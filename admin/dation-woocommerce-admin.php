@@ -53,6 +53,32 @@ function dation_options_page_html() {
 						>
 					</td>
 				</tr>
+				<tr>
+					<th scope="row">
+						<label class="description" for="dw_settings[tkm_price]">
+							<?php _e('Prijs'); ?>
+						</label>
+					</th>
+					<td>
+						<input id="dw_settings[tkm_price]" name="dw_settings[tkm_price]"
+							   type="text"
+							   value="<?php echo $dw_options['tkm_price'] ?>"
+						>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label class="description" for="dw_settings[tkm_capacity]">
+							<?php _e('Beschikbare plaatsen'); ?>
+						</label>
+					</th>
+					<td>
+						<input id="dw_settings[tkm_capacity]" name="dw_settings[tkm_capacity]"
+							   type="text"
+							   value="<?php echo $dw_options['tkm_capacity'] ?>"
+						>
+					</td>
+				</tr>
 			</table>
 
 			<p class="submit">
