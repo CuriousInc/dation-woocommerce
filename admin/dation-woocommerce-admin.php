@@ -6,7 +6,7 @@ declare(strict_types=1);
  */
 function dation_options_page() {
 	add_menu_page(
-		'Instellingen voor koppeling met Dation',
+		'Instellingen',
 		'Dation',
 		'manage_options',
 		'dation',
@@ -19,7 +19,7 @@ function dation_options_page() {
 add_action('admin_menu', 'dation_options_page');
 
 /**
- * REgister a settings group for the plugin
+ * Register a settings group for the plugin
  */
 function dw_register_settings() {
 	register_setting('dw_settings_group', 'dw_settings');
@@ -39,6 +39,8 @@ function dation_options_page_html() {
 
 		<form method="post" action="options.php">
 			<?php settings_fields('dw_settings_group'); ?>
+
+			<h2 class="title">Koppeling</h2>
 			<table class="form-table">
 				<tr>
 					<th scope="row">
@@ -53,6 +55,10 @@ function dation_options_page_html() {
 						>
 					</td>
 				</tr>
+			</table>
+
+			<h2 class="title">Terugkommomenten</h2>
+			<table>
 				<tr>
 					<th scope="row">
 						<label class="description" for="dw_settings[tkm_price]">
@@ -82,7 +88,7 @@ function dation_options_page_html() {
 			</table>
 
 			<p class="submit">
-				<input type="submit" class="button-primary" value="<?php _e('Save') ?>">
+				<input type="submit" class="button-primary" value="<?php _e('Save changes') ?>">
 			</p>
 		</form>
 	</div>
