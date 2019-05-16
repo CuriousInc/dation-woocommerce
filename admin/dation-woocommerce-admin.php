@@ -58,7 +58,7 @@ function dation_options_page_html() {
 			</table>
 
 			<h2 class="title">Terugkommomenten</h2>
-			<table>
+			<table class="form-table">
 				<tr>
 					<th scope="row">
 						<label class="description" for="dw_settings[tkm_price]">
