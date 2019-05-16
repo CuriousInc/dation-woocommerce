@@ -1,11 +1,12 @@
 <?php
+
 /*
 Plugin Name: Dation Woocommerce
 Plugin URI: http:/www.dation.nl/
 Description: Dation Woocommerce plugin
 Author: Dation
 Author URI: http://www.dation.nl
-Version: 0.0.1
+Version: 0.0.2
 */
 
 function dation_options_page_html(){
