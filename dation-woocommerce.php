@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /*
 Plugin Name: Dation Woocommerce
@@ -9,27 +10,11 @@ Author URI: http://www.dation.nl
 Version: 0.0.2
 */
 
-function dation_options_page_html(){
-	?>
-	<div class="wrap">
-		<h1><?php esc_html( get_admin_page_title() ); ?> - Welkom!</h1>
-	</div>
-	<?php
-}
+// Global variables
 
-function dation_options_page() {
-	add_menu_page(
-		'Dation Instellingen',
-		'Dation',
-		'manage_options',
-		'dation',
-		'dation_options_page_html',
-		'',
-		40
-	);
-}
-add_action( 'admin_menu', 'dation_options_page' );
+$dw_options = get_option('dw_settings');
 
+// Includes
 
 /**
  * Check if WooCommerce is active
@@ -56,7 +41,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 				// indicates we are running the admin
 				if ( is_admin() ) {
-					// ...
+					require 'admin/dation-woocommerce-admin.php';
 				}
 
 				// indicates we are being served over ssl
