@@ -42,6 +42,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 				// indicates we are running the admin
 				if ( is_admin() ) {
 					require 'admin/dation-woocommerce-admin.php';
+					require 'admin/dation-woocommerce-get-products.php';
 				}
 
 				// indicates we are being served over ssl
