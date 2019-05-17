@@ -57,14 +57,17 @@ function dw_options_page_html() {
 				<tr>
 					<th scope="row">
 						<label class="description" for="dw_settings[api_key]">
-							<?php _e('API-Key'); ?>
+							<?php _e('API-Sleutel'); ?>
 						</label>
 					</th>
 					<td>
 						<input id="dw_settings[api_key]" name="dw_settings[api_key]"
-							   type="text"
+							   type="text" class="regular-text"
 							   value="<?php echo $dw_options['api_key'] ?>"
 						>
+						<p class="description">
+							API-Sleutels kan je instellen in Dation onder <em>Beheer</em> > <em>Websitekoppeling</em>
+						</p>
 					</td>
 				</tr>
 			</table>
@@ -79,9 +82,13 @@ function dw_options_page_html() {
 					</th>
 					<td>
 						<input id="dw_settings[tkm_price]" name="dw_settings[tkm_price]"
-							   type="text"
+							   type="text" class="small-text"
 							   value="<?php echo $dw_options['tkm_price'] ?>"
 						>
+						<p class="description">
+							Prijs die voor iedere nieuwe cursus wordt ingesteld. Deze kan je later aanpassen
+							in het product-scherm.
+						</p>
 					</td>
 				</tr>
 				<tr>
@@ -92,15 +99,19 @@ function dw_options_page_html() {
 					</th>
 					<td>
 						<input id="dw_settings[tkm_capacity]" name="dw_settings[tkm_capacity]"
-							   type="text"
+							   type="text" class="small-text"
 							   value="<?php echo $dw_options['tkm_capacity'] ?>"
 						>
+						<p class="description">
+							Aantal vrije plaatsen dat voor iedere nieuwe cursus wordt ingesteld. Deze kan je later
+							aanpassen in het product-scherm
+						</p>
 					</td>
 				</tr>
 			</table>
 
 			<p class="submit">
-				<input type="submit" class="button-primary" value="<?php _e('Save changes') ?>">
+				<input type="submit" class="button-primary" value="<?php _e('Wijzigingen opslaan') ?>">
 			</p>
 		</form>
 	</div>
