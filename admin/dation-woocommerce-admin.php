@@ -27,6 +27,16 @@ function dw_admin_menu() {
 		40
 	);
 
+	// Adding a submenu with the same slug tells Wordpress to not add a submenu for the parent item
+	add_submenu_page(
+		'dation',
+		'Instellingen',
+		'Instellingen',
+		'manage_options',
+		'dation',
+		'dw_options_page_html'
+	);
+
 	add_submenu_page(
 		'dation',
 		'Cursussen',
@@ -82,7 +92,7 @@ function dw_options_page_html() {
 					</th>
 					<td>
 						<input id="dw_settings[tkm_price]" name="dw_settings[tkm_price]"
-							   type="text" class="small-text"
+							   type="text"
 							   value="<?php echo $dw_options['tkm_price'] ?>"
 						>
 						<p class="description">
