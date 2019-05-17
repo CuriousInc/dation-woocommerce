@@ -42,20 +42,20 @@ function dw_get_products() {
 
 	curl_close($curl);
 
+	$createdProducts = [];
+
 	if ($err) {
 		echo "cURL Error #:" . $err;
 	} else {
 		foreach(json_decode($response, true) as $dationProduct) {
 			if(get_product_by_sku($dationProduct['id']) === null) {
 				$addedProducts += 1;
-				add_woo_commerce_product($dationProduct);
-				echo 'Nieuw terugkommoment toegevoegd';
+				$product = add_woo_commerce_product($dationProduct);
+				$createdProducts[] = $product;
 			}
 		}
-		echo 'Er zijn ' . $addedProducts . ' nieuwe cursussen toegevoegd';
 	}
-
-
+	generateTable($createdProducts);
 }
 
 function add_woo_commerce_product($dationProduct) {
@@ -105,6 +105,8 @@ function add_woo_commerce_product($dationProduct) {
 
 	update_post_meta($product->get_id(), '_product_attributes', $attributes);
 
+	return $product;
+
 }
 
 function get_product_by_sku( $sku ) {
@@ -113,8 +115,33 @@ function get_product_by_sku( $sku ) {
 
 	$product_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $sku ) );
 
-	if ( $product_id ) return new WC_Product( $product_id );
+	if($product_id){
+		return new WC_Product($product_id);
+	}
 
 	return null;
 }
 
+function generateTable(array $createdProducts) {
+	?>
+	<p>De volgende Dation producten zijn toegevoegd aan de webshop</p>
+	<table>
+		<thead>
+			<tr>
+				<th>Dation Product</th>
+				<th>Webshop Product</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+				foreach($createdProducts as $product) {
+					echo '<tr>
+							<td><a href="https://dashboard.dation.nl/eqmobi/nascholing/details?id='. $product->get_sku() . '">'. $product->get_sku() . '</a></td>
+							<td><a href="https://www.mygenerationdrive.be/wp-admin/post.php?post='. $product->get_id() . '&action=edit">'. $product->get_name() . '</a></td>
+						</tr>';
+				}
+			?>
+		</tbody>
+	</table>
+	<?php
+}
