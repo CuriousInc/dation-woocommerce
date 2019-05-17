@@ -27,7 +27,6 @@ add_action('init', 'dw_override_woo_templates', 20);
 // indicates we are running the admin
 if(is_admin()) {
 	require 'admin/dation-woocommerce-admin.php';
-	require 'admin/dation-woocommerce-get-products.php';
 }
 
 /**

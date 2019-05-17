@@ -8,24 +8,6 @@ const VARIABLES = [
 	'low_stock_amount' => 0,
 ];
 
-
-/**
- * Add Admin menu item
- */
-function dw_products_page() {
-	add_menu_page(
-		'Koppel Producten',
-		'Dation-woocommerce',
-		'manage_options',
-		'dw_products',
-		'dw_get_products',
-		'',
-		41
-	);
-}
-
-add_action('admin_menu', 'dw_products_page');
-
 function dw_get_products() {
 	global $dw_options;
 	$curl = curl_init();
