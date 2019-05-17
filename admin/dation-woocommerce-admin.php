@@ -20,24 +20,23 @@ function dw_admin_menu() {
 		'Instellingen',
 		'Dation',
 		'manage_options',
-		'dation',
-		'dw_options_page_html',
+		'dw-options.php',
+		'',
 		'',
 		40
 	);
 
 	// Adding a submenu with the same slug tells Wordpress to not add a submenu for the parent item
 	add_submenu_page(
-		'dation',
+		'dw-options.php',
 		'Instellingen',
 		'Instellingen',
 		'manage_options',
-		'dation',
-		'dw_options_page_html'
+		'dw-options.php'
 	);
 
 	add_submenu_page(
-		'dation',
+		'dw-options.php',
 		'Cursussen',
 		'Cursussen',
 		'manage_options',
