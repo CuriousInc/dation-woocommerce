@@ -4,19 +4,19 @@ declare(strict_types=1);
 /**
  * Add Admin menu item
  */
-function dation_options_page() {
+function dw_options_page() {
 	add_menu_page(
 		'Instellingen',
 		'Dation',
 		'manage_options',
 		'dation',
-		'dation_options_page_html',
+		'dw_options_page_html',
 		'',
 		40
 	);
 }
 
-add_action('admin_menu', 'dation_options_page');
+add_action('admin_menu', 'dw_options_page');
 
 /**
  * Register a settings group for the plugin
@@ -30,7 +30,7 @@ add_action('admin_init', 'dw_register_settings');
 /**
  * Display Admin page
  */
-function dation_options_page_html() {
+function dw_options_page_html() {
 	global $dw_options;
 
 	?>
