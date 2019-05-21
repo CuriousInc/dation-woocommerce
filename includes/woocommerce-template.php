@@ -67,7 +67,7 @@ function dw_process_checkout() {
 	}}
 
 	if(!dw_is_valid_date($_POST[ISSUE_DATE_DRIVING_LICENSE])) {
-		wc_add_notice(__('Afgiftedatum rijbewijs is onjuist '), 'error');
+		wc_add_notice(__('Afgiftedatum rijbewijs is onjuist, verwacht formaat \'d.m.Y\''), 'error');
 	}
 }
 
