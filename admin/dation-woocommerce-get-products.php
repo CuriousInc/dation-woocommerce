@@ -76,7 +76,12 @@ function add_woo_commerce_product($dationProduct) {
 
 	$product = new WC_Product();
 
-	$product->set_name($dationProduct['name'] . ' ' . date_i18n('l d F Y H:i', $date->getTimestamp()));
+	$timestamp = $date->getTimestamp();
+	$prettyDate = date_i18n('l d F Y H:i', $timestamp);
+
+	$product->set_name($dationProduct['name'] . ' ' . $prettyDate);
+	$product->set_menu_order($timestamp);
+
 	$product->set_description($dationProduct['name']);
 	$product->set_short_description($dationProduct['ccvCode']);
 	$product->set_sku($dationProduct['id']);
