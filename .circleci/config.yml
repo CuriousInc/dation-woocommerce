@@ -8,3 +8,4 @@ jobs:
       - run: zip -r dation-woocommerce.zip . -x *.git*
       - store_artifacts:
           path: dation-woocommerce.zip
+          destination: release
