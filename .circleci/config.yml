@@ -6,5 +6,5 @@ jobs:
     steps:
       - checkout
       - run: zip -r dation-woocommerce.zip . -x *.git*
-      - store_artifact:
+      - store_artifacts:
           path: dation-woocommerce.zip
