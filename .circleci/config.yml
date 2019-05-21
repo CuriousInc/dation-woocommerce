@@ -5,7 +5,7 @@ jobs:
     machine: true
     steps:
       - checkout
-      - run: zip -r dation-woocommerce.zip . -x *.git*
+      - run: zip -r dation-woocommerce.zip . -x *.git* -x *.circleci*
       - store_artifacts:
           path: dation-woocommerce.zip
           destination: dation-woocommerce.zip
