@@ -1,0 +1,9 @@
+version: 2
+jobs:
+  # Job 'build': create zip file for install
+  build:
+    steps:
+      - checkout
+      - run: zip -r dation-woocommerce.zip . -x *.git*
+      - store_artifact:
+          path: dation-woocommerce.zip
