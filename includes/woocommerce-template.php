@@ -2,13 +2,12 @@
 
 /**
  * Template Function Overrides
- *
  */
 
 const ISSUE_DATE_DRIVING_LICENSE = 'issue_date_driving_license';
 const DATE_OF_BIRTH              = 'date_of_birth';
 const NATIONAL_REGISTRY_NUMBER   = 'rijksregisternummer';
-const AUTOMATIC_GEARS            = 'automatic_gears';
+const AUTOMATIC_TRANSMISSION     = 'automatic_transmission';
 
 // Register override
 add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
@@ -34,7 +33,7 @@ function dw_override_checkout_fields($fields) {
 		'required' => true,
 	];
 
-	$newOrderFields['order'][AUTOMATIC_GEARS] = [
+	$newOrderFields['order'][AUTOMATIC_TRANSMISSION] = [
 		'type'     => 'select',
 		'options'  => [
 			'yes' => __('Yes'),
@@ -74,7 +73,7 @@ function dw_checkout_update_order_meta($order_id) {
 		ISSUE_DATE_DRIVING_LICENSE,
 		DATE_OF_BIRTH,
 		NATIONAL_REGISTRY_NUMBER,
-		AUTOMATIC_GEARS
+		AUTOMATIC_TRANSMISSION
 	];
 
 	foreach($fields as $field) {
@@ -87,7 +86,7 @@ function dw_checkout_update_order_meta($order_id) {
 /**
  * Display field value on the order edit page
  */
-add_action('woocommerce_admin_order_data_after_billing_address', 'dw_admin_order_tkm_data', 10, 1);
+add_action('woocommerce_admin_order_data_after_shipping_address', 'dw_admin_order_tkm_data', 10, 1);
 
 function dw_admin_order_tkm_data($order) {
 	echo '<p><strong>' . __('Geboortedatum') . ':</strong> <br/>'
@@ -97,5 +96,5 @@ function dw_admin_order_tkm_data($order) {
 	echo '<p><strong>' . __('Afgiftedatum rijbewijs') . ':</strong> <br/>'
 		. get_post_meta($order->get_id(), ISSUE_DATE_DRIVING_LICENSE, true) . '</p>';
 	echo '<p><strong>' . __('Automaat') . ':</strong> <br/>'
-		. get_post_meta($order->get_id(), AUTOMATIC_GEARS, true) . '</p>';
+		. (get_post_meta($order->get_id(), AUTOMATIC_TRANSMISSION, true) ? __('Ja') : __('Nee') ). '</p>';
 }
