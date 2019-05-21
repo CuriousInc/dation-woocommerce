@@ -31,6 +31,20 @@ function dw_options_page_html() {
 							API-Sleutels kan je instellen in Dation onder <em>Beheer</em> > <em>Websitekoppeling</em>
 						</p>
 					</td>
+					<th scope="row">
+						<label class="description" for="dw_settings[handle]">
+							<?php _e('Handle'); ?>
+						</label>
+					</th>
+					<td>
+						<input id="dw_settings[handle]" name="dw_settings[handle]"
+							   type="text" class="regular-text"
+							   value="<?php echo $dw_options['handle'] ?>"
+						>
+						<p class="description">
+							De handle vindt u na https://dashboard.dation.nl/UWRIJSCHOOLCODE. Vul hier UWRIJSCHOOLCODE in.
+						</p>
+					</td>
 				</tr>
 			</table>
 

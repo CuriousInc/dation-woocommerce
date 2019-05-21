@@ -223,9 +223,10 @@ class DationProductList extends WP_List_Table {
 	}
 
 	public function column_default($item, $column_name) {
+		global $dw_options;
 		switch ($column_name) {
 			case 'sku':
-				return '<a target="_blank" href="https://dashboard.dation.nl/eqmobi/nascholing/details?id='. $item[$column_name]. '">Open in Dation</a>';
+				return '<a target="_blank" href="https://dashboard.dation.nl/' . $dw_options['handle'] . '/nascholing/details?id='. $item[$column_name]. '">Open in Dation</a>';
 			case 'id':
 				return '<a target="_blank" href="https://www.mygenerationdrive.be/wp-admin/post.php?post='. $item[$column_name] . '&action=edit">'. $item['name'] . '</a>';
 			case 'location':
