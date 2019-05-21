@@ -4,10 +4,13 @@
  * Template Function Overrides
  */
 
+// Fields
 const ISSUE_DATE_DRIVING_LICENSE = 'issue_date_driving_license';
 const DATE_OF_BIRTH              = 'date_of_birth';
 const NATIONAL_REGISTRY_NUMBER   = 'rijksregisternummer';
 const AUTOMATIC_TRANSMISSION     = 'automatic_transmission';
+
+const BELGIAN_DATE_FORMAT =  'd.m.Y';
 
 // Register override
 add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
@@ -55,12 +58,44 @@ function dw_override_checkout_fields($fields) {
 add_action('woocommerce_checkout_process', 'dw_process_checkout');
 
 function dw_process_checkout() {
+	if(!dw_is_valid_date($_POST[DATE_OF_BIRTH])) {
+		wc_add_notice(__('Geboortedatum is onjuist, verwacht formaat \'d.m.Y\''), 'error');
+	} else {
+		$birthDate = DateTime::createFromFormat(BELGIAN_DATE_FORMAT, $_POST[DATE_OF_BIRTH]);
+		if(!dw_is_valid_rrn($_POST[NATIONAL_REGISTRY_NUMBER], $birthDate)) {
+		wc_add_notice(__('Rijksregsternummer is onjuist'), 'error');
+	}}
 
-	// // Check if set, if its not set add an error.
-	// if(!$_POST[DATE_OF_BIRTH]) {
-	// 	wc_add_notice(__('Geboorte 2 is compulsory. Please enter a value'), 'error');
-	// }
+	if(!dw_is_valid_date($_POST[ISSUE_DATE_DRIVING_LICENSE])) {
+		wc_add_notice(__('Afgiftedatum rijbewijs is onjuist '), 'error');
+	}
+}
 
+function dw_is_valid_date(string $input): bool {
+	$dateTime = DateTime::createFromFormat(BELGIAN_DATE_FORMAT, $input);
+	return $dateTime && $dateTime->format(BELGIAN_DATE_FORMAT) === $input;
+}
+
+function dw_is_valid_rrn(string $nationalRegistryNumber, DateTime $birthDate): bool {
+	if(
+		substr($nationalRegistryNumber, 0, 2) != $birthDate->format('y')
+		|| substr($nationalRegistryNumber, 2, 2) != $birthDate->format('m')
+		|| substr($nationalRegistryNumber, 4, 2) != $birthDate->format('d')
+	) {
+		return false;
+	}
+	if($birthDate->format('Y') < 2000) {
+		if((97 - (substr($nationalRegistryNumber, 0, 9) % 97)) != intval(substr($nationalRegistryNumber, -2))) {
+			return false;
+		}
+	} else {
+		//checksum + 2000000000 (http://www.ibz.rrn.fgov.be/fileadmin/user_upload/nl/rr/toegang/bestand-rr.pdf)
+		if((97 - (intval('2' . substr($nationalRegistryNumber, 0, 9)) % 97)) != intval(substr($nationalRegistryNumber, -2))) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 /**
@@ -96,5 +131,5 @@ function dw_admin_order_tkm_data($order) {
 	echo '<p><strong>' . __('Afgiftedatum rijbewijs') . ':</strong> <br/>'
 		. get_post_meta($order->get_id(), ISSUE_DATE_DRIVING_LICENSE, true) . '</p>';
 	echo '<p><strong>' . __('Automaat') . ':</strong> <br/>'
-		. (get_post_meta($order->get_id(), AUTOMATIC_TRANSMISSION, true) ? __('Ja') : __('Nee') ). '</p>';
+		. (get_post_meta($order->get_id(), AUTOMATIC_TRANSMISSION, true) ? __('Ja') : __('Nee')) . '</p>';
 }
