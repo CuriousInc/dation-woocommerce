@@ -2,6 +2,7 @@ version: 2
 jobs:
   # Job 'build': create zip file for install
   build:
+    machine: true
     steps:
       - checkout
       - run: zip -r dation-woocommerce.zip . -x *.git*
