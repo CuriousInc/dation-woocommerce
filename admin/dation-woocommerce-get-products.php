@@ -10,7 +10,6 @@ const VARIABLES = [
 
 
 date_default_timezone_set('Europe/Amsterdam');
-add_action('dw_delete_past_products', 'delete_past_products');
 
 // WP_List_Table is not loaded automatically so we need to load it in our application
 if( ! class_exists( 'WP_List_Table' ) ) {
