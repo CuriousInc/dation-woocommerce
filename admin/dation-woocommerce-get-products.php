@@ -140,6 +140,7 @@ function dw_get_course_instances(DateTime $startDateAfter = null, DateTime $star
 			"Connection: keep-alive",
 			"Host: dashboard.dation.nl",
 			"accept-encoding: gzip, deflate",
+			"handle: wp-" . $dw_options['handle'],
 		),
 	));
 
