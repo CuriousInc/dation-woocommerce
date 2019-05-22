@@ -5,10 +5,10 @@
  */
 
 // Fields
-const ISSUE_DATE_DRIVING_LICENSE = 'Afgiftedatum rijbewijs';
-const DATE_OF_BIRTH              = 'Geboortedatum';
+const ISSUE_DATE_DRIVING_LICENSE = 'issue_date_driving_license';
+const DATE_OF_BIRTH              = 'date_of_birth';
 const NATIONAL_REGISTRY_NUMBER   = 'rijksregisternummer';
-const AUTOMATIC_TRANSMISSION     = 'Automaat';
+const AUTOMATIC_TRANSMISSION     = 'automatic_transmission';
 
 const BELGIAN_DATE_FORMAT =  'd.m.Y';
 
