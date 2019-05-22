@@ -42,7 +42,7 @@ function dw_admin_menu() {
 		'Cursussen',
 		'manage_options',
 		'dation-cursussen',
-		'dw_get_products'
+		'dw_show_course_page'
 	);
 }
 

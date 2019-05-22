@@ -17,9 +17,23 @@ if(!class_exists('WP_List_Table')) {
 	require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
-function dw_get_products() {
-	echo '<h1>Cursussen</h1>';
+function dw_show_course_page() {
+	dw_get_products();
 
+	$table = new DationProductList();
+	$table->prepare_items();
+
+	?>
+	<h1>Cursussen</h1>
+	<div class="wrap">
+		<div id="icon-users" class="icon32"></div>
+		<?php $table->display(); ?>
+	</div>
+	<?php
+
+}
+
+function dw_get_products() {
 	$courses = dw_get_course_instances(new DateTime(), null) ?? [];
 
 	$createdProducts = [];
@@ -32,18 +46,11 @@ function dw_get_products() {
 	}
 
 	if(count($createdProducts) > 0 ) {
-		echo '<p>Er zijn ' . count($createdProducts) . ' cursussen gesynchroniseerd met Dation</p>';
+		echo '<div class="notice notice-info"><p>Er zijn ' . count($createdProducts) . ' cursussen gesynchroniseerd met Dation</p></div>';
 	}
 
 
-	$table = new DationProductList();
-	$table->prepare_items();
-	?>
-	<div class="wrap">
-		<div id="icon-users" class="icon32"></div>
-		<?php $table->display(); ?>
-	</div>
-	<?php
+
 }
 
 function dw_add_woo_commerce_product($dationProduct) {
