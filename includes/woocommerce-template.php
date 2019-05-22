@@ -11,7 +11,16 @@ const AUTOMATIC_TRANSMISSION     = 'automatic_transmission';
 
 // Register override
 add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
+add_filter('woocommerce_email_order_meta_keys', 'custom_order_meta_fields');
 
+function custom_order_meta_fields($keys) {
+	$keys[] = ISSUE_DATE_DRIVING_LICENSE;
+	$keys[] = DATE_OF_BIRTH;
+	$keys[] = NATIONAL_REGISTRY_NUMBER;
+	$keys[] = AUTOMATIC_TRANSMISSION;
+
+	return $keys;
+}
 // Override checkout fields, add custom TKM fields to checkout fields
 function dw_override_checkout_fields($fields) {
 
