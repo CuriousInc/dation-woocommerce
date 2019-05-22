@@ -5,14 +5,14 @@
  */
 
 // Fields
-const ISSUE_DATE_DRIVING_LICENSE = 'issue_date_driving_license';
-const DATE_OF_BIRTH              = 'date_of_birth';
+const ISSUE_DATE_DRIVING_LICENSE = 'Afgiftedatum rijbewijs';
+const DATE_OF_BIRTH              = 'Geboortedatum';
 const NATIONAL_REGISTRY_NUMBER   = 'rijksregisternummer';
-const AUTOMATIC_TRANSMISSION     = 'automatic_transmission';
+const AUTOMATIC_TRANSMISSION     = 'Automaat';
 
 const BELGIAN_DATE_FORMAT =  'd.m.Y';
 
-// Register override
+// Register override for checkout and order email
 add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
 add_filter('woocommerce_email_order_meta_keys', 'custom_order_meta_fields');
 

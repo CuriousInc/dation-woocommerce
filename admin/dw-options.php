@@ -31,6 +31,8 @@ function dw_options_page_html() {
 							API-Sleutels kan je instellen in Dation onder <em>Beheer</em> > <em>Websitekoppeling</em>
 						</p>
 					</td>
+				</tr>
+				<tr>
 					<th scope="row">
 						<label class="description" for="dw_settings[handle]">
 							<?php _e('Handle'); ?>
