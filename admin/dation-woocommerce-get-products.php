@@ -71,32 +71,35 @@ function dw_add_woo_commerce_product($dationProduct) {
 			'is_taxonomy' => '1'
 		]
 	];
-
-
 	$product = new WC_Product();
 
-	$timestamp = $date->getTimestamp();
-	$prettyDate = date_i18n('l d F Y H:i', $timestamp);
+	try{
+		$timestamp = $date->getTimestamp();
+		$prettyDate = date_i18n('l d F Y H:i', $timestamp);
 
-	$product->set_name($dationProduct['name'] . ' ' . $prettyDate);
-	$product->set_menu_order($timestamp);
+		$product->set_name($dationProduct['name'] . ' ' . $prettyDate);
+		$product->set_menu_order($timestamp);
 
-	$product->set_description($dationProduct['name']);
-	$product->set_short_description($dationProduct['ccvCode']);
-	$product->set_sku($dationProduct['id']);
-	$product->set_regular_price($dw_options['tkm_price']);
-	$product->set_virtual(VARIABLES['virtual']);
-	$product->set_manage_stock(VARIABLES['manage_stock']);
-	$product->set_stock_quantity($dw_options['tkm_capacity']);
-	$product->set_sold_individually(VARIABLES['sold_individually']);
-	$product->set_low_stock_amount(VARIABLES['low_stock_amount']);
-	$product->save();
+		$product->set_description($dationProduct['name']);
+		$product->set_short_description($dationProduct['ccvCode']);
+		$product->set_sku($dationProduct['id']);
+		$product->set_regular_price($dw_options['tkm_price']);
+		$product->set_virtual(VARIABLES['virtual']);
+		$product->set_manage_stock(VARIABLES['manage_stock']);
+		$product->set_stock_quantity($dw_options['tkm_capacity']);
+		$product->set_sold_individually(VARIABLES['sold_individually']);
+		$product->set_low_stock_amount(VARIABLES['low_stock_amount']);
+		$product->save();
 
-	wp_set_object_terms($product->get_id(), $date->format('d-m-Y'), 'pa_datum', false);
-	wp_set_object_terms($product->get_id(), $date->format('H:i'), 'pa_tijd', false);
-	wp_set_object_terms($product->get_id(), $dationProduct['parts'][0]['slots'][0]['city'], 'pa_locatie', false);
+		wp_set_object_terms($product->get_id(), $date->format('d-m-Y'), 'pa_datum', false);
+		wp_set_object_terms($product->get_id(), $date->format('H:i'), 'pa_tijd', false);
+		wp_set_object_terms($product->get_id(), $dationProduct['parts'][0]['slots'][0]['city'], 'pa_locatie', false);
 
-	update_post_meta($product->get_id(), '_product_attributes', $attributes);
+		update_post_meta($product->get_id(), '_product_attributes', $attributes);
+	} catch (Throwable $e) {
+		echo '<div class="error notice"><p>Er is iets misgegaan bij het opslaan van het product. Herlaad de pagina en probeer het opnieuw.</p></div>';
+	}
+
 
 	return $product;
 
