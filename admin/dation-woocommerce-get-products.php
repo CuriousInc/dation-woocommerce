@@ -32,7 +32,7 @@ function dw_get_products() {
 	}
 
 	if(count($createdProducts) > 0 ) {
-		echo '<p>Er zijn ' . count($createdProducts) . 'cursussen gesynchroniseerd met dation</p>';
+		echo '<p>Er zijn ' . count($createdProducts) . ' cursussen gesynchroniseerd met dation</p>';
 	}
 
 
@@ -188,6 +188,7 @@ class DationProductList extends WP_List_Table {
 			'id'       => 'Webshop Product',
 			'location' => 'Locatie',
 			'sku'      => 'Dation Product',
+			'stock'    => 'Beschikbaar',
 		];
 	}
 
@@ -215,6 +216,7 @@ class DationProductList extends WP_List_Table {
 				'id'       => $product->get_id(),
 				'name'     => $product->get_name(),
 				'location' => $product->get_attribute('pa_locatie'),
+				'stock'    => $product->get_stock_quantity(),
 			];
 		}
 
@@ -229,6 +231,8 @@ class DationProductList extends WP_List_Table {
 			case 'id':
 				return '<a target="_blank" href="https://www.mygenerationdrive.be/wp-admin/post.php?post='. $item[$column_name] . '&action=edit">'. $item['name'] . '</a>';
 			case 'location':
+				return $item[$column_name];
+			case 'stock':
 				return $item[$column_name];
 		}
 	}
