@@ -2,37 +2,37 @@
 declare(strict_types=1);
 
 const VARIABLES = [
-	'virtual' => true,
-	'manage_stock' => true,
-	'sold_individually' =>true,
-	'low_stock_amount' => 0,
+	'virtual' =>           true,
+	'manage_stock' =>      true,
+	'sold_individually' => true,
+	'low_stock_amount' =>  0,
 ];
+const BASE_API_URL = 'https://dashboard.dation.nl/api/v1/';
 
 
 date_default_timezone_set('Europe/Amsterdam');
 
 // WP_List_Table is not loaded automatically so we need to load it in our application
-if( ! class_exists( 'WP_List_Table' ) ) {
-	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
+if(!class_exists('WP_List_Table')) {
+	require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
 function dw_get_products() {
 	echo '<h1>Cursussen</h1>';
 
-	$today = new DateTime();
-	$courses = get_course_instances($today, null);
+	$courses = dw_get_course_instances(new DateTime(), null) ?? [];
 
 	$createdProducts = [];
 
 	foreach($courses as $dationProduct) {
-		if(get_product_by_sku($dationProduct['id']) === null) {
-			$product = add_woo_commerce_product($dationProduct);
+		if(dw_get_product_by_sku($dationProduct['id']) === null) {
+			$product = dw_add_woo_commerce_product($dationProduct);
 			$createdProducts[] = $product;
 		}
 	}
 
 	if(count($createdProducts) > 0 ) {
-		echo '<p>Er zijn ' . count($createdProducts) . ' cursussen gesynchroniseerd met dation</p>';
+		echo '<p>Er zijn ' . count($createdProducts) . ' cursussen gesynchroniseerd met Dation</p>';
 	}
 
 
@@ -46,7 +46,7 @@ function dw_get_products() {
 	<?php
 }
 
-function add_woo_commerce_product($dationProduct) {
+function dw_add_woo_commerce_product($dationProduct) {
 	global $dw_options;
 	$date = new DateTime($dationProduct['startDate']);
 
@@ -102,20 +102,22 @@ function add_woo_commerce_product($dationProduct) {
 
 }
 
-function get_product_by_sku( $sku ) {
-
+// Get product by unique `stock keep unit`.
+// When creating a product, dation course ID is set to the sku of a woocommerce product.
+// When synchronizing with Dation, we can use this to find Dation courses that are not in Woocommerce
+function dw_get_product_by_sku($sku) {
 	global $wpdb;
 
-	$product_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $sku ) );
+	$product_id = $wpdb->get_var( $wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $sku));
 
-	if($product_id){
+	if($product_id) {
 		return new WC_Product($product_id);
 	}
 
 	return null;
 }
 
-function get_course_instances(DateTime $startDateAfter = null, DateTime $startDateBefore = null) {
+function dw_get_course_instances(DateTime $startDateAfter = null, DateTime $startDateBefore = null) {
 	global $dw_options;
 
 	$beforeParam = $startDateBefore ? '&startDateBefore=' . $startDateBefore->format('Y-m-d') : '';
@@ -124,7 +126,7 @@ function get_course_instances(DateTime $startDateAfter = null, DateTime $startDa
 	$curl = curl_init();
 
 	curl_setopt_array($curl, array(
-		CURLOPT_URL => "https://dashboard.dation.nl/api/v1/course-instances?startDateAfter=" . $beforeParam . $afterParam,
+		CURLOPT_URL => BASE_API_URL . "course-instances?" . $beforeParam . $afterParam,
 		CURLOPT_RETURNTRANSFER => true,
 		CURLOPT_ENCODING => "",
 		CURLOPT_MAXREDIRS => 10,
@@ -137,11 +139,7 @@ function get_course_instances(DateTime $startDateAfter = null, DateTime $startDa
 			"Cache-Control: no-cache",
 			"Connection: keep-alive",
 			"Host: dashboard.dation.nl",
-			"Postman-Token: a80eff2e-473e-4dc0-a88d-10e692a54d27,48664008-cb2b-4d9b-aece-f101f633d26b",
-			"User-Agent: PostmanRuntime/7.13.0",
 			"accept-encoding: gzip, deflate",
-			"cache-control: no-cache",
-			"cookie: PHPSESSID=03d87add6fd48ecdd289e00d061592f5"
 		),
 	));
 
@@ -151,7 +149,7 @@ function get_course_instances(DateTime $startDateAfter = null, DateTime $startDa
 	curl_close($curl);
 
 	if ($err) {
-		echo "cURL Error #:" . $err;
+		echo '<div class="error notice"><p>Er is iets misgegaan bij het synchroniseren van de producten. Herlaad de pagina en probeer het opnieuw</p></div>';
 	} else {
 		return json_decode($response, true);
 	}
@@ -227,7 +225,7 @@ class DationProductList extends WP_List_Table {
 		global $dw_options;
 		switch ($column_name) {
 			case 'sku':
-				return '<a target="_blank" href="https://dashboard.dation.nl/' . $dw_options['handle'] . '/nascholing/details?id='. $item[$column_name]. '">Open in Dation</a>';
+				return '<a target="_blank" href="https://dashboard.dation.nl/' . $dw_options['handle'] . '/nascholing/details?id='. $item[$column_name]. '">Openen in Dation</a>';
 			case 'id':
 				return '<a target="_blank" href="https://www.mygenerationdrive.be/wp-admin/post.php?post='. $item[$column_name] . '&action=edit">'. $item['name'] . '</a>';
 			case 'location':

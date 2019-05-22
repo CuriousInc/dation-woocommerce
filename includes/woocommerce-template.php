@@ -68,15 +68,15 @@ add_action('woocommerce_checkout_process', 'dw_process_checkout');
 
 function dw_process_checkout() {
 	if(!dw_is_valid_date($_POST[DATE_OF_BIRTH])) {
-		wc_add_notice(__('Geboortedatum is onjuist, verwacht formaat \'d.m.Y\''), 'error');
+		wc_add_notice(__('Geboortedatum is onjuist, verwacht formaat ' . BELGIAN_DATE_FORMAT), 'error');
 	} else {
 		$birthDate = DateTime::createFromFormat(BELGIAN_DATE_FORMAT, $_POST[DATE_OF_BIRTH]);
-		if(!dw_is_valid_rrn($_POST[NATIONAL_REGISTRY_NUMBER], $birthDate)) {
-		wc_add_notice(__('Rijksregsternummer is onjuist'), 'error');
-	}}
+		if(!dw_is_valid_national_registry_number($_POST[NATIONAL_REGISTRY_NUMBER], $birthDate)) {
+			wc_add_notice(__('Rijksregsternummer is onjuist'), 'error');
+		}}
 
 	if(!dw_is_valid_date($_POST[ISSUE_DATE_DRIVING_LICENSE])) {
-		wc_add_notice(__('Afgiftedatum rijbewijs is onjuist, verwacht formaat \'d.m.Y\''), 'error');
+		wc_add_notice(__('Afgiftedatum rijbewijs is onjuist, verwacht formaat ' . BELGIAN_DATE_FORMAT), 'error');
 	}
 }
 
@@ -85,7 +85,7 @@ function dw_is_valid_date(string $input): bool {
 	return $dateTime && $dateTime->format(BELGIAN_DATE_FORMAT) === $input;
 }
 
-function dw_is_valid_rrn(string $nationalRegistryNumber, DateTime $birthDate): bool {
+function dw_is_valid_national_registry_number(string $nationalRegistryNumber, DateTime $birthDate): bool {
 	if(
 		substr($nationalRegistryNumber, 0, 2) != $birthDate->format('y')
 		|| substr($nationalRegistryNumber, 2, 2) != $birthDate->format('m')

@@ -10,3 +10,9 @@ You can download the latest ZIP from
  [dation-woocommerce on CircleCI](https://circleci.com/gh/CuriousInc/workflows/dation-woocommerce/tree/master).
  See the `dation-woocommerce.zip` artifact at the latest build.
  
+The ZIP file has to be uploaded to your wordpress installation. 
+In the wp-admin environment, go to Plugins > New Plugin and upload the ZIP file.
+ 
+After activating the plugin 'Dation' will show up in the side-bar
+ 
+ 
