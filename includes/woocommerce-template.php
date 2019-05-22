@@ -14,13 +14,25 @@ const BELGIAN_DATE_FORMAT =  'd.m.Y';
 
 // Register override for checkout and order email
 add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
-add_filter('woocommerce_email_order_meta_keys', 'custom_order_meta_fields');
+add_filter('woocommerce_email_order_meta_keys', 'custom_order_meta_fields', 10, 3);
 
-function custom_order_meta_fields($keys) {
-	$keys[] = ISSUE_DATE_DRIVING_LICENSE;
-	$keys[] = DATE_OF_BIRTH;
-	$keys[] = NATIONAL_REGISTRY_NUMBER;
-	$keys[] = AUTOMATIC_TRANSMISSION;
+function custom_order_meta_fields($keys, $sent_to_admin, $order_obj) {
+	$keys[ISSUE_DATE_DRIVING_LICENSE] = [
+		'label' => 'Afgiftedatum Rijbewijs',
+		'value' => get_post_meta($order_obj->get_order_number(), ISSUE_DATE_DRIVING_LICENSE, true),
+	];
+	$keys[DATE_OF_BIRTH] = [
+		'label' => 'Geboortedatum',
+		'value' => get_post_meta($order_obj->get_order_number(), DATE_OF_BIRTH, true),
+	];
+	$keys[NATIONAL_REGISTRY_NUMBER] = [
+		'label' => 'Rijksregisternummer',
+		'value' => get_post_meta($order_obj->get_order_number(), NATIONAL_REGISTRY_NUMBER, true),
+	];
+	$keys[AUTOMATIC_TRANSMISSION] = [
+		'label' => 'Automatische versnelling',
+		'value' => get_post_meta($order_obj->get_order_number(), AUTOMATIC_TRANSMISSION, true),
+	];
 
 	return $keys;
 }
