@@ -22,7 +22,7 @@ function dw_admin_menu() {
 		'manage_options',
 		'dation',
 		'dw_options_page_html',
-		'',
+		plugins_url('dation-woocommerce/admin/images/dation-elephant-head-20x20.png'),
 		40
 	);
 
