@@ -16,6 +16,8 @@ $dw_options = get_option('dw_settings');
 
 // Includes
 
+require 'vendor/autoload.php';
+
 /**
  * Localisation
  **/
