@@ -9,7 +9,6 @@ const VARIABLES    = [
 	'sold_individually' => true,
 	'low_stock_amount'  => 0,
 ];
-const BASE_API_URL = 'https://dashboard.dation.nl/api/v1/';
 
 date_default_timezone_set('Europe/Amsterdam');
 
@@ -58,7 +57,9 @@ function dw_show_course_page() {
  * @throws WC_Data_Exception
  */
 function dw_get_products() {
-	$courses = dw_get_course_instances(new DateTime(), null) ?? [];
+	global $dw_options;
+	$client = new Dation\Woocommerce\RestApiClient\RestApiClient($dw_options['api_key'], $dw_options['handle']);
+	$courses = $client->getCourseInstances(new DateTime(), null) ?? [];
 
 	$createdProducts = [];
 
@@ -153,46 +154,3 @@ function dw_get_product_by_sku($sku) {
 	return null;
 }
 
-/**
- * @param DateTime|null $startDateAfter
- * @param DateTime|null $startDateBefore
- *
- * @return array|null|object
- */
-function dw_get_course_instances(DateTime $startDateAfter = null, DateTime $startDateBefore = null) {
-	global $dw_options;
-
-	$beforeParam = $startDateBefore ? '&startDateBefore=' . $startDateBefore->format('Y-m-d') : '';
-	$afterParam  = $startDateAfter ? '&startDateAfter=' . $startDateAfter->format('Y-m-d') : '';
-
-	$curl = curl_init();
-
-	curl_setopt_array($curl, [
-		CURLOPT_URL            => BASE_API_URL . 'course-instances?' . $beforeParam . $afterParam,
-		CURLOPT_RETURNTRANSFER => true,
-		CURLOPT_ENCODING       => '',
-		CURLOPT_MAXREDIRS      => 10,
-		CURLOPT_TIMEOUT        => 30,
-		CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-		CURLOPT_CUSTOMREQUEST  => 'GET',
-		CURLOPT_HTTPHEADER     => [
-			'Accept: */*',
-			'Authorization: Basic ' . $dw_options['api_key'],
-			'Cache-Control: no-cache',
-			'Connection: keep-alive',
-			'accept-encoding: gzip, deflate',
-			'handle: dw-' . $dw_options['handle'],
-		],
-	]);
-
-	$response = curl_exec($curl);
-	$err      = curl_error($curl);
-
-	curl_close($curl);
-
-	if($err) {
-		throw new \RuntimeException('Er is iets misgegaan bij het synchroniseren van de producten. Herlaad de pagina en probeer het opnieuw');
-	}
-
-	return json_decode($response, true);
-}
