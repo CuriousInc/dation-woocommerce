@@ -48,48 +48,45 @@ function dw_get_products() {
 	if(count($createdProducts) > 0 ) {
 		echo '<div class="notice notice-info"><p>Er zijn ' . count($createdProducts) . ' cursussen gesynchroniseerd met Dation</p></div>';
 	}
-
-
-
 }
 
-function dw_add_woo_commerce_product($dationProduct) {
+function dw_add_woo_commerce_product($course) {
 	global $dw_options;
-	$date = new DateTime($dationProduct['startDate']);
+	$startDate = new DateTime($course['startDate']);
 
 	$attributes = [
 		'pa_datum' => [
-			"name" => "pa_datum",
-			"value" => $date->format('d-m-Y'),
-			"position" => 1,
-			"is_visible" => true,
+			'name'        => 'pa_datum',
+			'value'       => $startDate->format('d-m-Y'),
+			'position'    => 1,
+			'is_visible'  => true,
 			'is_taxonomy' => '1'
 		],
 		'pa_locatie' => [
-			"name" => "pa_locatie",
-			"value" => $dationProduct['parts'][0]['slots'][0]['city'],
-			"is_visible" => true,
+			'name'        => 'pa_locatie',
+			'value'       => $course['parts'][0]['slots'][0]['city'],
+			'is_visible'  => true,
 			'is_taxonomy' => '1'
 		],
 		'pa_tijd' => [
-			"name" => "pa_tijd",
-			"value" => $date->format('H:i'),
-			"is_visible" => true,
+			'name'        => 'pa_tijd',
+			'value'       => $startDate->format('H:i'),
+			'is_visible'  => true,
 			'is_taxonomy' => '1'
 		]
 	];
 	$product = new WC_Product();
 
 	try{
-		$timestamp = $date->getTimestamp();
+		$timestamp = $startDate->getTimestamp();
 		$prettyDate = date_i18n('l d F Y H:i', $timestamp);
 
-		$product->set_name($dationProduct['name'] . ' ' . $prettyDate);
+		$product->set_name($course['name'] . ' ' . $prettyDate);
 		$product->set_menu_order($timestamp);
 
-		$product->set_description($dationProduct['name']);
-		$product->set_short_description($dationProduct['ccvCode']);
-		$product->set_sku($dationProduct['id']);
+		$product->set_description($course['name']);
+		$product->set_short_description($course['ccvCode']);
+		$product->set_sku($course['id']);
 		$product->set_regular_price($dw_options['tkm_price']);
 		$product->set_virtual(VARIABLES['virtual']);
 		$product->set_manage_stock(VARIABLES['manage_stock']);
@@ -98,13 +95,19 @@ function dw_add_woo_commerce_product($dationProduct) {
 		$product->set_low_stock_amount(VARIABLES['low_stock_amount']);
 		$product->save();
 
-		wp_set_object_terms($product->get_id(), $date->format('d-m-Y'), 'pa_datum', false);
-		wp_set_object_terms($product->get_id(), $date->format('H:i'), 'pa_tijd', false);
-		wp_set_object_terms($product->get_id(), $dationProduct['parts'][0]['slots'][0]['city'], 'pa_locatie', false);
+		wp_set_object_terms($product->get_id(), $startDate->format('d-m-Y'), 'pa_datum', false);
+		wp_set_object_terms($product->get_id(), $startDate->format('H:i'), 'pa_tijd', false);
+		wp_set_object_terms($product->get_id(), $course['parts'][0]['slots'][0]['city'], 'pa_locatie', false);
 
 		update_post_meta($product->get_id(), '_product_attributes', $attributes);
 	} catch (Throwable $e) {
-		echo '<div class="error notice"><p>Er is iets misgegaan bij het opslaan van het product. Herlaad de pagina en probeer het opnieuw.</p></div>';
+		?>
+			<div class="error notice">
+				<p>
+					Er is iets misgegaan bij het opslaan van het product. Herlaad de pagina en probeer het opnieuw.
+				</p>
+			</div>
+		<?php
 	}
 
 
@@ -136,21 +139,21 @@ function dw_get_course_instances(DateTime $startDateAfter = null, DateTime $star
 	$curl = curl_init();
 
 	curl_setopt_array($curl, array(
-		CURLOPT_URL => BASE_API_URL . "course-instances?" . $beforeParam . $afterParam,
+		CURLOPT_URL => BASE_API_URL . 'course-instances?' . $beforeParam . $afterParam,
 		CURLOPT_RETURNTRANSFER => true,
-		CURLOPT_ENCODING => "",
+		CURLOPT_ENCODING => '',
 		CURLOPT_MAXREDIRS => 10,
 		CURLOPT_TIMEOUT => 30,
 		CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-		CURLOPT_CUSTOMREQUEST => "GET",
+		CURLOPT_CUSTOMREQUEST => 'GET',
 		CURLOPT_HTTPHEADER => array(
-			"Accept: */*",
+			'Accept: */*',
 			'Authorization: Basic ' . $dw_options['api_key'],
-			"Cache-Control: no-cache",
-			"Connection: keep-alive",
-			"Host: dashboard.dation.nl",
-			"accept-encoding: gzip, deflate",
-			"handle: wp-" . $dw_options['handle'],
+			'Cache-Control: no-cache',
+			'Connection: keep-alive',
+			'Host: dashboard.dation.nl',
+			'accept-encoding: gzip, deflate',
+			'handle: wp-' . $dw_options['handle'],
 		),
 	));
 

@@ -10,7 +10,7 @@ function dw_register_settings() {
 
 add_action('admin_init', 'dw_register_settings');
 
-require 'dation-woocommerce-get-products.php';
+require 'dw-courses.php';
 
 /**
  * Add Admin menu items
