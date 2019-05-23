@@ -3,14 +3,13 @@ declare(strict_types=1);
 
 use Dation\Woocommerce\Admin\DationProductList;
 
-const VARIABLES = [
-	'virtual' =>           true,
-	'manage_stock' =>      true,
+const VARIABLES    = [
+	'virtual'           => true,
+	'manage_stock'      => true,
 	'sold_individually' => true,
-	'low_stock_amount' =>  0,
+	'low_stock_amount'  => 0,
 ];
 const BASE_API_URL = 'https://dashboard.dation.nl/api/v1/';
-
 
 date_default_timezone_set('Europe/Amsterdam');
 
@@ -31,7 +30,7 @@ function dw_show_course_page() {
 	$newProductsCount = 0;
 	try {
 		$newProductsCount = dw_get_products();
-	} catch (Throwable $e) {
+	} catch(Throwable $e) {
 		dw_notice_error('Er is iets misgegaan bij het opslaan van het product. Herlaad de pagina en probeer het opnieuw.');
 	}
 
@@ -65,7 +64,7 @@ function dw_get_products() {
 
 	foreach($courses as $dationProduct) {
 		if(dw_get_product_by_sku($dationProduct['id']) === null) {
-			$product = dw_add_woocommerce_product($dationProduct);
+			$product           = dw_add_woocommerce_product($dationProduct);
 			$createdProducts[] = $product;
 		}
 	}
@@ -85,7 +84,7 @@ function dw_add_woocommerce_product($course) {
 	$startDate = new DateTime($course['startDate']);
 
 	$attributes = [
-		'pa_datum' => [
+		'pa_datum'   => [
 			'name'        => 'pa_datum',
 			'value'       => $startDate->format('d-m-Y'),
 			'position'    => 1,
@@ -98,16 +97,16 @@ function dw_add_woocommerce_product($course) {
 			'is_visible'  => true,
 			'is_taxonomy' => '1'
 		],
-		'pa_tijd' => [
+		'pa_tijd'    => [
 			'name'        => 'pa_tijd',
 			'value'       => $startDate->format('H:i'),
 			'is_visible'  => true,
 			'is_taxonomy' => '1'
 		]
 	];
-	$product = new WC_Product();
+	$product    = new WC_Product();
 
-	$timestamp = $startDate->getTimestamp();
+	$timestamp  = $startDate->getTimestamp();
 	$prettyDate = date_i18n('l d F Y H:i', $timestamp);
 
 	$product->set_name($course['name'] . ' ' . $prettyDate);
@@ -145,7 +144,7 @@ function dw_add_woocommerce_product($course) {
 function dw_get_product_by_sku($sku) {
 	global $wpdb;
 
-	$product_id = $wpdb->get_var( $wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $sku));
+	$product_id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $sku));
 
 	if($product_id) {
 		return new WC_Product($product_id);
@@ -164,37 +163,36 @@ function dw_get_course_instances(DateTime $startDateAfter = null, DateTime $star
 	global $dw_options;
 
 	$beforeParam = $startDateBefore ? '&startDateBefore=' . $startDateBefore->format('Y-m-d') : '';
-	$afterParam = $startDateAfter ? '&startDateAfter=' . $startDateAfter->format('Y-m-d') : '';
+	$afterParam  = $startDateAfter ? '&startDateAfter=' . $startDateAfter->format('Y-m-d') : '';
 
 	$curl = curl_init();
 
-	curl_setopt_array($curl, array(
-		CURLOPT_URL => BASE_API_URL . 'course-instances?' . $beforeParam . $afterParam,
+	curl_setopt_array($curl, [
+		CURLOPT_URL            => BASE_API_URL . 'course-instances?' . $beforeParam . $afterParam,
 		CURLOPT_RETURNTRANSFER => true,
-		CURLOPT_ENCODING => '',
-		CURLOPT_MAXREDIRS => 10,
-		CURLOPT_TIMEOUT => 30,
-		CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-		CURLOPT_CUSTOMREQUEST => 'GET',
-		CURLOPT_HTTPHEADER => array(
+		CURLOPT_ENCODING       => '',
+		CURLOPT_MAXREDIRS      => 10,
+		CURLOPT_TIMEOUT        => 30,
+		CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+		CURLOPT_CUSTOMREQUEST  => 'GET',
+		CURLOPT_HTTPHEADER     => [
 			'Accept: */*',
 			'Authorization: Basic ' . $dw_options['api_key'],
 			'Cache-Control: no-cache',
 			'Connection: keep-alive',
 			'accept-encoding: gzip, deflate',
 			'handle: dw-' . $dw_options['handle'],
-		),
-	));
+		],
+	]);
 
 	$response = curl_exec($curl);
-	$err = curl_error($curl);
+	$err      = curl_error($curl);
 
 	curl_close($curl);
 
-	if ($err) {
-		echo dw_notice_error('Er is iets misgegaan bij het synchroniseren van de producten. Herlaad de pagina en probeer het opnieuw');
-	} else {
-		return json_decode($response, true);
+	if($err) {
+		throw new \RuntimeException('Er is iets misgegaan bij het synchroniseren van de producten. Herlaad de pagina en probeer het opnieuw');
 	}
-	return null;
+
+	return json_decode($response, true);
 }
