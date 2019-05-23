@@ -18,7 +18,7 @@ if(!class_exists('WP_List_Table')) {
 }
 
 if(!class_exists('DationProductList')) {
-	require_once ABSPATH . 'wp-content/plugins/dation-woocommerce/admin/DationProductList.php';
+	include(plugin_dir_path(__FILE__) . 'DationProductList.php');
 }
 
 function dw_notice_error(string $msg): string {
