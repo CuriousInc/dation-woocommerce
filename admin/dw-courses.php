@@ -17,8 +17,27 @@ if(!class_exists('WP_List_Table')) {
 	require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
+if(!class_exists('DationProductList')) {
+	require_once(ABSPATH . 'wp-content/plugins/dation-woocommerce/admin/DationProductList.php');
+}
+
 function dw_show_course_page() {
-	dw_get_products();
+	$newProductsCount = 0;
+	try {
+		$newProductsCount = dw_get_products();
+	} catch (Throwable $e) {
+		echo '<div class="notice notice-error">
+					<p>Er is iets misgegaan bij het opslaan van het product. Herlaad de pagina en probeer het opnieuw.</p>
+			 </div>';
+	}
+
+	if($newProductsCount > 0 ) {
+		echo '<div class="notice notice-info">
+				<p>Er zijn ' . $newProductsCount . ' cursussen gesynchroniseerd met Dation</p>
+			</div>';
+	}
+
+
 
 	$table = new DationProductList();
 	$table->prepare_items();
@@ -33,6 +52,11 @@ function dw_show_course_page() {
 
 }
 
+/**
+ * @return int
+ *
+ * @throws WC_Data_Exception
+ */
 function dw_get_products() {
 	$courses = dw_get_course_instances(new DateTime(), null) ?? [];
 
@@ -40,25 +64,19 @@ function dw_get_products() {
 
 	foreach($courses as $dationProduct) {
 		if(dw_get_product_by_sku($dationProduct['id']) === null) {
-			try{
-				$product = dw_add_woo_commerce_product($dationProduct);
-				$createdProducts[] = $product;
-			} catch (Throwable $e) {
-				echo '<div class="notice notice-error">
-						<p>Er is iets misgegaan bij het opslaan van het product. Herlaad de pagina en probeer het opnieuw.</p>
-					</div>';
-			}
+			$product = dw_add_woo_commerce_product($dationProduct);
+			$createdProducts[] = $product;
 		}
 	}
 
-	if(count($createdProducts) > 0 ) {
-		echo '<div class="notice notice-info"><p>Er zijn ' . count($createdProducts) . ' cursussen gesynchroniseerd met Dation</p></div>';
-	}
+	return count($createdProducts);
 }
 
 /**
- * @param $dationProduct
+ * @param $course
+ *
  * @return WC_Product
+ *
  * @throws WC_Data_Exception
  */
 function dw_add_woo_commerce_product($course) {
@@ -115,9 +133,15 @@ function dw_add_woo_commerce_product($course) {
 
 }
 
-// Get product by unique `stock keep unit`.
-// When creating a product, dation course ID is set to the sku of a woocommerce product.
-// When synchronizing with Dation, we can use this to find Dation courses that are not in Woocommerce
+/**
+ * Get product by unique `stock keep unit`.
+ * When creating a product, dation course ID is set to the sku of a woocommerce product.
+ * When synchronizing with Dation, we can use this to find Dation courses that are not in Woocommerce
+ *
+ * @param $sku
+ *
+ * @return null|WC_Product
+ */
 function dw_get_product_by_sku($sku) {
 	global $wpdb;
 
@@ -130,6 +154,12 @@ function dw_get_product_by_sku($sku) {
 	return null;
 }
 
+/**
+ * @param DateTime|null $startDateAfter
+ * @param DateTime|null $startDateBefore
+ *
+ * @return array|null|object
+ */
 function dw_get_course_instances(DateTime $startDateAfter = null, DateTime $startDateBefore = null) {
 	global $dw_options;
 
@@ -166,84 +196,5 @@ function dw_get_course_instances(DateTime $startDateAfter = null, DateTime $star
 	} else {
 		return json_decode($response, true);
 	}
-
 	return null;
-}
-
-class DationProductList extends WP_List_Table {
-	public function prepare_items() {
-		$columns = $this->get_columns();
-		$hidden = $this->get_hidden_columns();
-		$sortable = $this->get_sortable_columns();
-
-		$data = $this->table_data();
-
-		$perPage = 25;
-		$currentPage = $this->get_pageNum();
-		$totalItems = count($data);
-
-		$this->set_pagination_args([
-			'total_items' => $totalItems,
-			'per_page' => $perPage
-		]);
-
-		$data = array_slice($data, (($currentPage -1) * $perPage), $perPage);
-
-		$this->_column_headers = [$columns, $hidden, $sortable];
-		$this->items = $data;
-	}
-
-	public function get_columns() {
-		return [
-			'id'       => 'Webshop Product',
-			'location' => 'Locatie',
-			'sku'      => 'Dation Product',
-			'stock'    => 'Beschikbaar',
-		];
-	}
-
-	public function get_hidden_columns() {
-		return [];
-	}
-
-	public function get_sortable_columns() {
-		return [
-			[
-				'id',
-				true,
-			]
-		];
-	}
-
-	private function table_data() {
-		$query = new WC_Product_Query();
-		$products = $query->get_products();
-		$data = [];
-		/** @var WC_Product $product */
-		foreach($products as $product) {
-			$data[] = [
-				'sku'      => $product->get_sku(),
-				'id'       => $product->get_id(),
-				'name'     => $product->get_name(),
-				'location' => $product->get_attribute('pa_locatie'),
-				'stock'    => $product->get_stock_quantity(),
-			];
-		}
-
-		return $data;
-	}
-
-	public function column_default($item, $column_name) {
-		global $dw_options;
-		switch ($column_name) {
-			case 'sku':
-				return '<a target="_blank" href="https://dashboard.dation.nl/' . $dw_options['handle'] . '/nascholing/details?id='. $item[$column_name]. '">Openen in Dation</a>';
-			case 'id':
-				return '<a target="_blank" href="'. get_admin_url() . 'post.php?post='. $item[$column_name] . '&action=edit">'. $item['name'] . '</a>';
-			case 'location':
-				return $item[$column_name];
-			case 'stock':
-				return $item[$column_name];
-		}
-	}
 }
