@@ -35,9 +35,7 @@ function dw_show_course_page() {
 		dw_notice_error('Er is iets misgegaan bij het opslaan van het product. Herlaad de pagina en probeer het opnieuw.');
 	}
 
-	if($newProductsCount > 0 ) {
-		echo dw_notice_info('Er zijn ' . $newProductsCount . ' cursussen gesynchroniseerd met Dation');
-	}
+	echo dw_notice_info('Er zijn ' . $newProductsCount . ' nieuwe cursussen gesynchroniseerd met Dation');
 
 	$table = new DationProductList();
 	$table->prepare_items();
