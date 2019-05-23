@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
 
+namespace Dation\Woocommerce\Admin;
+
+use WP_List_Table;
+
 class DationProductList extends WP_List_Table {
 	public function prepare_items() {
 		$columns = $this->get_columns();

@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use Dation\Woocommerce\Admin\DationProductList;
+
 const VARIABLES = [
 	'virtual' =>           true,
 	'manage_stock' =>      true,
@@ -15,10 +17,6 @@ date_default_timezone_set('Europe/Amsterdam');
 // WP_List_Table is not loaded automatically so we need to load it in our application
 if(!class_exists('WP_List_Table')) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
-}
-
-if(!class_exists('DationProductList')) {
-	include(plugin_dir_path(__FILE__) . 'DationProductList.php');
 }
 
 function dw_notice_error(string $msg): string {
