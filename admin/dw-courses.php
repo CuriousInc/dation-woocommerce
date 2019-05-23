@@ -18,7 +18,7 @@ function dw_notice_info(string $msg): string {
 	return '<div class="notice notice-info"><p>' . $msg . '</p></div>';
 }
 
-function dw_show_course_page() {
+function dw_render_course_page() {
 	$table = new DationProductList();
 	$table->prepare_items();
 
