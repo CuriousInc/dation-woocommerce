@@ -8,7 +8,7 @@ use GuzzleHttp\Client;
 
 class RestApiClient {
 
-	protected const BASE_API_URL = 'https://dashboard.dation.nl/api/v1/';
+	const BASE_API_URL = 'https://dashboard.dation.nl/api/v1/';
 
 	/**
 	 * @var \GuzzleHttp\Client
@@ -34,15 +34,15 @@ class RestApiClient {
 	public function getCourseInstances(DateTime $startDateAfter = null, DateTime $startDateBefore = null): array {
 		// Prepare query
 		$query = [];
-		if(null!==$startDateBefore) {
+		if(null !== $startDateBefore) {
 			$query['startDateBefore'] = $startDateBefore->format('Y-m-d');
 		}
-		if(null!==$startDateAfter) {
+		if(null !== $startDateAfter) {
 			$query['startDateAfter'] = $startDateBefore->format('Y-m-d');
 		}
 
 		// Send request, parse response
-		$response = $this->httpClient->get('course-instances', ['query' => $query]);
+		$response        = $this->httpClient->get('course-instances', ['query' => $query]);
 		$courseInstances = json_decode($response->getBody(), true) ?? [];
 
 		return $courseInstances;
