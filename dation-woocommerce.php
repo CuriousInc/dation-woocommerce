@@ -18,6 +18,8 @@ $dw_options = get_option('dw_settings');
 
 require 'vendor/autoload.php';
 
+require 'includes/get-product-cron.php';
+
 /**
  * Localisation
  **/
@@ -30,6 +32,7 @@ add_action('init', 'dw_override_woo_templates', 20);
 if(is_admin()) {
 	require 'admin/dation-woocommerce-admin.php';
 }
+
 
 /**
  * Override any of the template functions from woocommerce/woocommerce-template.php
