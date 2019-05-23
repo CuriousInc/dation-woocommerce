@@ -7,22 +7,22 @@
 use SetBased\Rijksregisternummer\Rijksregisternummer;
 
 // Fields
-const ISSUE_DATE_DRIVING_LICENSE = 'Afgiftedatum_Rijbewijs';
-const DATE_OF_BIRTH              = 'Geboortedatum';
-const NATIONAL_REGISTRY_NUMBER   = 'Rijksregisternummer';
-const AUTOMATIC_TRANSMISSION     = 'Automaat';
+const DW_ISSUE_DATE_DRIVING_LICENSE = 'Afgiftedatum_Rijbewijs';
+const DW_DATE_OF_BIRTH              = 'Geboortedatum';
+const DW_NATIONAL_REGISTRY_NUMBER   = 'Rijksregisternummer';
+const DW_AUTOMATIC_TRANSMISSION     = 'Automaat';
 
-const BELGIAN_DATE_FORMAT =  'd.m.Y';
+const DW_BELGIAN_DATE_FORMAT =  'd.m.Y';
 
 // Register override for checkout and order email
 add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
 add_filter('woocommerce_email_order_meta', 'custom_order_meta_fields', 10, 3);
 
 function custom_order_meta_fields($order_obj, $sent_to_admin, $plain_text) {
-	$issueDrivingLicense = get_post_meta($order_obj->get_id(), ISSUE_DATE_DRIVING_LICENSE, true);
-	$dateOfBirth = get_post_meta($order_obj->get_id(), DATE_OF_BIRTH, true);
-	$nationalRegistryNumber = get_post_meta($order_obj->get_id(), NATIONAL_REGISTRY_NUMBER, true);
-	$automaticTransmission = get_post_meta($order_obj->get_id(), AUTOMATIC_TRANSMISSION, true);
+	$issueDrivingLicense = get_post_meta($order_obj->get_id(), DW_ISSUE_DATE_DRIVING_LICENSE, true);
+	$dateOfBirth = get_post_meta($order_obj->get_id(), DW_DATE_OF_BIRTH, true);
+	$nationalRegistryNumber = get_post_meta($order_obj->get_id(), DW_NATIONAL_REGISTRY_NUMBER, true);
+	$automaticTransmission = get_post_meta($order_obj->get_id(), DW_AUTOMATIC_TRANSMISSION, true);
 
 	if(!$plain_text) {
 		echo '<h2>Dation informatie</h2>
@@ -44,25 +44,25 @@ function custom_order_meta_fields($order_obj, $sent_to_admin, $plain_text) {
 // Override checkout fields, add custom TKM fields to checkout fields
 function dw_override_checkout_fields($fields) {
 
-	$newOrderFields['order'][DATE_OF_BIRTH] = [
+	$newOrderFields['order'][DW_DATE_OF_BIRTH] = [
 		'type'     => 'text',
 		'label'    => __('Geboortedatum'),
 		'required' => true,
 	];
 
-	$newOrderFields['order'][NATIONAL_REGISTRY_NUMBER] = [
+	$newOrderFields['order'][DW_NATIONAL_REGISTRY_NUMBER] = [
 		'type'     => 'text',
 		'label'    => __('Rijksregisternummer'),
 		'required' => true,
 	];
 
-	$newOrderFields['order'][ISSUE_DATE_DRIVING_LICENSE] = [
+	$newOrderFields['order'][DW_ISSUE_DATE_DRIVING_LICENSE] = [
 		'type'     => 'text',
 		'label'    => __('Afgiftedatum rijbewijs'),
 		'required' => true,
 	];
 
-	$newOrderFields['order'][AUTOMATIC_TRANSMISSION] = [
+	$newOrderFields['order'][DW_AUTOMATIC_TRANSMISSION] = [
 		'type'     => 'select',
 		'options'  => [
 			'yes' => __('Yes'),
@@ -84,22 +84,22 @@ function dw_override_checkout_fields($fields) {
 add_action('woocommerce_checkout_process', 'dw_process_checkout');
 
 function dw_process_checkout() {
-	if(!dw_is_valid_date($_POST[DATE_OF_BIRTH])) {
-		wc_add_notice(__('Geboortedatum is onjuist, verwacht formaat ' . BELGIAN_DATE_FORMAT), 'error');
+	if(!dw_is_valid_date($_POST[DW_DATE_OF_BIRTH])) {
+		wc_add_notice(__('Geboortedatum is onjuist, verwacht formaat ' . DW_BELGIAN_DATE_FORMAT), 'error');
 	} else {
-		$birthDate = DateTime::createFromFormat(BELGIAN_DATE_FORMAT, $_POST[DATE_OF_BIRTH]);
-		if(!dw_is_valid_national_registry_number($_POST[NATIONAL_REGISTRY_NUMBER], $birthDate)) {
+		$birthDate = DateTime::createFromFormat(DW_BELGIAN_DATE_FORMAT, $_POST[DW_DATE_OF_BIRTH]);
+		if(!dw_is_valid_national_registry_number($_POST[DW_NATIONAL_REGISTRY_NUMBER], $birthDate)) {
 			wc_add_notice(__('Rijksregsternummer is onjuist'), 'error');
 		}}
 
-	if(!dw_is_valid_date($_POST[ISSUE_DATE_DRIVING_LICENSE])) {
-		wc_add_notice(__('Afgiftedatum rijbewijs is onjuist, verwacht formaat ' . BELGIAN_DATE_FORMAT), 'error');
+	if(!dw_is_valid_date($_POST[DW_ISSUE_DATE_DRIVING_LICENSE])) {
+		wc_add_notice(__('Afgiftedatum rijbewijs is onjuist, verwacht formaat ' . DW_BELGIAN_DATE_FORMAT), 'error');
 	}
 }
 
 function dw_is_valid_date(string $input): bool {
-	$dateTime = DateTime::createFromFormat(BELGIAN_DATE_FORMAT, $input);
-	return $dateTime && $dateTime->format(BELGIAN_DATE_FORMAT) === $input;
+	$dateTime = DateTime::createFromFormat(DW_BELGIAN_DATE_FORMAT, $input);
+	return $dateTime && $dateTime->format(DW_BELGIAN_DATE_FORMAT) === $input;
 }
 
 function dw_is_valid_national_registry_number(string $registryNumberString, DateTime $birthDate): bool {
@@ -125,10 +125,10 @@ add_action('woocommerce_checkout_update_order_meta', 'dw_checkout_update_order_m
 
 function dw_checkout_update_order_meta($order_id) {
 	$fields = [
-		ISSUE_DATE_DRIVING_LICENSE,
-		DATE_OF_BIRTH,
-		NATIONAL_REGISTRY_NUMBER,
-		AUTOMATIC_TRANSMISSION
+		DW_ISSUE_DATE_DRIVING_LICENSE,
+		DW_DATE_OF_BIRTH,
+		DW_NATIONAL_REGISTRY_NUMBER,
+		DW_AUTOMATIC_TRANSMISSION
 	];
 
 	foreach($fields as $field) {
@@ -145,11 +145,11 @@ add_action('woocommerce_admin_order_data_after_shipping_address', 'dw_admin_orde
 
 function dw_admin_order_tkm_data($order) {
 	echo '<p><strong>' . __('Geboortedatum') . ':</strong> <br/>'
-		. get_post_meta($order->get_id(), DATE_OF_BIRTH, true) . '</p>';
+		. get_post_meta($order->get_id(), DW_DATE_OF_BIRTH, true) . '</p>';
 	echo '<p><strong>' . __('Rijksregisternummer') . ':</strong> <br/>'
-		. get_post_meta($order->get_id(), NATIONAL_REGISTRY_NUMBER, true) . '</p>';
+		. get_post_meta($order->get_id(), DW_NATIONAL_REGISTRY_NUMBER, true) . '</p>';
 	echo '<p><strong>' . __('Afgiftedatum rijbewijs') . ':</strong> <br/>'
-		. get_post_meta($order->get_id(), ISSUE_DATE_DRIVING_LICENSE, true) . '</p>';
+		. get_post_meta($order->get_id(), DW_ISSUE_DATE_DRIVING_LICENSE, true) . '</p>';
 	echo '<p><strong>' . __('Automaat') . ':</strong> <br/>'
-		. (get_post_meta($order->get_id(), AUTOMATIC_TRANSMISSION, true) ? __('Ja') : __('Nee')) . '</p>';
+		. (get_post_meta($order->get_id(), DW_AUTOMATIC_TRANSMISSION, true) ? __('Ja') : __('Nee')) . '</p>';
 }
