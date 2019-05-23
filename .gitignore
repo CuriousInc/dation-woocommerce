@@ -1,2 +1,5 @@
 # Ignore PhpStorm settings
 .idea
+
+# Ignore composer libraries
+/vendor/

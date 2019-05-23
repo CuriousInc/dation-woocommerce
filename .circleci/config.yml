@@ -5,7 +5,16 @@ jobs:
     machine: true
     steps:
       - checkout
-      - run: zip -r dation-woocommerce.zip . -x *.git* -x *.circleci*
+      - run:
+          name: Composer install with production libraries
+          command: |
+            set -x
+            docker run --rm --interactive --tty \
+              --volume $(pwd)/:/app \
+                composer install --no-dev --ignore-platform-reqs --no-scripts --no-progress
+      - run:
+          name: Create ZIP file
+          command: zip -r dation-woocommerce.zip . -x *.git* -x *.circleci*
       - store_artifacts:
           path: dation-woocommerce.zip
           destination: dation-woocommerce.zip
