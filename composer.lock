@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "aeae2b1804e9aa5ee42ee71eeb92e944",
+    "content-hash": "0c1e046c1481a0253d31cf4b0b21150b",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -278,6 +278,86 @@
             ],
             "description": "A polyfill for getallheaders.",
             "time": "2016-02-11T07:05:27+00:00"
+        },
+        {
+            "name": "setbased/exception",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SetBased/php-exception.git",
+                "reference": "57a488764b933e78319d63e5379e8d8b80cefa1d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SetBased/php-exception/zipball/57a488764b933e78319d63e5379e8d8b80cefa1d",
+                "reference": "57a488764b933e78319d63e5379e8d8b80cefa1d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0.0"
+            },
+            "require-dev": {
+                "phing/phing": "^2.0.0",
+                "phpunit/phpunit": "^6.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SetBased\\Exception\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Exceptions with format string",
+            "keywords": [
+                "exception",
+                "format"
+            ],
+            "time": "2017-08-02T22:34:46+00:00"
+        },
+        {
+            "name": "setbased/rijksregisternummer",
+            "version": "0.10.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SetBased/php-rijksregisternummer.git",
+                "reference": "4b1c0192d6ea2a6b10e1c5731e19e45b14c31b00"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SetBased/php-rijksregisternummer/zipball/4b1c0192d6ea2a6b10e1c5731e19e45b14c31b00",
+                "reference": "4b1c0192d6ea2a6b10e1c5731e19e45b14c31b00",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=7.1.0",
+                "setbased/exception": "^1.0.0"
+            },
+            "require-dev": {
+                "phing/phing": "^2.0.0",
+                "phpunit/phpunit": "^6.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SetBased\\Rijksregisternummer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Library for handling identification numbers of the National Register of Belgium (a.k.a. Rijksregisternummer)",
+            "keywords": [
+                "BIS",
+                "Rijksregisternummer",
+                "bis-nummer",
+                "bisnummer"
+            ],
+            "time": "2019-01-28T17:33:48+00:00"
         }
     ],
     "packages-dev": [],

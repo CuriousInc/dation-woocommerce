@@ -4,6 +4,8 @@
  * Template Function Overrides
  */
 
+use SetBased\Rijksregisternummer\Rijksregisternummer;
+
 // Fields
 const ISSUE_DATE_DRIVING_LICENSE = 'Afgiftedatum_Rijbewijs';
 const DATE_OF_BIRTH              = 'Geboortedatum';
@@ -100,23 +102,17 @@ function dw_is_valid_date(string $input): bool {
 	return $dateTime && $dateTime->format(BELGIAN_DATE_FORMAT) === $input;
 }
 
-function dw_is_valid_national_registry_number(string $nationalRegistryNumber, DateTime $birthDate): bool {
-	if(
-		substr($nationalRegistryNumber, 0, 2) != $birthDate->format('y')
-		|| substr($nationalRegistryNumber, 2, 2) != $birthDate->format('m')
-		|| substr($nationalRegistryNumber, 4, 2) != $birthDate->format('d')
-	) {
+function dw_is_valid_national_registry_number(string $registryNumberString, DateTime $birthDate): bool {
+	try {
+		$registryNumber = new Rijksregisternummer($registryNumberString);
+	} catch (UnexpectedValueException $exception) {
+		// Invalid format
 		return false;
 	}
-	if($birthDate->format('Y') < 2000) {
-		if((97 - (substr($nationalRegistryNumber, 0, 9) % 97)) != intval(substr($nationalRegistryNumber, -2))) {
-			return false;
-		}
-	} else {
-		//checksum + 2000000000 (http://www.ibz.rrn.fgov.be/fileadmin/user_upload/nl/rr/toegang/bestand-rr.pdf)
-		if((97 - (intval('2' . substr($nationalRegistryNumber, 0, 9)) % 97)) != intval(substr($nationalRegistryNumber, -2))) {
-			return false;
-		}
+
+	if($registryNumber->getBirthday() !== $birthDate->format('Y-m-d')) {
+		// Birth date in number mismatches
+		return false;
 	}
 
 	return true;
