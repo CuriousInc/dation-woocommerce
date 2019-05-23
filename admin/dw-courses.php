@@ -21,6 +21,14 @@ if(!class_exists('DationProductList')) {
 	require_once ABSPATH . 'wp-content/plugins/dation-woocommerce/admin/DationProductList.php';
 }
 
+function dw_notice_error(string $msg): string {
+	return '<div class="notice notice-error"><p>' . $msg . '</p></div>';
+}
+
+function dw_notice_info(string $msg): string {
+	return '<div class="notice notice-info"><p>' . $msg . '</p></div>';
+}
+
 function dw_show_course_page() {
 	$newProductsCount = 0;
 	try {
@@ -33,8 +41,6 @@ function dw_show_course_page() {
 		echo dw_notice_info('Er zijn ' . $newProductsCount . ' cursussen gesynchroniseerd met Dation');
 	}
 
-
-
 	$table = new DationProductList();
 	$table->prepare_items();
 
@@ -45,14 +51,6 @@ function dw_show_course_page() {
 		<?php $table->display(); ?>
 	</div>
 	<?php
-}
-
-function dw_notice_error(string $msg): string {
-	return '<div class="notice notice-error"><p>' . $msg . '</p></div>';
-}
-
-function dw_notice_info(string $msg): string {
-	return '<div class="notice notice-info"><p>' . $msg . '</p></div>';
 }
 
 /**
@@ -196,7 +194,7 @@ function dw_get_course_instances(DateTime $startDateAfter = null, DateTime $star
 	curl_close($curl);
 
 	if ($err) {
-		echo '<div class="error notice"><p>Er is iets misgegaan bij het synchroniseren van de producten. Herlaad de pagina en probeer het opnieuw</p></div>';
+		echo dw_notice_error('Er is iets misgegaan bij het synchroniseren van de producten. Herlaad de pagina en probeer het opnieuw');
 	} else {
 		return json_decode($response, true);
 	}
