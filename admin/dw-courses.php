@@ -10,14 +10,6 @@ if(!class_exists('WP_List_Table')) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
-function dw_notice_error(string $msg): string {
-	return '<div class="notice notice-error"><p>' . $msg . '</p></div>';
-}
-
-function dw_notice_info(string $msg): string {
-	return '<div class="notice notice-info"><p>' . $msg . '</p></div>';
-}
-
 function dw_render_course_page() {
 	$table = new DationProductList();
 	$table->prepare_items();
@@ -30,7 +22,3 @@ function dw_render_course_page() {
 	</div>
 	<?php
 }
-
-
-
-
