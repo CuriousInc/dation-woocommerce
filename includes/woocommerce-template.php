@@ -14,15 +14,29 @@ const BELGIAN_DATE_FORMAT =  'd.m.Y';
 
 // Register override for checkout and order email
 add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
-add_filter('woocommerce_email_order_meta_keys', 'custom_order_meta_fields');
+add_filter('woocommerce_email_order_meta', 'custom_order_meta_fields', 10, 3);
 
-function custom_order_meta_fields($keys) {
-	$keys[] = ISSUE_DATE_DRIVING_LICENSE;
-	$keys[] = DATE_OF_BIRTH;
-	$keys[] = NATIONAL_REGISTRY_NUMBER;
-	$keys[] = AUTOMATIC_TRANSMISSION;
+function custom_order_meta_fields($order_obj, $sent_to_admin, $plain_text) {
+	$issueDrivingLicense = get_post_meta($order_obj->get_id(), ISSUE_DATE_DRIVING_LICENSE, true);
+	$dateOfBirth = get_post_meta($order_obj->get_id(), DATE_OF_BIRTH, true);
+	$nationalRegistryNumber = get_post_meta($order_obj->get_id(), NATIONAL_REGISTRY_NUMBER, true);
+	$automaticTransmission = get_post_meta($order_obj->get_id(), AUTOMATIC_TRANSMISSION, true);
 
-	return $keys;
+	if(!$plain_text) {
+		echo '<h2>Dation informatie</h2>
+				<ul>
+					<li><strong>Afgiftedatum rijbewijs</strong> ' . $issueDrivingLicense . '</li>
+					<li><strong>Geboortedatum</strong> ' . $dateOfBirth . '</li>
+					<li><strong>Rijksregisternummer</strong> ' . $nationalRegistryNumber . '</li>
+					<li><strong>Automaat</strong> ' . $automaticTransmission . '</li>
+				</ul>';
+	} else {
+		echo "DATION INFORMATIE\n
+				Afgiftedatum rijbewijs: $issueDrivingLicense
+				Geboortedatum: $dateOfBirth
+				Rijksregisternummer: $nationalRegistryNumber
+				Automaat: $automaticTransmission";
+	}
 }
 
 // Override checkout fields, add custom TKM fields to checkout fields
