@@ -24,6 +24,7 @@ function custom_order_meta_fields($keys) {
 
 	return $keys;
 }
+
 // Override checkout fields, add custom TKM fields to checkout fields
 function dw_override_checkout_fields($fields) {
 

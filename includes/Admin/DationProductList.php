@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Dation\Woocommerce\Admin;
 
+use WC_Product;
+use WC_Product_Query;
 use WP_List_Table;
 
 class DationProductList extends WP_List_Table {
