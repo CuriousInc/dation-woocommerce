@@ -38,7 +38,7 @@ class RestApiClient {
 			$query['startDateBefore'] = $startDateBefore->format('Y-m-d');
 		}
 		if(null !== $startDateAfter) {
-			$query['startDateAfter'] = $startDateBefore->format('Y-m-d');
+			$query['startDateAfter'] = $startDateAfter->format('Y-m-d');
 		}
 
 		// Send request, parse response
