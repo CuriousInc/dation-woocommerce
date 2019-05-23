@@ -34,5 +34,5 @@ if(is_admin()) {
  * with our own template functions file
  */
 function dw_override_woo_templates() {
-	include('includes/woocommerce-template.php');
+	include 'includes/woocommerce-template.php';
 }

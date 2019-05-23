@@ -14,11 +14,11 @@ date_default_timezone_set('Europe/Amsterdam');
 
 // WP_List_Table is not loaded automatically so we need to load it in our application
 if(!class_exists('WP_List_Table')) {
-	require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
+	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
 if(!class_exists('DationProductList')) {
-	require_once(ABSPATH . 'wp-content/plugins/dation-woocommerce/admin/DationProductList.php');
+	require_once ABSPATH . 'wp-content/plugins/dation-woocommerce/admin/DationProductList.php';
 }
 
 function dw_show_course_page() {
@@ -26,15 +26,11 @@ function dw_show_course_page() {
 	try {
 		$newProductsCount = dw_get_products();
 	} catch (Throwable $e) {
-		echo '<div class="notice notice-error">
-					<p>Er is iets misgegaan bij het opslaan van het product. Herlaad de pagina en probeer het opnieuw.</p>
-			 </div>';
+		dw_notice_error('Er is iets misgegaan bij het opslaan van het product. Herlaad de pagina en probeer het opnieuw.');
 	}
 
 	if($newProductsCount > 0 ) {
-		echo '<div class="notice notice-info">
-				<p>Er zijn ' . $newProductsCount . ' cursussen gesynchroniseerd met Dation</p>
-			</div>';
+		echo dw_notice_info('Er zijn ' . $newProductsCount . ' cursussen gesynchroniseerd met Dation');
 	}
 
 
@@ -49,7 +45,14 @@ function dw_show_course_page() {
 		<?php $table->display(); ?>
 	</div>
 	<?php
+}
 
+function dw_notice_error(string $msg): string {
+	return '<div class="notice notice-error"><p>' . $msg . '</p></div>';
+}
+
+function dw_notice_info(string $msg): string {
+	return '<div class="notice notice-info"><p>' . $msg . '</p></div>';
 }
 
 /**
@@ -64,7 +67,7 @@ function dw_get_products() {
 
 	foreach($courses as $dationProduct) {
 		if(dw_get_product_by_sku($dationProduct['id']) === null) {
-			$product = dw_add_woo_commerce_product($dationProduct);
+			$product = dw_add_woocommerce_product($dationProduct);
 			$createdProducts[] = $product;
 		}
 	}
@@ -75,11 +78,13 @@ function dw_get_products() {
 /**
  * @param $course
  *
+ * @param mixed[] $course
+ *
  * @return WC_Product
  *
  * @throws WC_Data_Exception
  */
-function dw_add_woo_commerce_product($course) {
+function dw_add_woocommerce_product($course) {
 	global $dw_options;
 	$startDate = new DateTime($course['startDate']);
 
@@ -111,6 +116,7 @@ function dw_add_woo_commerce_product($course) {
 
 	$product->set_name($course['name'] . ' ' . $prettyDate);
 	$product->set_menu_order($timestamp);
+
 	$product->set_description($course['name']);
 	$product->set_short_description($course['ccvCode']);
 	$product->set_sku($course['id']);
@@ -128,9 +134,7 @@ function dw_add_woo_commerce_product($course) {
 
 	update_post_meta($product->get_id(), '_product_attributes', $attributes);
 
-
 	return $product;
-
 }
 
 /**
