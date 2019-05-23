@@ -48,7 +48,7 @@ function dw_get_products() {
 	foreach($courses as $dationProduct) {
 		if(dw_get_product_by_sku($dationProduct['id']) === null) {
 			try{
-				$product = dw_add_woo_commerce_product($dationProduct);
+				$product = dw_add_woocommerce_product($dationProduct);
 				$createdProducts[] = $product;
 			} catch (Throwable $e) {
 				echo dw_notice_error(
