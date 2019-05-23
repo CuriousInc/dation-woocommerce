@@ -40,8 +40,14 @@ function dw_get_products() {
 
 	foreach($courses as $dationProduct) {
 		if(dw_get_product_by_sku($dationProduct['id']) === null) {
-			$product = dw_add_woo_commerce_product($dationProduct);
-			$createdProducts[] = $product;
+			try{
+				$product = dw_add_woo_commerce_product($dationProduct);
+				$createdProducts[] = $product;
+			} catch (Throwable $e) {
+				echo '<div class="notice notice-error">
+						<p>Er is iets misgegaan bij het opslaan van het product. Herlaad de pagina en probeer het opnieuw.</p>
+					</div>';
+			}
 		}
 	}
 
@@ -53,6 +59,11 @@ function dw_get_products() {
 
 }
 
+/**
+ * @param $dationProduct
+ * @return WC_Product
+ * @throws WC_Data_Exception
+ */
 function dw_add_woo_commerce_product($dationProduct) {
 	global $dw_options;
 	$date = new DateTime($dationProduct['startDate']);
@@ -80,32 +91,27 @@ function dw_add_woo_commerce_product($dationProduct) {
 	];
 	$product = new WC_Product();
 
-	try{
-		$timestamp = $date->getTimestamp();
-		$prettyDate = date_i18n('l d F Y H:i', $timestamp);
+	$timestamp = $date->getTimestamp();
+	$prettyDate = date_i18n('l d F Y H:i', $timestamp);
 
-		$product->set_name($dationProduct['name'] . ' ' . $prettyDate);
-		$product->set_menu_order($timestamp);
+	$product->set_name($dationProduct['name'] . ' ' . $prettyDate);
+	$product->set_menu_order($timestamp);
+	$product->set_description($dationProduct['name']);
+	$product->set_short_description($dationProduct['ccvCode']);
+	$product->set_sku($dationProduct['id']);
+	$product->set_regular_price($dw_options['tkm_price']);
+	$product->set_virtual(VARIABLES['virtual']);
+	$product->set_manage_stock(VARIABLES['manage_stock']);
+	$product->set_stock_quantity($dw_options['tkm_capacity']);
+	$product->set_sold_individually(VARIABLES['sold_individually']);
+	$product->set_low_stock_amount(VARIABLES['low_stock_amount']);
+	$product->save();
 
-		$product->set_description($dationProduct['name']);
-		$product->set_short_description($dationProduct['ccvCode']);
-		$product->set_sku($dationProduct['id']);
-		$product->set_regular_price($dw_options['tkm_price']);
-		$product->set_virtual(VARIABLES['virtual']);
-		$product->set_manage_stock(VARIABLES['manage_stock']);
-		$product->set_stock_quantity($dw_options['tkm_capacity']);
-		$product->set_sold_individually(VARIABLES['sold_individually']);
-		$product->set_low_stock_amount(VARIABLES['low_stock_amount']);
-		$product->save();
+	wp_set_object_terms($product->get_id(), $date->format('d-m-Y'), 'pa_datum', false);
+	wp_set_object_terms($product->get_id(), $date->format('H:i'), 'pa_tijd', false);
+	wp_set_object_terms($product->get_id(), $dationProduct['parts'][0]['slots'][0]['city'], 'pa_locatie', false);
 
-		wp_set_object_terms($product->get_id(), $date->format('d-m-Y'), 'pa_datum', false);
-		wp_set_object_terms($product->get_id(), $date->format('H:i'), 'pa_tijd', false);
-		wp_set_object_terms($product->get_id(), $dationProduct['parts'][0]['slots'][0]['city'], 'pa_locatie', false);
-
-		update_post_meta($product->get_id(), '_product_attributes', $attributes);
-	} catch (Throwable $e) {
-		echo '<div class="error notice"><p>Er is iets misgegaan bij het opslaan van het product. Herlaad de pagina en probeer het opnieuw.</p></div>';
-	}
+	update_post_meta($product->get_id(), '_product_attributes', $attributes);
 
 
 	return $product;
@@ -148,9 +154,8 @@ function dw_get_course_instances(DateTime $startDateAfter = null, DateTime $star
 			'Authorization: Basic ' . $dw_options['api_key'],
 			"Cache-Control: no-cache",
 			"Connection: keep-alive",
-			"Host: dashboard.dation.nl",
 			"accept-encoding: gzip, deflate",
-			"handle: wp-" . $dw_options['handle'],
+			"handle: dw-" . $dw_options['handle'],
 		),
 	));
 
@@ -167,7 +172,6 @@ function dw_get_course_instances(DateTime $startDateAfter = null, DateTime $star
 
 	return null;
 }
-
 
 class DationProductList extends WP_List_Table {
 	public function prepare_items() {
@@ -238,7 +242,7 @@ class DationProductList extends WP_List_Table {
 			case 'sku':
 				return '<a target="_blank" href="https://dashboard.dation.nl/' . $dw_options['handle'] . '/nascholing/details?id='. $item[$column_name]. '">Openen in Dation</a>';
 			case 'id':
-				return '<a target="_blank" href="https://www.mygenerationdrive.be/wp-admin/post.php?post='. $item[$column_name] . '&action=edit">'. $item['name'] . '</a>';
+				return '<a target="_blank" href="'. get_admin_url() . 'post.php?post='. $item[$column_name] . '&action=edit">'. $item['name'] . '</a>';
 			case 'location':
 				return $item[$column_name];
 			case 'stock':

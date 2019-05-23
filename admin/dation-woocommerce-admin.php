@@ -29,7 +29,7 @@ function dw_admin_menu() {
 	// Adding a submenu with the same slug tells Wordpress to not add a submenu for the parent item
 	add_submenu_page(
 		'dation',
-		'Instellingen',
+		'Dation Instellingen',
 		'Instellingen',
 		'manage_options',
 		'dation',
