@@ -4,7 +4,7 @@ declare(strict_types=1);
 /**
  * Display Admin page
  */
-function dw_options_page_html() {
+function dw_render_options_page() {
 	global $dw_options;
 
 	?>

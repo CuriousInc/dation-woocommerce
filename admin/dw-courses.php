@@ -25,10 +25,10 @@ function dw_notice_info(string $msg): string {
 	return '<div class="notice notice-info"><p>' . $msg . '</p></div>';
 }
 
-function dw_show_course_page() {
+function dw_render_course_page() {
 	$newProductsCount = 0;
 	try {
-		$newProductsCount = dw_get_products();
+		$newProductsCount = count(dw_import_products());
 	} catch(Throwable $e) {
 		dw_notice_error('Er is iets misgegaan bij het opslaan van het product. Herlaad de pagina en probeer het opnieuw.');
 	}
@@ -52,11 +52,11 @@ function dw_show_course_page() {
 }
 
 /**
- * @return int
+ * @return mixed[]
  *
  * @throws WC_Data_Exception
  */
-function dw_get_products() {
+function dw_import_products() {
 	global $dw_options;
 	$client = new Dation\Woocommerce\RestApiClient\RestApiClient($dw_options['api_key'], $dw_options['handle']);
 	$courses = $client->getCourseInstances(new DateTime(), null) ?? [];
@@ -70,7 +70,7 @@ function dw_get_products() {
 		}
 	}
 
-	return count($createdProducts);
+	return $createdProducts;
 }
 
 /**

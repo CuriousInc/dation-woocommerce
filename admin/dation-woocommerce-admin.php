@@ -21,7 +21,7 @@ function dw_admin_menu() {
 		'Dation',
 		'manage_options',
 		'dation',
-		'dw_options_page_html',
+		'dw_render_options_page',
 		plugins_url('dation-woocommerce/admin/images/dation-elephant-head-20x20.png'),
 		40
 	);
@@ -33,7 +33,7 @@ function dw_admin_menu() {
 		'Instellingen',
 		'manage_options',
 		'dation',
-		'dw_options_page_html'
+		'dw_render_options_page'
 	);
 
 	add_submenu_page(
@@ -42,7 +42,7 @@ function dw_admin_menu() {
 		'Cursussen',
 		'manage_options',
 		'dation-cursussen',
-		'dw_show_course_page'
+		'dw_render_course_page'
 	);
 }
 
