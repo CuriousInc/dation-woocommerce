@@ -28,7 +28,7 @@ function custom_order_meta_fields($order_obj, $sent_to_admin, $plain_text) {
 					<li><strong>Afgiftedatum rijbewijs</strong> ' . $issueDrivingLicense . '</li>
 					<li><strong>Geboortedatum</strong> ' . $dateOfBirth . '</li>
 					<li><strong>Rijksregisternummer</strong> ' . $nationalRegistryNumber . '</li>
-					<li><strong>Automaat</strong> ' . $automaticTransmission . '</li>
+					<li><strong>Automaat</strong> ' . __($automaticTransmission) . '</li>
 				</ul>';
 	} else {
 		echo "DATION INFORMATIE\n
