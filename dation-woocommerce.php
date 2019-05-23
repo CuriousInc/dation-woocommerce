@@ -7,7 +7,7 @@ Plugin URI: http:/www.dation.nl/
 Description: Dation Woocommerce plugin
 Author: Dation
 Author URI: http://www.dation.nl
-Version: 0.0.3
+Version: 1.0.0
 */
 
 // Global variables

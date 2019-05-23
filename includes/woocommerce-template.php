@@ -85,7 +85,7 @@ add_action('woocommerce_checkout_process', 'dw_process_checkout');
 
 function dw_process_checkout() {
 	if(!dw_is_valid_date($_POST[DW_DATE_OF_BIRTH])) {
-		wc_add_notice(__('Geboortedatum is onjuist, verwacht formaat ' . DW_BELGIAN_DATE_FORMAT), 'error');
+		wc_add_notice(__('Geboortedatum is onjuist, verwacht formaat dd.mm.yyyy'), 'error');
 	} else {
 		$birthDate = DateTime::createFromFormat(DW_BELGIAN_DATE_FORMAT, $_POST[DW_DATE_OF_BIRTH]);
 		if(!dw_is_valid_national_registry_number($_POST[DW_NATIONAL_REGISTRY_NUMBER], $birthDate)) {
@@ -93,7 +93,7 @@ function dw_process_checkout() {
 		}}
 
 	if(!dw_is_valid_date($_POST[DW_ISSUE_DATE_DRIVING_LICENSE])) {
-		wc_add_notice(__('Afgiftedatum rijbewijs is onjuist, verwacht formaat ' . DW_BELGIAN_DATE_FORMAT), 'error');
+		wc_add_notice(__('Afgiftedatum rijbewijs is onjuist, verwacht formaat dd.mm.yyyy'), 'error');
 	}
 }
 
