@@ -1,29 +1,12 @@
 <?php
-/**
- * Register wp-cron events for fetching Dation products and transforming them to Woocommerce products
- */
+declare(strict_types=1);
 
-const HOOK_NAME = 'dw_import_dation_products';
-
-const VARIABLES    = [
+const DW_DEFAULT_PRODUCT_PROPERTIES = [
 	'virtual'           => true,
 	'manage_stock'      => true,
 	'sold_individually' => true,
 	'low_stock_amount'  => 0,
 ];
-
-add_action(HOOK_NAME, 'dw_import_products');
-
-if(!wp_next_scheduled(HOOK_NAME)) {
-	wp_schedule_event(time(), 'hourly', HOOK_NAME);
-}
-
-register_deactivation_hook(__FILE__, 'deactivate_cron');
-
-function deactivate_cron(){
-	$timestamp = wp_next_scheduled(HOOK_NAME);
-	wp_unschedule_event($timestamp, HOOK_NAME);
-}
 
 /**
  * @return WC_Product[]
@@ -60,10 +43,10 @@ function dw_import_products() {
 function dw_get_product_by_sku($sku) {
 	global $wpdb;
 
-	$product_id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $sku));
+	$productId = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $sku));
 
-	if($product_id) {
-		return new WC_Product($product_id);
+	if($productId) {
+		return new WC_Product($productId);
 	}
 
 	return null;
@@ -75,6 +58,7 @@ function dw_get_product_by_sku($sku) {
  * @return WC_Product
  *
  * @throws WC_Data_Exception
+ * @throws \Exception When $course.startDate cannot be converted to DateTime
  */
 function dw_add_woocommerce_product($course) {
 	global $dw_options;
@@ -113,11 +97,11 @@ function dw_add_woocommerce_product($course) {
 	$product->set_short_description($course['ccvCode']);
 	$product->set_sku($course['id']);
 	$product->set_regular_price($dw_options['tkm_price']);
-	$product->set_virtual(VARIABLES['virtual']);
-	$product->set_manage_stock(VARIABLES['manage_stock']);
+	$product->set_virtual(DW_DEFAULT_PRODUCT_PROPERTIES['virtual']);
+	$product->set_manage_stock(DW_DEFAULT_PRODUCT_PROPERTIES['manage_stock']);
 	$product->set_stock_quantity($dw_options['tkm_capacity']);
-	$product->set_sold_individually(VARIABLES['sold_individually']);
-	$product->set_low_stock_amount(VARIABLES['low_stock_amount']);
+	$product->set_sold_individually(DW_DEFAULT_PRODUCT_PROPERTIES['sold_individually']);
+	$product->set_low_stock_amount(DW_DEFAULT_PRODUCT_PROPERTIES['low_stock_amount']);
 	$product->save();
 
 	wp_set_object_terms($product->get_id(), $startDate->format('d-m-Y'), 'pa_datum', false);

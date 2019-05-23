@@ -14,11 +14,13 @@ Version: 0.0.3
 
 $dw_options = get_option('dw_settings');
 
+const DW_PLUGIN_FILE = __FILE__;
+
 // Includes
 
 require 'vendor/autoload.php';
 
-require 'includes/get-product-cron.php';
+require 'includes/cron-import-products.php';
 
 /**
  * Localisation
@@ -32,7 +34,6 @@ add_action('init', 'dw_override_woo_templates', 20);
 if(is_admin()) {
 	require 'admin/dation-woocommerce-admin.php';
 }
-
 
 /**
  * Override any of the template functions from woocommerce/woocommerce-template.php
