@@ -43,7 +43,7 @@ class RestApiClient {
 
 		// Send request, parse response
 		$response        = $this->httpClient->get('course-instances', ['query' => $query]);
-		$courseInstances = json_decode($response->getBody(), true) ?? [];
+		$courseInstances = json_decode($response->getBody()->getContents(), true) ?? [];
 
 		return $courseInstances;
 	}
