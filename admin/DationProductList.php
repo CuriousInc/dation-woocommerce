@@ -70,7 +70,7 @@ class DationProductList extends WP_List_Table {
 			case 'sku':
 				return '<a target="_blank" href="https://dashboard.dation.nl/' . $dw_options['handle'] . '/nascholing/details?id='. $item[$column_name]. '">Openen in Dation</a>';
 			case 'id':
-				return '<a target="_blank" href="'. get_admin_url() . 'post.php?post='. $item[$column_name] . '&action=edit">'. $item['name'] . '</a>';
+				return '<a target="_blank" href="'. get_edit_post_link($item[$column_name]). '">'. $item['name'] . '</a>';
 			case 'location':
 				return $item[$column_name];
 			case 'stock':

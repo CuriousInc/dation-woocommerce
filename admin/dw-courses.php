@@ -74,8 +74,6 @@ function dw_get_products() {
 }
 
 /**
- * @param $course
- *
  * @param mixed[] $course
  *
  * @return WC_Product
