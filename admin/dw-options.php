@@ -35,7 +35,7 @@ function dw_render_options_page() {
 				<tr>
 					<th scope="row">
 						<label class="description" for="dw_settings[handle]">
-							<?php _e('Handle'); ?>
+							<?php _e('Rijschoolcode'); ?>
 						</label>
 					</th>
 					<td>
@@ -44,13 +44,18 @@ function dw_render_options_page() {
 							   value="<?php echo $dw_options['handle'] ?>"
 						>
 						<p class="description">
-							De handle vindt u na https://dashboard.dation.nl/UWRIJSCHOOLCODE. Vul hier UWRIJSCHOOLCODE in.
+							Uw rijschoolcode vind u in de login-link die u van Dation heeft gekregen:
+							<code>https://dashboard.dation.nl/{UWRIJSCHOOLCODE}</code>.
+						</p>
+						<p class="description">
+						Als u uw login-link niet meer weet, of als u nog geen login-link hebt,
+							kunt u contact opnemen met de Dation service desk op +31 85 – 2085 205.
 						</p>
 					</td>
 				</tr>
 			</table>
 
-			<h2 class="title">Terugkommomenten</h2>
+			<h2 class="title">Standaard waarden voor nieuwe cursussen</h2>
 			<table class="form-table">
 				<tr>
 					<th scope="row">
