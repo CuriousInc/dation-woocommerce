@@ -7,7 +7,7 @@ use WC_Product;
 use WC_Product_Query;
 use WP_List_Table;
 
-class DationProductList extends WP_List_Table {
+class ProductList extends WP_List_Table {
 	public function prepare_items() {
 		$columns = $this->get_columns();
 		$hidden = $this->get_hidden_columns();

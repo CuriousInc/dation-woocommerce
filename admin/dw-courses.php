@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use Dation\Woocommerce\Admin\DationProductList;
+use Dation\Woocommerce\Admin\ProductList;
 
 date_default_timezone_set('Europe/Amsterdam');
 
@@ -11,7 +11,7 @@ if(!class_exists('WP_List_Table')) {
 }
 
 function dw_render_course_page() {
-	$table = new DationProductList();
+	$table = new ProductList();
 	$table->prepare_items();
 
 	?>
