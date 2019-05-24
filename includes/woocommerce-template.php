@@ -18,7 +18,14 @@ const DW_BELGIAN_DATE_FORMAT =  'd.m.Y';
 add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
 add_filter('woocommerce_email_order_meta', 'custom_order_meta_fields', 10, 3);
 
+/**
+ * @param WC_Product $order_obj
+ * @param $sent_to_admin
+ * @param $plain_text
+ */
 function custom_order_meta_fields($order_obj, $sent_to_admin, $plain_text) {
+	global $dw_options;
+
 	$issueDrivingLicense = get_post_meta($order_obj->get_id(), DW_ISSUE_DATE_DRIVING_LICENSE, true);
 	$dateOfBirth = get_post_meta($order_obj->get_id(), DW_DATE_OF_BIRTH, true);
 	$nationalRegistryNumber = get_post_meta($order_obj->get_id(), DW_NATIONAL_REGISTRY_NUMBER, true);
@@ -31,7 +38,8 @@ function custom_order_meta_fields($order_obj, $sent_to_admin, $plain_text) {
 					<li><strong>Geboortedatum</strong> ' . $dateOfBirth . '</li>
 					<li><strong>Rijksregisternummer</strong> ' . $nationalRegistryNumber . '</li>
 					<li><strong>Automaat</strong> ' . __($automaticTransmission) . '</li>
-				</ul>';
+				</ul>
+				<a target="_blank" href="https://dashboard.dation.nl/' . $dw_options['handle'] . '/nascholing/details?id='. $order_obj->get_sku() . '">Open in Dation</a>';
 	} else {
 		echo "DATION INFORMATIE\n
 				Afgiftedatum rijbewijs: $issueDrivingLicense
@@ -43,6 +51,11 @@ function custom_order_meta_fields($order_obj, $sent_to_admin, $plain_text) {
 
 // Override checkout fields, add custom TKM fields to checkout fields
 function dw_override_checkout_fields($fields) {
+	unset($fields['shipping']['shipping_address_2']);
+	unset($fields['shipping']['shipping_company']);
+
+	unset($fields['billing']['billing_address_2']);
+	unset($fields['billing']['billing_company']);
 
 	$newOrderFields['order'][DW_DATE_OF_BIRTH] = [
 		'type'     => 'text',
