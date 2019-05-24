@@ -16,32 +16,29 @@ const DW_BELGIAN_DATE_FORMAT =  'd.m.Y';
 
 // Register override for checkout and order email
 add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
-add_filter('woocommerce_email_order_meta', 'custom_order_meta_fields', 10, 3);
+add_filter('woocommerce_email_order_meta', 'dw_custom_order_meta_fields', 10, 3);
 
 /**
  * @param WC_Product $order_obj
  * @param $sent_to_admin
  * @param $plain_text
  */
-function custom_order_meta_fields($order_obj, $sent_to_admin, $plain_text) {
-	global $dw_options;
-
+function dw_custom_order_meta_fields($order_obj, $sent_to_admin, $plain_text) {
 	$issueDrivingLicense = get_post_meta($order_obj->get_id(), DW_ISSUE_DATE_DRIVING_LICENSE, true);
 	$dateOfBirth = get_post_meta($order_obj->get_id(), DW_DATE_OF_BIRTH, true);
 	$nationalRegistryNumber = get_post_meta($order_obj->get_id(), DW_NATIONAL_REGISTRY_NUMBER, true);
 	$automaticTransmission = get_post_meta($order_obj->get_id(), DW_AUTOMATIC_TRANSMISSION, true);
 
 	if(!$plain_text) {
-		echo '<h2>Dation informatie</h2>
+		echo '<h2>Extra informatie</h2>
 				<ul>
 					<li><strong>Afgiftedatum rijbewijs</strong> ' . $issueDrivingLicense . '</li>
 					<li><strong>Geboortedatum</strong> ' . $dateOfBirth . '</li>
 					<li><strong>Rijksregisternummer</strong> ' . $nationalRegistryNumber . '</li>
 					<li><strong>Automaat</strong> ' . __($automaticTransmission) . '</li>
-				</ul>
-				<a target="_blank" href="https://dashboard.dation.nl/' . $dw_options['handle'] . '/nascholing/details?id='. $order_obj->get_sku() . '">Open in Dation</a>';
+				</ul>';
 	} else {
-		echo "DATION INFORMATIE\n
+		echo "EXTRA INFORMATIE\n
 				Afgiftedatum rijbewijs: $issueDrivingLicense
 				Geboortedatum: $dateOfBirth
 				Rijksregisternummer: $nationalRegistryNumber
