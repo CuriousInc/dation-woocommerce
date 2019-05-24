@@ -5,6 +5,7 @@
  */
 
 use SetBased\Rijksregisternummer\Rijksregisternummer;
+use SetBased\Rijksregisternummer\RijksregisternummerHelper;
 
 // Fields
 const DW_ISSUE_DATE_DRIVING_LICENSE = 'Afgiftedatum_Rijbewijs';
@@ -34,8 +35,8 @@ function dw_custom_order_meta_fields($order_obj, $sent_to_admin, $plain_text) {
 				<ul>
 					<li><strong>Afgiftedatum rijbewijs</strong> ' . $issueDrivingLicense . '</li>
 					<li><strong>Geboortedatum</strong> ' . $dateOfBirth . '</li>
-					<li><strong>Rijksregisternummer</strong> ' . $nationalRegistryNumber . '</li>
-					<li><strong>Automaat</strong> ' . __($automaticTransmission) . '</li>
+					<li><strong>Rijksregisternummer</strong> ' . RijksregisternummerHelper::format($nationalRegistryNumber) . '</li>
+					<li><strong>Automaat</strong> ' . $automaticTransmission === 'no' ? 'Nee' : 'Ja' . '</li>
 				</ul>';
 	} else {
 		echo "EXTRA INFORMATIE\n
