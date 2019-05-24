@@ -87,7 +87,7 @@ function dw_add_woocommerce_product($course) {
 	];
 	$product    = new WC_Product();
 
-	$prettyDate = $startDate->format('l d F Y H:i');
+	$prettyDate = date_i18n('l d F Y', $startDate->getTimestamp()) . ' ' . $startDate->format('H:i');
 
 	$product->set_name($course['name'] . ' ' . $prettyDate);
 	$product->set_menu_order($startDate->getTimestamp());
