@@ -65,10 +65,10 @@ function dw_override_checkout_fields($fields) {
 	$newOrderFields['order'][DW_AUTOMATIC_TRANSMISSION] = [
 		'type'     => 'select',
 		'options'  => [
+			'no'  => __('No'),
 			'yes' => __('Yes'),
-			'no'  => __('No')
 		],
-		'label'    => __('Ik rij met automatische versnellingen'),
+		'label'    => __('Ik rijd enkel met een automaat'),
 		'required' => true,
 	];
 
