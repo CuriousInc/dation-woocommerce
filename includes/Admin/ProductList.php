@@ -32,9 +32,9 @@ class ProductList extends WP_List_Table {
 
 	public function get_columns() {
 		return [
-			'id'       => 'Webshop Product',
+			'id'       => 'Artikel (Webshop)',
 			'location' => 'Locatie',
-			'sku'      => 'Dation Product',
+			'sku'      => 'Cursus (Dation)',
 			'stock'    => 'Beschikbaar',
 		];
 	}

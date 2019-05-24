@@ -13,8 +13,8 @@ function dw_render_course_page() {
 	$table->prepare_items();
 
 	?>
-	<h1>Cursussen</h1>
 	<div class="wrap">
+		<h1>Cursussen</h1>
 		<div id="icon-users" class="icon32"></div>
 		<?php $table->display(); ?>
 	</div>
