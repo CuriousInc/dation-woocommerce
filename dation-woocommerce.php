@@ -1,14 +1,16 @@
 <?php
 declare(strict_types=1);
 
-/*
-Plugin Name: Dation Woocommerce
-Plugin URI: http:/www.dation.nl/
-Description: Dation Woocommerce plugin
-Author: Dation
-Author URI: http://www.dation.nl
-Version: 1.0.0
-*/
+/**
+ * Dation Woocommerce plugin
+ *
+ * @wordpress-plugin
+ * Plugin Name: Dation Woocommerce
+ * Description: Je website altijd up-to-date met je Dation planning. Importeer je Dation cursussen als Woocommerce producten.
+ * Author: Dation
+ * Author URI: http://www.dation.nl
+ * Version: 1.0.1
+ */
 
 // Global variables
 
