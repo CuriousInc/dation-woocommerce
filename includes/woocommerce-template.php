@@ -95,16 +95,31 @@ function dw_override_checkout_fields($fields) {
 add_action('woocommerce_checkout_process', 'dw_process_checkout');
 
 function dw_process_checkout() {
-	if(!dw_is_valid_date($_POST[DW_DATE_OF_BIRTH])) {
-		wc_add_notice(__('Geboortedatum is onjuist, verwacht formaat dd.mm.yyyy'), 'error');
-	} else {
-		$birthDate = DateTime::createFromFormat(DW_BELGIAN_DATE_FORMAT, $_POST[DW_DATE_OF_BIRTH]);
-		if(!dw_is_valid_national_registry_number($_POST[DW_NATIONAL_REGISTRY_NUMBER], $birthDate)) {
-			wc_add_notice(__('Rijksregsternummer is onjuist'), 'error');
-		}}
+	if(!empty($_POST[DW_DATE_OF_BIRTH])){
+		if(!dw_is_valid_date($_POST[DW_DATE_OF_BIRTH])) {
+			wc_add_notice(__('Geboortedatum is onjuist, verwacht formaat dd.mm.yyyy'), 'error');
+			$invalidDate = true;
+		}
+	}
 
-	if(!dw_is_valid_date($_POST[DW_ISSUE_DATE_DRIVING_LICENSE])) {
-		wc_add_notice(__('Afgiftedatum rijbewijs is onjuist, verwacht formaat dd.mm.yyyy'), 'error');
+	if(!empty($_POST[DW_NATIONAL_REGISTRY_NUMBER])){
+		if(!dw_is_valid_national_registry_number_format($_POST[DW_NATIONAL_REGISTRY_NUMBER])){
+			wc_add_notice(__('Rijksregsternummer is onjuist'), 'error');
+		} elseif(
+			!$invalidDate
+			&& !dw_is_match_national_registry_number_and_birth_date(
+				$_POST[DW_NATIONAL_REGISTRY_NUMBER],
+				DateTime::createFromFormat(DW_BELGIAN_DATE_FORMAT, $_POST[DW_DATE_OF_BIRTH])
+			)
+		) {
+			wc_add_notice(__('Rijksregsternummer komt niet overeen met geboortedatum'), 'error');
+		}
+	}
+
+	if(!empty($_POST[DW_ISSUE_DATE_DRIVING_LICENSE])){
+		if(!dw_is_valid_date($_POST[DW_ISSUE_DATE_DRIVING_LICENSE])) {
+			wc_add_notice(__('Afgiftedatum rijbewijs is onjuist, verwacht formaat dd.mm.yyyy'), 'error');
+		}
 	}
 }
 
@@ -113,20 +128,22 @@ function dw_is_valid_date(string $input): bool {
 	return $dateTime && $dateTime->format(DW_BELGIAN_DATE_FORMAT) === $input;
 }
 
-function dw_is_valid_national_registry_number(string $registryNumberString, DateTime $birthDate): bool {
+function dw_is_valid_national_registry_number_format(string $registryNumberString): bool {
 	try {
 		$registryNumber = new Rijksregisternummer($registryNumberString);
 	} catch (UnexpectedValueException $exception) {
 		// Invalid format
 		return false;
 	}
-
-	if($registryNumber->getBirthday() !== $birthDate->format('Y-m-d')) {
-		// Birth date in number mismatches
-		return false;
-	}
-
 	return true;
+}
+
+function dw_is_match_national_registry_number_and_birth_date(
+	string $registryNumberString,
+	DateTime $birthDate
+): bool {
+	$registryNumber = new Rijksregisternummer($registryNumberString);
+	return $registryNumber->getBirthday() === $birthDate->format('Y-m-d')) {
 }
 
 /**
