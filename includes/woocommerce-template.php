@@ -143,7 +143,7 @@ function dw_is_match_national_registry_number_and_birth_date(
 	DateTime $birthDate
 ): bool {
 	$registryNumber = new Rijksregisternummer($registryNumberString);
-	return $registryNumber->getBirthday() === $birthDate->format('Y-m-d')) {
+	return $registryNumber->getBirthday() === $birthDate->format('Y-m-d');
 }
 
 /**
