@@ -17,18 +17,18 @@ const DW_BELGIAN_DATE_FORMAT =  'd.m.Y';
 
 // Register override for checkout and order email
 add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
-add_filter('woocommerce_email_order_meta', 'dw_custom_order_meta_fields', 10, 3);
+add_filter('woocommerce_email_order_meta', 'dw_email_order_render_extra_fields', 10, 3);
 
 /**
- * @param WC_Product $order_obj
- * @param $sent_to_admin
- * @param $plain_text
+ * @param WC_Order $order
+ * @param bool $sent_to_admin
+ * @param bool $plain_text
  */
-function dw_custom_order_meta_fields($order_obj, $sent_to_admin, $plain_text) {
-	$issueDrivingLicense = get_post_meta($order_obj->get_id(), DW_ISSUE_DATE_DRIVING_LICENSE, true);
-	$dateOfBirth = get_post_meta($order_obj->get_id(), DW_DATE_OF_BIRTH, true);
-	$nationalRegistryNumber = get_post_meta($order_obj->get_id(), DW_NATIONAL_REGISTRY_NUMBER, true);
-	$automaticTransmission = get_post_meta($order_obj->get_id(), DW_AUTOMATIC_TRANSMISSION, true);
+function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text) {
+	$issueDrivingLicense = get_post_meta($order->get_id(), DW_ISSUE_DATE_DRIVING_LICENSE, true);
+	$dateOfBirth = get_post_meta($order->get_id(), DW_DATE_OF_BIRTH, true);
+	$nationalRegistryNumber = get_post_meta($order->get_id(), DW_NATIONAL_REGISTRY_NUMBER, true);
+	$automaticTransmission = get_post_meta($order->get_id(), DW_AUTOMATIC_TRANSMISSION, true);
 
 	if(!$plain_text) {
 		echo '<h2>Extra informatie</h2>
@@ -151,7 +151,7 @@ function dw_is_match_national_registry_number_and_birth_date(
  */
 add_action('woocommerce_checkout_update_order_meta', 'dw_checkout_update_order_meta');
 
-function dw_checkout_update_order_meta($order_id) {
+function dw_checkout_update_order_meta($orderId) {
 	$fields = [
 		DW_ISSUE_DATE_DRIVING_LICENSE,
 		DW_DATE_OF_BIRTH,
@@ -161,7 +161,7 @@ function dw_checkout_update_order_meta($order_id) {
 
 	foreach($fields as $field) {
 		if(!empty($_POST[$field])) {
-			update_post_meta($order_id, $field, sanitize_text_field($_POST[$field]));
+			update_post_meta($orderId, $field, sanitize_text_field($_POST[$field]));
 		}
 	}
 }
@@ -169,9 +169,14 @@ function dw_checkout_update_order_meta($order_id) {
 /**
  * Display field value on the order edit page
  */
-add_action('woocommerce_admin_order_data_after_shipping_address', 'dw_admin_order_tkm_data', 10, 1);
+add_action('woocommerce_admin_order_data_after_shipping_address', 'dw_admin_order_render_extra_fields', 10, 1);
 
-function dw_admin_order_tkm_data($order) {
+/**
+ * Render extra fields for admin order page
+ *
+ * @param WC_Order $order
+ */
+function dw_admin_order_render_extra_fields($order) {
 	echo '<p><strong>' . __('Geboortedatum') . ':</strong> <br/>'
 		. get_post_meta($order->get_id(), DW_DATE_OF_BIRTH, true) . '</p>';
 	echo '<p><strong>' . __('Rijksregisternummer') . ':</strong> <br/>'
