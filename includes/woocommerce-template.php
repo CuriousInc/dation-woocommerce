@@ -14,7 +14,7 @@ const DW_DATE_OF_BIRTH              = 'Geboortedatum';
 const DW_NATIONAL_REGISTRY_NUMBER   = 'Rijksregisternummer';
 const DW_AUTOMATIC_TRANSMISSION     = 'Automaat';
 
-const DW_BELGIAN_DATE_FORMAT =  'd.m.Y';
+const DW_BELGIAN_DATE_FORMAT = 'd.m.Y';
 
 // Register override for checkout and order email
 add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
@@ -26,10 +26,10 @@ add_filter('woocommerce_email_order_meta', 'dw_email_order_render_extra_fields',
  * @param bool $plain_text
  */
 function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text) {
-	$issueDrivingLicense = get_post_meta($order->get_id(), DW_ISSUE_DATE_DRIVING_LICENSE, true);
-	$dateOfBirth = get_post_meta($order->get_id(), DW_DATE_OF_BIRTH, true);
+	$issueDrivingLicense    = get_post_meta($order->get_id(), DW_ISSUE_DATE_DRIVING_LICENSE, true);
+	$dateOfBirth            = get_post_meta($order->get_id(), DW_DATE_OF_BIRTH, true);
 	$nationalRegistryNumber = get_post_meta($order->get_id(), DW_NATIONAL_REGISTRY_NUMBER, true);
-	$automaticTransmission = get_post_meta($order->get_id(), DW_AUTOMATIC_TRANSMISSION, true);
+	$automaticTransmission  = get_post_meta($order->get_id(), DW_AUTOMATIC_TRANSMISSION, true);
 
 	if(!$plain_text) {
 		echo '<h2>Extra informatie</h2>
@@ -96,15 +96,15 @@ function dw_override_checkout_fields($fields) {
 add_action('woocommerce_checkout_process', 'dw_process_checkout');
 
 function dw_process_checkout() {
-	if(!empty($_POST[DW_DATE_OF_BIRTH])){
+	if(!empty($_POST[DW_DATE_OF_BIRTH])) {
 		if(!dw_is_valid_date($_POST[DW_DATE_OF_BIRTH])) {
 			wc_add_notice(__('Geboortedatum is onjuist, verwacht formaat dd.mm.yyyy'), 'error');
 			$invalidDate = true;
 		}
 	}
 
-	if(!empty($_POST[DW_NATIONAL_REGISTRY_NUMBER])){
-		if(!dw_is_valid_national_registry_number_format($_POST[DW_NATIONAL_REGISTRY_NUMBER])){
+	if(!empty($_POST[DW_NATIONAL_REGISTRY_NUMBER])) {
+		if(!dw_is_valid_national_registry_number_format($_POST[DW_NATIONAL_REGISTRY_NUMBER])) {
 			wc_add_notice(__('Rijksregsternummer is onjuist'), 'error');
 		} elseif(
 			!$invalidDate
@@ -117,7 +117,7 @@ function dw_process_checkout() {
 		}
 	}
 
-	if(!empty($_POST[DW_ISSUE_DATE_DRIVING_LICENSE])){
+	if(!empty($_POST[DW_ISSUE_DATE_DRIVING_LICENSE])) {
 		if(!dw_is_valid_date($_POST[DW_ISSUE_DATE_DRIVING_LICENSE])) {
 			wc_add_notice(__('Afgiftedatum rijbewijs is onjuist, verwacht formaat dd.mm.yyyy'), 'error');
 		}
@@ -132,7 +132,7 @@ function dw_is_valid_date(string $input): bool {
 function dw_is_valid_national_registry_number_format(string $registryNumberString): bool {
 	try {
 		$registryNumber = new Rijksregisternummer($registryNumberString);
-	} catch (UnexpectedValueException $exception) {
+	} catch(UnexpectedValueException $exception) {
 		// Invalid format
 		return false;
 	}
@@ -194,4 +194,20 @@ function dw_woocommerce_order_status_processing($orderId) {
 	$order = wc_get_order($orderId);
 	$orderManager = new OrderManager();
 	$orderManager->procesOrder($order);
+}
+
+add_action('woocommerce_order_actions', 'dw_order_meta_box_actions');
+
+function dw_order_meta_box_actions($actions) {
+    $actions['dw_send_student_to_dashboard'] = __('Leerling aanmaken in Dation');
+
+    return $actions;
+}
+
+add_action('woocommerce_order_action_dw_send_student_to_dashboard', 'dw_send_student_to_dashboard');
+
+function dw_send_student_to_dashboard(WC_Order $order) {
+    $note = __('Leerling aangemaakt in Dation');
+
+    $order->add_order_note( $note );
 }
