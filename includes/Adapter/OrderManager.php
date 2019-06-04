@@ -13,13 +13,13 @@ namespace Dation\Woocommerce\Adapter;
 class OrderManager {
 
 	/**
-	 * Handle Order Change
+	 * Process Order
 	 *
 	 * This function is called when an order is changed and its changes should be synchronized to Dation
 	 *
 	 * @param \WC_Order $order
 	 */
-	public function handleOrderChange(\WC_Order $order) {
+	public function procesOrder(\WC_Order $order) {
 		throw new \BadMethodCallException(sprintf('Function %s is not implemented yet', __FUNCTION__));
 	}
 }

@@ -188,10 +188,10 @@ function dw_admin_order_render_extra_fields($order) {
 		. (get_post_meta($order->get_id(), DW_AUTOMATIC_TRANSMISSION, true) ? __('Ja') : __('Nee')) . '</p>';
 }
 
-add_action('woocommerce_order_status_completed', 'dw_woocommerce_order_status_completed', 10, 1);
+add_action('woocommerce_order_status_processing', 'dw_woocommerce_order_status_processing', 10, 1);
 
-function dw_woocommerce_order_status_completed($orderId) {
+function dw_woocommerce_order_status_processing($orderId) {
 	$order = wc_get_order($orderId);
 	$orderManager = new OrderManager();
-	$orderManager->handleOrderChange($order);
+	$orderManager->procesOrder($order);
 }
