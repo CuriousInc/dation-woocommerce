@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use Dation\Woocommerce\Adapter\RestApiClientFactory;
+
 const DW_DEFAULT_PRODUCT_PROPERTIES = [
 	'virtual'           => true,
 	'manage_stock'      => true,
@@ -14,9 +16,7 @@ const DW_DEFAULT_PRODUCT_PROPERTIES = [
  * @throws WC_Data_Exception
  */
 function dw_import_products() {
-	global $dw_options;
-
-	$client = new Dation\Woocommerce\RestApiClient\RestApiClient($dw_options['api_key'], $dw_options['handle']);
+	$client = RestApiClientFactory::getClient();
 	$courses = $client->getCourseInstances(new DateTime(), null) ?? [];
 
 	$createdProducts = [];
