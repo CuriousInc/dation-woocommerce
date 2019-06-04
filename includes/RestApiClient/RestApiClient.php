@@ -6,6 +6,16 @@ namespace Dation\Woocommerce\RestApiClient;
 use DateTime;
 use GuzzleHttp\Client;
 
+/**
+ * The RestApiClient is a service that deals with the communication with the
+ * Dation API.
+ *
+ * It works at the level of functional objects (e.g. students,
+ * course-instances etc.) in contrast to technical details (like
+ * requests, connections, etc.).
+ *
+ * @internal THe actual transport is delegated to a HTTP client
+ */
 class RestApiClient {
 
 	const BASE_API_URL = 'https://dashboard.dation.nl/api/v1/';
@@ -26,6 +36,8 @@ class RestApiClient {
 	}
 
 	/**
+	 * Search Course Instances
+	 *
 	 * @param DateTime|null $startDateAfter
 	 * @param DateTime|null $startDateBefore
 	 *
@@ -46,5 +58,16 @@ class RestApiClient {
 		$courseInstances = json_decode($response->getBody()->getContents(), true) ?? [];
 
 		return $courseInstances;
+	}
+
+	/**
+	 * Create a new Student
+	 *
+	 * @param mixed[] $studentData Associative array of student data, e.g. ['firstName' => 'Piet', ...]
+	 *
+	 * @return mixed[] Associative array of student data, as returned by the response
+	 */
+	public function postStudent(array $studentData): array {
+		throw new \BadMethodCallException(sprintf('Function %s is not implemented yet', __FUNCTION__));
 	}
 }
