@@ -12,18 +12,23 @@ namespace Dation\Woocommerce\Adapter;
  */
 class OrderManager {
 
-	/**
-	 * Process Order
-	 *
-	 * This function is called when an order is set to status "Processing".
-	 * This means payment has been received (paid) and stock reduced; order is
-	 * awaiting fulfillment.
-	 *
-	 * In our context, fulfillment means synchronizing its changes to Dation
-	 *
-	 * @param \WC_Order $order
-	 */
-	public function procesOrder(\WC_Order $order) {
-		throw new \BadMethodCallException(sprintf('Function %s is not implemented yet', __FUNCTION__));
-	}
+    /**
+     * Process Order
+     *
+     * This function is called when an order is set to status "Processing".
+     * This means payment has been received (paid) and stock reduced; order is
+     * awaiting fulfillment.
+     *
+     * In our context, fulfillment means synchronizing its changes to Dation
+     *
+     * @param \WC_Order $order
+     */
+    public function procesOrder(\WC_Order $order) {
+        try {
+            throw new \BadMethodCallException(sprintf('Function %s is not implemented yet', __FUNCTION__));
+        } catch (\Exception $e) {
+            $note = __('Aanmaken leerling in Dation mislukt: ');
+            $order->add_order_note($note . $e->getMessage());
+        }
+    }
 }

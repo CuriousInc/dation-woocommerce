@@ -207,7 +207,6 @@ function dw_order_meta_box_actions($actions) {
 add_action('woocommerce_order_action_dw_send_student_to_dashboard', 'dw_send_student_to_dashboard');
 
 function dw_send_student_to_dashboard(WC_Order $order) {
-    $note = __('Leerling aangemaakt in Dation');
-
-    $order->add_order_note( $note );
+    $orderManager = new OrderManager();
+    $orderManager->procesOrder($order);
 }
