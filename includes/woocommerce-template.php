@@ -15,6 +15,7 @@ const DW_NATIONAL_REGISTRY_NUMBER   = 'Rijksregisternummer';
 const DW_AUTOMATIC_TRANSMISSION     = 'Automaat';
 
 const DW_BELGIAN_DATE_FORMAT = 'd.m.Y';
+const DW_API_DATE_FORMAT = 'Y-m-d';
 
 // Register override for checkout and order email
 add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');

@@ -65,9 +65,20 @@ class RestApiClient {
 	 *
 	 * @param mixed[] $studentData Associative array of student data, e.g. ['firstName' => 'Piet', ...]
 	 *
-	 * @return mixed[] Associative array of student data, as returned by the response
+	 * @return \Psr\Http\Message\ResponseInterface Associative array of student data, as returned by the response
 	 */
-	public function postStudent(array $studentData): array {
-		throw new \BadMethodCallException(sprintf('Function %s is not implemented yet', __FUNCTION__));
+	public function postStudent(array $studentData) {
+		/** @var DateTime $birthDate */
+		$birthDate = $studentData['dateOfBirth'];
+		/** @var DateTime $issueDateDrivingLicense */
+		$issueDateDrivingLicense = $studentData['issueDate'];
+
+		$transformedStudentData = $studentData;
+		$transformedStudentData['dateOfBirth'] = $birthDate->format(DW_API_DATE_FORMAT);
+		$transformedStudentData['issueDateCategoryBDrivingLicense '] = $issueDateDrivingLicense->format(DW_API_DATE_FORMAT);
+
+		unset($transformedStudentData['issueDate']);
+
+		return $this->httpClient->post( 'students', ['form_params' => $transformedStudentData, 'debug' => true]);
 	}
 }
