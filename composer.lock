@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "0c1e046c1481a0253d31cf4b0b21150b",
@@ -319,16 +319,16 @@
         },
         {
             "name": "setbased/rijksregisternummer",
-            "version": "0.10.1",
+            "version": "0.10.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SetBased/php-rijksregisternummer.git",
-                "reference": "4b1c0192d6ea2a6b10e1c5731e19e45b14c31b00"
+                "reference": "f7e87c255255fe0ebe651ee16d94163591123242"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SetBased/php-rijksregisternummer/zipball/4b1c0192d6ea2a6b10e1c5731e19e45b14c31b00",
-                "reference": "4b1c0192d6ea2a6b10e1c5731e19e45b14c31b00",
+                "url": "https://api.github.com/repos/SetBased/php-rijksregisternummer/zipball/f7e87c255255fe0ebe651ee16d94163591123242",
+                "reference": "f7e87c255255fe0ebe651ee16d94163591123242",
                 "shasum": ""
             },
             "require": {
@@ -338,7 +338,7 @@
             },
             "require-dev": {
                 "phing/phing": "^2.0.0",
-                "phpunit/phpunit": "^6.0.0"
+                "phpunit/phpunit": "^7.0.0 || ^8.0.0"
             },
             "type": "library",
             "autoload": {
@@ -357,7 +357,7 @@
                 "bis-nummer",
                 "bisnummer"
             ],
-            "time": "2019-01-28T17:33:48+00:00"
+            "time": "2019-05-30T17:13:40+00:00"
         }
     ],
     "packages-dev": [],
