@@ -15,7 +15,11 @@ class OrderManager {
 	/**
 	 * Process Order
 	 *
-	 * This function is called when an order is changed and its changes should be synchronized to Dation
+	 * This function is called when an order is set to status "Processing".
+	 * This means payment has been received (paid) and stock reduced; order is
+	 * awaiting fulfillment.
+	 *
+	 * In our context, fulfillment means synchronizing its changes to Dation
 	 *
 	 * @param \WC_Order $order
 	 */
