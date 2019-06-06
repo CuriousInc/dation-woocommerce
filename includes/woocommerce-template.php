@@ -6,7 +6,7 @@
 
 use Dation\Woocommerce\Adapter\OrderManager;
 use Dation\Woocommerce\Adapter\OrderManagerFactory;
-use Dation\Woocommerce\Emails\EmailSyncFailed;
+use Dation\Woocommerce\Email\EmailSyncFailed;
 use SetBased\Rijksregisternummer\Rijksregisternummer;
 use SetBased\Rijksregisternummer\RijksregisternummerHelper;
 
@@ -187,7 +187,7 @@ function dw_admin_order_render_extra_fields(WC_Order $order) {
 add_action('woocommerce_order_status_processing', 'dw_woocommerce_order_status_processing', 10, 1);
 
 function dw_woocommerce_order_status_processing(int $orderId) {
-	$order = wc_get_order($orderId);
+	$order = new WC_Order($orderId);
 	$orderManager = OrderManagerFactory::getManager();
 	$orderManager->sendToDation($order);
 }
@@ -207,6 +207,8 @@ function dw_send_student_to_dashboard(WC_Order $order) {
     $orderManager->sendToDation($order);
 }
 
+add_filter('woocommerce_email_classes', 'dw_add_synchronizing_failed_email', 10, 1);
+
 /**
  *  Add a custom email to the list of emails WooCommerce should load
  *  Add an action to trigger sending the email
@@ -221,11 +223,10 @@ function dw_add_synchronizing_failed_email($email_classes) {
 	}
 	$emailClass = new EmailSyncFailed();
 	// add the email class to the list of email classes that WooCommerce loads
-	$email_classes['DW_Student_Failed_Email'] = $emailClass;
+	$email_classes['dw_failed_email'] = $emailClass;
 
 	add_action('dw_synchronize_failed_email_action', [$emailClass, 'dw_email_trigger'], 1, 1);
 
 	return $email_classes;
 
 }
-add_filter('woocommerce_email_classes', 'dw_add_synchronizing_failed_email', 10, 1);

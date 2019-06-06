@@ -90,7 +90,7 @@ class RestApiClient {
 	}
 
 	private function post(string $endpoint, array $data): array {
-		$response = $this->httpClient->post($endpoint, ['form_params' => $data, 'debug' => true]);
+		$response = $this->httpClient->post($endpoint, ['form_params' => $data]);
 		$responseData = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
 
 		return \array_merge($data, $responseData);

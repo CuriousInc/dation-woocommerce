@@ -1,6 +1,6 @@
 <?php
 
-namespace Dation\Woocommerce\Emails;
+namespace Dation\Woocommerce\Email;
 
 use WC_Email;
 use WC_Order;
@@ -35,7 +35,7 @@ class EmailSyncFailed extends WC_Email {
 		$this->template_plain = '/templates/plain/synchronizing-failed-email.php';
 
 		// Title field in WooCommerce Email settings
-		$this->title = __( 'Student synchroniseren mislukt' );
+		$this->title          = __( 'Student synchroniseren mislukt' );
 
 		// Call parent constructor to load any other defaults not explicity defined here
 		parent::__construct();
@@ -54,7 +54,7 @@ class EmailSyncFailed extends WC_Email {
 	 * @param WC_Order $order
 	 */
 	public function dw_email_trigger( WC_Order $order) {
-//		 Bail if no order ID is present
+//		 Bail if no order is present
 		if ( !$order) {
 			return;
 		}
@@ -113,21 +113,14 @@ class EmailSyncFailed extends WC_Email {
 			'subject'    => array(
 				'title'       => __( 'Subject', 'woocommerce' ),
 				'type'        => 'text',
-				'description' => sprintf( 'This controls the email subject line. Leave blank to use the default subject: <code>%s</code>.', $this->subject ),
-				'placeholder' => '',
-				'default'     => ''
-			),
-			'heading'    => array(
-				'title'       => __( 'Email Heading', 'woocommerce' ),
-				'type'        => 'text',
-				'description' => sprintf( __( 'This controls the main heading contained within the email notification. Leave blank to use the default heading: <code>%s</code>.' ), $this->heading ),
+				'description' => sprintf( 'Voer het onderwerp in. Standaard is het onderwerp: <code>%s</code>.', $this->subject ),
 				'placeholder' => '',
 				'default'     => ''
 			),
 			'recipient'  => array(
-				'title'       => __('Recipient(s)'),
+				'title'       => __('Ontvanger(s)'),
 				'type'        => 'text',
-				'description' => sprintf( 'Enter recipients (comma separated) for this email. Defaults to <code>%s</code>.', esc_attr( get_option( 'admin_email' ) ) ),
+				'description' => sprintf( 'Voer ontvangers in, gescheiden door een komma. Standaard ontvanger <code>%s</code>.', esc_attr( get_option( 'admin_email' ) ) ),
 				'placeholder' => '',
 				'default'     => ''
 			),
