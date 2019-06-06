@@ -32,12 +32,13 @@ class OrderManager {
 	 *
 	 * @param \WC_Order $order
 	 */
-	public function procesOrder(\WC_Order $order) {
+	public function sendToDation(\WC_Order $order) {
 		try {
-			$student = $this->client->postStudent($this->getStudentDataFromOrder($order));
-
-			$note = __('Leerling gesynchroniseerd met dation') . " (ID: {$student['id']})";
-			$order->add_order_note($note);
+			if(!$this->orderHasStudentId($order)) {
+				$student = $this->sendStudentToDation($this->getStudentDataFromOrder($order));
+				$note = __('Leerling aangemaakt in Dation');
+				$order->add_order_note($note);
+			}
 		} catch (\Exception $e) {
 			$note = __('Aanmaken leerling in Dation mislukt: ');
 			$order->add_order_note($note . $e->getMessage());
@@ -71,5 +72,13 @@ class OrderManager {
 			'nationalRegistryNumber' => get_post_meta($order->get_id(), DW_NATIONAL_REGISTRY_NUMBER, true),
 			'issueDate' => $issueDateDrivingLicense,
 		];
+	}
+
+	public function sendStudentToDation(array $studentData): array {
+		return $this->client->postStudent($studentData);
+	}
+
+	public function orderHasStudentId(\WC_Order $order): bool {
+		return false;
 	}
 }
