@@ -14,7 +14,9 @@ use Dation\Woocommerce\RestApiClient\RestApiClient;
  */
 class OrderManager {
 
-    /** @var RestApiClient */
+	const META_KEY_STUDENT_ID = 'dw_student_id';
+
+	/** @var RestApiClient */
     private $client;
 
     public function __construct(RestApiClient $client) {
@@ -36,15 +38,16 @@ class OrderManager {
 		global $dw_options;
 
 		try {
-			if(!$this->orderHasStudentId($order)) {
-				$student = $this->sendStudentToDation($this->getStudentDataFromOrder($order));
+			$student = $this->getStudentDataFromOrder($order);
+			if(empty($student['id'])) {
+				$student = $this->sendStudentToDation($student);
+				update_post_meta($order->get_id(), self::META_KEY_STUDENT_ID, $student['id']);
 
 				$link =  '<a target="_blank" href="https://dashboard.dation.nl/' . $dw_options['handle'] . '/leerlingen/'. $student['id'] . '">Dation</a>';
 
-				$note = __("Leerling aangemaakt in $link");
-				$order->add_order_note($note);
+				$order->add_order_note(__("Leerling aangemaakt in $link"));
 			}
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			do_action('woocommerce_email_classes');
 			do_action('dw_action_test_email', $order);
 
@@ -66,6 +69,7 @@ class OrderManager {
 		$addressInfo = explode(' ', $order->get_billing_address_1());
 
 		return [
+			'id' => (int)get_post_meta($order->get_id(), self::META_KEY_STUDENT_ID, true),
 			'firstName' => $order->get_billing_first_name(),
 			'lastName' => $order->get_billing_last_name(),
 			'dateOfBirth' => $birthDate,
@@ -83,11 +87,7 @@ class OrderManager {
 		];
 	}
 
-	public function sendStudentToDation(array $studentData): array {
-		return $this->client->postStudent($studentData);
-	}
-
-	public function orderHasStudentId(\WC_Order $order): bool {
-		return false;
+	public function sendStudentToDation(array $student): array {
+		return $this->client->postStudent($student);
 	}
 }
