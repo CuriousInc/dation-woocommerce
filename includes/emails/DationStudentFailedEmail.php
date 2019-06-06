@@ -56,8 +56,6 @@ class DationStudentFailedEmail extends WC_Email {
 
 		// All well, send the email
 		$this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
-
-		$order->add_order_note('Opslaan in Dation mislukt.');
 	}
 
 	/**
@@ -66,9 +64,15 @@ class DationStudentFailedEmail extends WC_Email {
 	 * @return string
 	 */
 	public function get_content_html() {
+		$url = $this->object->get_edit_order_url();
+		$order_id = $this->object->get_id();
+		$link = "<a href='$url' target='_blank'>Bestelling #$order_id</a>";
+
 		return wc_get_template_html( $this->template_html, array(
 			'order'			    => $this->object,
 			'heading'			=> $this->heading,
+			'link'				=> $link,
+			'studentName'       => $this->object->get_formatted_billing_full_name(),
 		), '', $this->template_base );
 	}
 	/**
@@ -77,9 +81,13 @@ class DationStudentFailedEmail extends WC_Email {
 	 * @return string
 	 */
 	public function get_content_plain() {
+		$url = $this->object->get_edit_order_url();
+
 		return wc_get_template_html( $this->template_plain, array(
 			'order'			=> $this->object,
 			'heading'		=> $this->get_heading(),
+			'link'          => $url,
+			'studentName'   => $this->object->get_formatted_billing_full_name(),
 		), '', $this->template_base );
 	}
 	/**

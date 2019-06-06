@@ -3,9 +3,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-/** @var WC_Order $order */
 ?>
 
-<p>Het is niet gelukt om de leerling te synchroniseren met Dation.</p>
-<p><?php printf(__('Ga naar de orderdetails voor meer informatie: %d', 'woocommerce'), $order->get_edit_order_url() ); ?></p>
+<p><?php echo "Het is niet gelukt om leerling $studentName te synchroniseren met Dation."?></p>
+<p><?php echo "Ga naar de Orderdetails voor meer informatie: $link"; ?></p>
 
