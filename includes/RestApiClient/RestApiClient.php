@@ -41,7 +41,7 @@ class RestApiClient {
 	 * @param DateTime|null $startDateAfter
 	 * @param DateTime|null $startDateBefore
 	 *
-	 * @return mixed[]
+	 * @return mixed[][] Array of Course Instances data (associative array's)
 	 */
 	public function getCourseInstances(DateTime $startDateAfter = null, DateTime $startDateBefore = null): array {
 		// Prepare query
@@ -53,11 +53,7 @@ class RestApiClient {
 			$query['startDateAfter'] = $startDateAfter->format('Y-m-d');
 		}
 
-		// Send request, parse response
-		$response        = $this->httpClient->get('course-instances', ['query' => $query]);
-		$courseInstances = json_decode($response->getBody()->getContents(), true) ?? [];
-
-		return $courseInstances;
+		return $this->get('course-instances', $query) ?? [];
 	}
 
 	/**
@@ -80,6 +76,12 @@ class RestApiClient {
 		unset($transformedStudentData['issueDate']);
 
 		return $this->post('students', $studentData);
+	}
+
+	private function get(string $endpoint, array $query) {
+		$response        = $this->httpClient->get($endpoint, ['query' => $query]);
+
+		return \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
 	}
 
 	private function post(string $endpoint, array $data): array {
