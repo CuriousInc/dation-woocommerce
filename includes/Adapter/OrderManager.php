@@ -24,8 +24,6 @@ class OrderManager {
     }
 
     /**
-	 * Process Order
-	 *
 	 * This function is called when an order is set to status "Processing".
 	 * This means payment has been received (paid) and stock reduced; order is
 	 * awaiting fulfillment.
@@ -43,13 +41,13 @@ class OrderManager {
 				$student = $this->sendStudentToDation($student);
 				update_post_meta($order->get_id(), self::META_KEY_STUDENT_ID, $student['id']);
 
-				$link =  '<a target="_blank" href="https://dashboard.dation.nl/' . $dw_options['handle'] . '/leerlingen/'. $student['id'] . '">Dation</a>';
+				$link =  '<a target="_blank" href="'. DW_BASE_HOST . '/' . $dw_options['handle'] . '/leerlingen/'. $student['id'] . '">Dation</a>';
 
 				$order->add_order_note(__("Leerling aangemaakt in $link"));
 			}
 		} catch (\Throwable $e) {
 			do_action('woocommerce_email_classes');
-			do_action('dw_action_test_email', $order);
+			do_action('dw_synchronize_failed_email_action', $order);
 
 			$note = __('Aanmaken leerling in Dation mislukt: ');
 			$order->add_order_note($note . $e->getMessage());

@@ -1,30 +1,38 @@
 <?php
+
+namespace Dation\Woocommerce\Emails;
+
+use WC_Email;
+use WC_Order;
+
 if(!defined('ABSPATH')) {
 	exit;
 }
+
 require_once(ABSPATH . '/wp-content/plugins/woocommerce/includes/emails/class-wc-email.php');
 
-class DationStudentFailedEmail extends WC_Email {
-
-	const CUSTOM_WC_EMAIL_PATH = __DIR__;
+class DWEmailSynchronizingFailed extends WC_Email {
 	/**
 	 * Set email defaults
 	 */
 	public function __construct() {
 		// Unique ID for custom email
-		$this->id = 'crwc_welcome_email';
+		$this->id             = 'dw_synchronize_failed_email';
+
 		// Is a customer email
 		$this->customer_email = false;
 
 		// Description field in WooCommerce email settings
-		$this->description = __( 'Email die gestuurd wordt op het moment dat een leerling niet toegevoegd kan worden aan Dation Dashboard', 'woocommerce' );
-		// Default heading and subject lines in WooCommerce email settings
-		$this->subject = apply_filters( 'dation_student_failed_email_default_subject', __( 'Synchroniseren mislukt', 'woocommerce' ) );
-		$this->heading = apply_filters( 'dation_student_failed_email_default_heading', __( 'Het synchroniseren met dation is mislukt', 'woocommerce' ) );
+		$this->description    = __( 'Email die gestuurd wordt op het moment dat een leerling niet kan worden toegevoegd aan Dation Dashboard', 'woocommerce' );
 
-		$this->template_base  = self::CUSTOM_WC_EMAIL_PATH;	// Fix the template base lookup for use on admin screen template path display
-		$this->template_html  = '/emails/student-failed-email.php';
-		$this->template_plain = '/emails/plain/student-failed-email.php';
+		// Default heading and subject lines in WooCommerce email settings
+		$this->subject        = apply_filters( 'dation_student_failed_email_default_subject', __( 'Synchroniseren mislukt', 'woocommerce' ) );
+		$this->heading        = apply_filters( 'dation_student_failed_email_default_heading', __( 'Het synchroniseren met dation is mislukt', 'woocommerce' ) );
+
+		// Fix the template base lookup for use on admin screen template path display
+		$this->template_base  = __DIR__;
+		$this->template_html  = '/templates/synchronizing-failed-email.php';
+		$this->template_plain = '/templates/plain/synchronizing-failed-email.php';
 
 		// Title field in WooCommerce Email settings
 		$this->title = __( 'Student synchroniseren mislukt', 'woocommerce' );
@@ -32,13 +40,12 @@ class DationStudentFailedEmail extends WC_Email {
 		// Call parent constructor to load any other defaults not explicity defined here
 		parent::__construct();
 
-		$this->recipient = 'd.huethorst@dation.nl';
+		$this->recipient = $this->get_option('recipient');
 
 		if( !$this->recipient) {
 			$this->recipient = $this->get_option('admin_email');
 		}
 
-		add_action('dw_action_test_email', [$this, 'dw_email_trigger'], 1, 1);
 	}
 
 	/**
@@ -75,6 +82,7 @@ class DationStudentFailedEmail extends WC_Email {
 			'studentName'       => $this->object->get_formatted_billing_full_name(),
 		), '', $this->template_base );
 	}
+
 	/**
 	 * get_content_plain function.
 	 *
@@ -90,6 +98,7 @@ class DationStudentFailedEmail extends WC_Email {
 			'studentName'   => $this->object->get_formatted_billing_full_name(),
 		), '', $this->template_base );
 	}
+
 	/**
 	 * Initialize settings form fields
 	 */
