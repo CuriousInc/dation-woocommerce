@@ -4,19 +4,13 @@
  * Template Function Overrides
  */
 
+use Dation\Woocommerce\Adapter\OrderManager;
 use Dation\Woocommerce\Adapter\OrderManagerFactory;
 use Dation\Woocommerce\Emails\DWEmailSynchronizingFailed;
 use SetBased\Rijksregisternummer\Rijksregisternummer;
 use SetBased\Rijksregisternummer\RijksregisternummerHelper;
 
-// Fields
-const DW_ISSUE_DATE_DRIVING_LICENSE = 'Afgiftedatum_Rijbewijs';
-const DW_DATE_OF_BIRTH              = 'Geboortedatum';
-const DW_NATIONAL_REGISTRY_NUMBER   = 'Rijksregisternummer';
-const DW_AUTOMATIC_TRANSMISSION     = 'Automaat';
-
 const DW_BELGIAN_DATE_FORMAT = 'd.m.Y';
-const DW_API_DATE_FORMAT = 'Y-m-d';
 
 // Register override for checkout and order email
 add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
@@ -28,10 +22,10 @@ add_filter('woocommerce_email_order_meta', 'dw_email_order_render_extra_fields',
  * @param bool $plain_text
  */
 function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text) {
-	$issueDrivingLicense    = get_post_meta($order->get_id(), DW_ISSUE_DATE_DRIVING_LICENSE, true);
-	$dateOfBirth            = get_post_meta($order->get_id(), DW_DATE_OF_BIRTH, true);
-	$nationalRegistryNumber = get_post_meta($order->get_id(), DW_NATIONAL_REGISTRY_NUMBER, true);
-	$automaticTransmission  = get_post_meta($order->get_id(), DW_AUTOMATIC_TRANSMISSION, true);
+	$issueDrivingLicense    = get_post_meta($order->get_id(), OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE, true);
+	$dateOfBirth            = get_post_meta($order->get_id(), OrderManager::KEY_DATE_OF_BIRTH, true);
+	$nationalRegistryNumber = get_post_meta($order->get_id(), OrderManager::KEY_NATIONAL_REGISTRY_NUMBER, true);
+	$automaticTransmission  = get_post_meta($order->get_id(), OrderManager::KEY_AUTOMATIC_TRANSMISSION, true);
 
 	if(!$plain_text) {
 		echo '<h2>Extra informatie</h2>
@@ -58,25 +52,25 @@ function dw_override_checkout_fields($fields) {
 	unset($fields['billing']['billing_address_2']);
 	unset($fields['billing']['billing_company']);
 
-	$newOrderFields['order'][DW_DATE_OF_BIRTH] = [
+	$newOrderFields['order'][OrderManager::KEY_DATE_OF_BIRTH] = [
 		'type'     => 'text',
 		'label'    => __('Geboortedatum'),
 		'required' => true,
 	];
 
-	$newOrderFields['order'][DW_NATIONAL_REGISTRY_NUMBER] = [
+	$newOrderFields['order'][OrderManager::KEY_NATIONAL_REGISTRY_NUMBER] = [
 		'type'     => 'text',
 		'label'    => __('Rijksregisternummer'),
 		'required' => true,
 	];
 
-	$newOrderFields['order'][DW_ISSUE_DATE_DRIVING_LICENSE] = [
+	$newOrderFields['order'][OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] = [
 		'type'     => 'text',
 		'label'    => __('Afgiftedatum rijbewijs'),
 		'required' => true,
 	];
 
-	$newOrderFields['order'][DW_AUTOMATIC_TRANSMISSION] = [
+	$newOrderFields['order'][OrderManager::KEY_AUTOMATIC_TRANSMISSION] = [
 		'type'     => 'select',
 		'options'  => [
 			'no'  => __('No'),
@@ -98,29 +92,29 @@ function dw_override_checkout_fields($fields) {
 add_action('woocommerce_checkout_process', 'dw_process_checkout');
 
 function dw_process_checkout() {
-	if(!empty($_POST[DW_DATE_OF_BIRTH])) {
-		if(!dw_is_valid_date($_POST[DW_DATE_OF_BIRTH])) {
+	if(!empty($_POST[OrderManager::KEY_DATE_OF_BIRTH])) {
+		if(!dw_is_valid_date($_POST[OrderManager::KEY_DATE_OF_BIRTH])) {
 			wc_add_notice(__('Geboortedatum is onjuist, verwacht formaat dd.mm.yyyy'), 'error');
 			$invalidDate = true;
 		}
 	}
 
-	if(!empty($_POST[DW_NATIONAL_REGISTRY_NUMBER])) {
-		if(!dw_is_valid_national_registry_number_format($_POST[DW_NATIONAL_REGISTRY_NUMBER])) {
+	if(!empty($_POST[OrderManager::KEY_NATIONAL_REGISTRY_NUMBER])) {
+		if(!dw_is_valid_national_registry_number_format($_POST[OrderManager::KEY_NATIONAL_REGISTRY_NUMBER])) {
 			wc_add_notice(__('Rijksregsternummer is onjuist'), 'error');
 		} elseif(
 			!$invalidDate
 			&& !dw_is_match_national_registry_number_and_birth_date(
-				$_POST[DW_NATIONAL_REGISTRY_NUMBER],
-				DateTime::createFromFormat(DW_BELGIAN_DATE_FORMAT, $_POST[DW_DATE_OF_BIRTH])
+				$_POST[OrderManager::KEY_NATIONAL_REGISTRY_NUMBER],
+				DateTime::createFromFormat(DW_BELGIAN_DATE_FORMAT, $_POST[OrderManager::KEY_DATE_OF_BIRTH])
 			)
 		) {
 			wc_add_notice(__('Rijksregsternummer komt niet overeen met geboortedatum'), 'error');
 		}
 	}
 
-	if(!empty($_POST[DW_ISSUE_DATE_DRIVING_LICENSE])) {
-		if(!dw_is_valid_date($_POST[DW_ISSUE_DATE_DRIVING_LICENSE])) {
+	if(!empty($_POST[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE])) {
+		if(!dw_is_valid_date($_POST[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE])) {
 			wc_add_notice(__('Afgiftedatum rijbewijs is onjuist, verwacht formaat dd.mm.yyyy'), 'error');
 		}
 	}
@@ -156,10 +150,10 @@ add_action('woocommerce_checkout_update_order_meta', 'dw_checkout_update_order_m
 
 function dw_checkout_update_order_meta($orderId) {
 	$fields = [
-		DW_ISSUE_DATE_DRIVING_LICENSE,
-		DW_DATE_OF_BIRTH,
-		DW_NATIONAL_REGISTRY_NUMBER,
-		DW_AUTOMATIC_TRANSMISSION
+		OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE,
+		OrderManager::KEY_DATE_OF_BIRTH,
+		OrderManager::KEY_NATIONAL_REGISTRY_NUMBER,
+		OrderManager::KEY_AUTOMATIC_TRANSMISSION
 	];
 
 	foreach($fields as $field) {
@@ -181,13 +175,13 @@ add_action('woocommerce_admin_order_data_after_shipping_address', 'dw_admin_orde
  */
 function dw_admin_order_render_extra_fields(WC_Order $order) {
 	echo '<p><strong>' . __('Geboortedatum') . ':</strong> <br/>'
-		. get_post_meta($order->get_id(), DW_DATE_OF_BIRTH, true) . '</p>';
+		. get_post_meta($order->get_id(), OrderManager::KEY_DATE_OF_BIRTH, true) . '</p>';
 	echo '<p><strong>' . __('Rijksregisternummer') . ':</strong> <br/>'
-		. get_post_meta($order->get_id(), DW_NATIONAL_REGISTRY_NUMBER, true) . '</p>';
+		. get_post_meta($order->get_id(), OrderManager::KEY_NATIONAL_REGISTRY_NUMBER, true) . '</p>';
 	echo '<p><strong>' . __('Afgiftedatum rijbewijs') . ':</strong> <br/>'
-		. get_post_meta($order->get_id(), DW_ISSUE_DATE_DRIVING_LICENSE, true) . '</p>';
+		. get_post_meta($order->get_id(), OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE, true) . '</p>';
 	echo '<p><strong>' . __('Automaat') . ':</strong> <br/>'
-		. (get_post_meta($order->get_id(), DW_AUTOMATIC_TRANSMISSION, true) ? __('Ja') : __('Nee')) . '</p>';
+		. (get_post_meta($order->get_id(), OrderManager::KEY_AUTOMATIC_TRANSMISSION, true) ? __('Ja') : __('Nee')) . '</p>';
 }
 
 add_action('woocommerce_order_status_processing', 'dw_woocommerce_order_status_processing', 10, 1);
