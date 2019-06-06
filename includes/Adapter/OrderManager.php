@@ -84,6 +84,7 @@ class OrderManager {
 			'mobileNumber'           => $order->get_billing_phone(),
 			'nationalRegistryNumber' => get_post_meta($order->get_id(), self::KEY_NATIONAL_REGISTRY_NUMBER, true),
 			'issueDate'              => $issueDateDrivingLicense ?: null,
+			'planAsIndependent'      => true,
 			'comments'               => $this->getTransmissionComment($order)
 		];
 	}
