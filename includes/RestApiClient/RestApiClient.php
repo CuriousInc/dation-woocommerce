@@ -79,8 +79,13 @@ class RestApiClient {
 
 		unset($transformedStudentData['issueDate']);
 
-        $response = $this->httpClient->post('students', ['form_params' => $transformedStudentData, 'debug' => true]);
+		return $this->post('students', $studentData);
+	}
 
-        return \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+	private function post(string $endpoint, array $data): array {
+		$response = $this->httpClient->post($endpoint, ['form_params' => $data, 'debug' => true]);
+		$responseData = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+
+		return \array_merge($data, $responseData);
 	}
 }
