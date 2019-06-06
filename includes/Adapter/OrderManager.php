@@ -112,9 +112,9 @@ class OrderManager {
 	 * @return string
 	 */
 	private function getTransmissionComment(WC_Order $order): string {
-		$answer = get_post_meta($order->get_id(),
-			self::KEY_AUTOMATIC_TRANSMISSION, true);
+		$answer = (bool)get_post_meta($order->get_id(),
+			OrderManager::KEY_AUTOMATIC_TRANSMISSION, true);
 
-		return __('Ik rijd enkel met een automaat') . ': ' . __($answer);
+		return __('Ik rijd enkel met een automaat') . ': ' . ($answer ? __('Ja') : __('Nee'));
 	}
 }
