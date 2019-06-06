@@ -33,7 +33,7 @@ function dw_import_products() {
 
 /**
  * Get product by unique `stock keep unit`.
- * When creating a product, dation course ID is set to the sku of a woocommerce product.
+ * When creating a product, Dation course ID is set to the sku of a woocommerce product.
  * When synchronizing with Dation, we can use this to find Dation courses that are not in Woocommerce
  *
  * @param $sku

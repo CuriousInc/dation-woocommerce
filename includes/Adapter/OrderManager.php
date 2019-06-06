@@ -37,24 +37,19 @@ class OrderManager {
 	 * @param \WC_Order $order
 	 */
 	public function sendToDation(\WC_Order $order) {
-		global $dw_options;
-
 		try {
 			$student = $this->getStudentDataFromOrder($order);
 			if(empty($student['id'])) {
 				$student = $this->sendStudentToDation($student);
 				update_post_meta($order->get_id(), self::KEY_STUDENT_ID, $student['id']);
-
-				$link =  '<a target="_blank" href="'. DW_BASE_HOST . '/' . $dw_options['handle'] . '/leerlingen/'. $student['id'] . '">Dation</a>';
-
-				$order->add_order_note(__("Leerling aangemaakt in $link"));
+				$order->add_order_note($this->syncSuccesNote($student));
 			}
 		} catch (\Throwable $e) {
 			do_action('woocommerce_email_classes');
 			do_action('dw_synchronize_failed_email_action', $order);
 
-			$note = __('Aanmaken leerling in Dation mislukt: ');
-			$order->add_order_note($note . $e->getMessage());
+			$note = __('Aanmaken leerling in Dation mislukt');
+			$order->add_order_note("{$note}: <code>{$e->getMessage()}</code>");
 		}
 	}
 
@@ -85,11 +80,19 @@ class OrderManager {
 			'mobileNumber' => $order->get_billing_phone(),
 			'nationalRegistryNumber' => get_post_meta($order->get_id(), self::KEY_NATIONAL_REGISTRY_NUMBER, true),
 			'issueDate' => $issueDateDrivingLicense,
-			'comments' => 'Ik rijd enkel met een automaat: ' . __(get_post_meta($order->get_id(), self::KEY_AUTOMATIC_TRANSMISSION, true))
+			'comments' => __('Ik rijd enkel met een automaat') . ': ' . __(get_post_meta($order->get_id(), self::KEY_AUTOMATIC_TRANSMISSION, true))
 		];
 	}
 
 	public function sendStudentToDation(array $student): array {
 		return $this->client->postStudent($student);
+	}
+
+	private function syncSuccesNote(array $student): string {
+		global $dw_options;
+
+		$link =  '<a target="_blank" href="'. DW_BASE_HOST . '/' . $dw_options['handle'] . '/leerlingen/'. $student['id'] . '">Dation</a>';
+
+		return sprintf(__('Leerling aangemaakt in %s'), $link);
 	}
 }
