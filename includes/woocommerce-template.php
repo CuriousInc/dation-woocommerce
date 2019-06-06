@@ -6,7 +6,7 @@
 
 use Dation\Woocommerce\Adapter\OrderManager;
 use Dation\Woocommerce\Adapter\OrderManagerFactory;
-use Dation\Woocommerce\Emails\DWEmailSynchronizingFailed;
+use Dation\Woocommerce\Emails\EmailSyncFailed;
 use SetBased\Rijksregisternummer\Rijksregisternummer;
 use SetBased\Rijksregisternummer\RijksregisternummerHelper;
 
@@ -207,7 +207,6 @@ function dw_send_student_to_dashboard(WC_Order $order) {
     $orderManager->sendToDation($order);
 }
 
-
 /**
  *  Add a custom email to the list of emails WooCommerce should load
  *  Add an action to trigger sending the email
@@ -220,8 +219,7 @@ function dw_add_synchronizing_failed_email($email_classes) {
 	if($email_classes === '') {
 		$email_classes = [];
 	}
-	require(__DIR__ . '/Emails/DW_Email_Synchronizing_Failed.php');
-	$emailClass = new DWEmailSynchronizingFailed();
+	$emailClass = new EmailSyncFailed();
 	// add the email class to the list of email classes that WooCommerce loads
 	$email_classes['DW_Student_Failed_Email'] = $emailClass;
 
