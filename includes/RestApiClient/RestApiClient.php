@@ -73,8 +73,10 @@ class RestApiClient {
 		$issueDateDrivingLicense = $studentData['issueDate'];
 
 		$transformedStudentData = $studentData;
-		$transformedStudentData['dateOfBirth'] = $birthDate->format(self::API_DATE_FORMAT);
-		$transformedStudentData['issueDateCategoryBDrivingLicense '] = $issueDateDrivingLicense->format(self::API_DATE_FORMAT);
+		$transformedStudentData['dateOfBirth'] =
+			$birthDate ? $birthDate->format(self::API_DATE_FORMAT) : null;
+		$transformedStudentData['issueDateCategoryBDrivingLicense '] =
+			$issueDateDrivingLicense ? $issueDateDrivingLicense->format(self::API_DATE_FORMAT) : null;
 
 		unset($transformedStudentData['issueDate']);
 

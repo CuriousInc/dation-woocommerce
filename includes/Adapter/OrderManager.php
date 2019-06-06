@@ -69,7 +69,7 @@ class OrderManager {
 			'id' => get_post_meta($order->get_id(), self::KEY_STUDENT_ID, true),
 			'firstName' => $order->get_billing_first_name(),
 			'lastName' => $order->get_billing_last_name(),
-			'dateOfBirth' => $birthDate,
+			'dateOfBirth' => $birthDate ?: null,
 			'residentialAddress' => [
 				'streetName' => $addressInfo[0],
 				'houseNumber' => $addressInfo[1],//TODO: verify
@@ -79,7 +79,7 @@ class OrderManager {
 			'emailAddress' => $order->get_billing_email(),
 			'mobileNumber' => $order->get_billing_phone(),
 			'nationalRegistryNumber' => get_post_meta($order->get_id(), self::KEY_NATIONAL_REGISTRY_NUMBER, true),
-			'issueDate' => $issueDateDrivingLicense,
+			'issueDate' => $issueDateDrivingLicense ?: null,
 			'comments' => __('Ik rijd enkel met een automaat') . ': ' . __(get_post_meta($order->get_id(), self::KEY_AUTOMATIC_TRANSMISSION, true))
 		];
 	}
