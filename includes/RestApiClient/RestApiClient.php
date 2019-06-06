@@ -65,9 +65,9 @@ class RestApiClient {
 	 *
 	 * @param mixed[] $studentData Associative array of student data, e.g. ['firstName' => 'Piet', ...]
 	 *
-	 * @return \Psr\Http\Message\ResponseInterface Associative array of student data, as returned by the response
+	 * @return mixed[] Associative array of student data, as returned by the response
 	 */
-	public function postStudent(array $studentData) {
+	public function postStudent(array $studentData): array {
 		/** @var DateTime $birthDate */
 		$birthDate = $studentData['dateOfBirth'];
 		/** @var DateTime $issueDateDrivingLicense */
@@ -79,6 +79,8 @@ class RestApiClient {
 
 		unset($transformedStudentData['issueDate']);
 
-		return $this->httpClient->post( 'students', ['form_params' => $transformedStudentData, 'debug' => true]);
+        $response = $this->httpClient->post('students', ['form_params' => $transformedStudentData, 'debug' => true]);
+
+        return \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
 	}
 }

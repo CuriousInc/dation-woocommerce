@@ -4,7 +4,7 @@
  * Template Function Overrides
  */
 
-use Dation\Woocommerce\Adapter\OrderManager;
+use Dation\Woocommerce\Adapter\OrderManagerFactory;
 use SetBased\Rijksregisternummer\Rijksregisternummer;
 use SetBased\Rijksregisternummer\RijksregisternummerHelper;
 
@@ -193,7 +193,7 @@ add_action('woocommerce_order_status_processing', 'dw_woocommerce_order_status_p
 
 function dw_woocommerce_order_status_processing($orderId) {
 	$order = wc_get_order($orderId);
-	$orderManager = new OrderManager();
+	$orderManager = OrderManagerFactory::getManager();
 	$orderManager->procesOrder($order);
 }
 
@@ -208,6 +208,6 @@ function dw_order_meta_box_actions($actions) {
 add_action('woocommerce_order_action_dw_send_student_to_dashboard', 'dw_send_student_to_dashboard');
 
 function dw_send_student_to_dashboard(WC_Order $order) {
-    $orderManager = new OrderManager();
+    $orderManager = OrderManagerFactory::getManager();
     $orderManager->procesOrder($order);
 }

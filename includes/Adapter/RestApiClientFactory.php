@@ -7,7 +7,7 @@ namespace Dation\Woocommerce\Adapter;
 use Dation\Woocommerce\RestApiClient\RestApiClient;
 
 /**
- * The RestApiClientFactory is a service to create a instance of the RestApiClient based on the Wordpress settings
+ * The RestApiClientFactory is a service to create an instance of the RestApiClient based on the Wordpress settings
  */
 class RestApiClientFactory {
 

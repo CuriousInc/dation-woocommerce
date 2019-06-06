@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Dation\Woocommerce\Adapter;
 
+use Dation\Woocommerce\RestApiClient\RestApiClient;
+
 /**
  * The OrderManager is a service responsible synchronizing Woocommerce orders with Dation.
  *
@@ -12,7 +14,14 @@ namespace Dation\Woocommerce\Adapter;
  */
 class OrderManager {
 
-	/**
+    /** @var RestApiClient */
+    private $client;
+
+    public function __construct(RestApiClient $client) {
+        $this->client = $client;
+    }
+
+    /**
 	 * Process Order
 	 *
 	 * This function is called when an order is set to status "Processing".
@@ -23,12 +32,11 @@ class OrderManager {
 	 *
 	 * @param \WC_Order $order
 	 */
-	static public function procesOrder(\WC_Order $order) {
+	public function procesOrder(\WC_Order $order) {
 		try {
-			$client = RestApiClientFactory::getClient();
-			$response = $client->postStudent(OrderManager::getOrderData($order));
+			$student = $this->client->postStudent($this->getStudentDataFromOrder($order));
 
-			$note = __('Leerling gesynchroniseerd met dation'. $response->getBody());
+			$note = __('Leerling gesynchroniseerd met dation') . " (ID: {$student['id']})";
 			$order->add_order_note($note);
 		} catch (\Exception $e) {
 			$note = __('Aanmaken leerling in Dation mislukt: ');
@@ -36,7 +44,7 @@ class OrderManager {
 		}
 	}
 
-	static function getOrderData(\WC_Order $order): array {
+	public function getStudentDataFromOrder(\WC_Order $order): array {
 		$birthDate = \DateTime::createFromFormat(
 			DW_BELGIAN_DATE_FORMAT,
 			get_post_meta($order->get_id(), DW_DATE_OF_BIRTH, true)
