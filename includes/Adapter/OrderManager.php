@@ -6,6 +6,8 @@ namespace Dation\Woocommerce\Adapter;
 
 use Dation\Woocommerce\RestApiClient\RestApiClient;
 
+use GuzzleHttp\Exception\RequestException;
+
 /**
  * The OrderManager is a service responsible synchronizing Woocommerce orders with Dation.
  *
@@ -33,12 +35,19 @@ class OrderManager {
 	 * @param \WC_Order $order
 	 */
 	public function procesOrder(\WC_Order $order) {
+		global $dw_options;
+
 		try {
 			$student = $this->client->postStudent($this->getStudentDataFromOrder($order));
 
-			$note = __('Leerling gesynchroniseerd met dation') . " (ID: {$student['id']})";
+			$link =  '<a target="_blank" href="https://dashboard.dation.nl/' . $dw_options['handle'] . '/leerlingen/'. $student['id'] . '">Dation</a>';
+
+			$note = __("Leerling gesynchroniseerd met $link");
 			$order->add_order_note($note);
-		} catch (\Exception $e) {
+		} catch (\Error $e) {
+			do_action('woocommerce_email_classes');
+			do_action('dw_action_test_email', $order);
+
 			$note = __('Aanmaken leerling in Dation mislukt: ');
 			$order->add_order_note($note . $e->getMessage());
 		}
@@ -70,6 +79,7 @@ class OrderManager {
 			'mobileNumber' => $order->get_billing_phone(),
 			'nationalRegistryNumber' => get_post_meta($order->get_id(), DW_NATIONAL_REGISTRY_NUMBER, true),
 			'issueDate' => $issueDateDrivingLicense,
+			'comments' => 'Ik rijd enkel met een automaat: ' . __(get_post_meta($order->get_id(), DW_AUTOMATIC_TRANSMISSION, true))
 		];
 	}
 }

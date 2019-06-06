@@ -211,3 +211,24 @@ function dw_send_student_to_dashboard(WC_Order $order) {
     $orderManager = OrderManagerFactory::getManager();
     $orderManager->procesOrder($order);
 }
+
+
+/**
+ *  Add a custom email to the list of emails WooCommerce should load
+ *
+ * @since 0.1
+ * @param array $email_classes available email classes
+ * @return array filtered available email classes
+ */
+function dw_add_synchornizing_failed_email( $email_classes ) {
+	if($email_classes === '') {
+		$email_classes = [];
+	}
+	require(__DIR__ . '/emails/DationStudentFailedEmail.php' );
+	// add the email class to the list of email classes that WooCommerce loads
+	$email_classes['DW_Student_Failed_Email'] = new DationStudentFailedEmail();
+
+	return $email_classes;
+
+}
+add_filter( 'woocommerce_email_classes', 'dw_add_synchornizing_failed_email', 10, 1 );
