@@ -74,7 +74,7 @@ class ProductList extends WP_List_Table {
 		global $dw_options;
 		switch ($column_name) {
 			case 'sku':
-				return '<a target="_blank" href="https://dashboard.dation.nl/' . $dw_options['handle'] . '/nascholing/details?id='. $item[$column_name]. '">Openen in Dation</a>';
+				return '<a target="_blank" href="' . DW_BASE_HOST . '/' . $dw_options['handle'] . '/nascholing/details?id='. $item[$column_name]. '">Openen in Dation</a>';
 			case 'id':
 				return '<a target="_blank" href="'. get_edit_post_link($item[$column_name]). '">'. $item['name'] . '</a>';
 			case 'location':
