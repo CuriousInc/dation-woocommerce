@@ -18,16 +18,18 @@ use GuzzleHttp\Client;
  */
 class RestApiClient {
 
-	const BASE_API_URL = 'https://dashboard.dation.nl/api/v1/';
+	const BASE_HOST = 'https://dashboard.dation.nl';
+	const BASE_PATH = '/api/v1/';
+	const BASE_API_URL = self::BASE_HOST . self::BASE_PATH;
 
 	/**
 	 * @var \GuzzleHttp\Client
 	 */
 	protected $httpClient;
 
-	public function __construct(string $apiKey, string $handle) {
+	public function __construct(string $apiKey, string $handle, string $baseUrl = self::BASE_API_URL) {
 		$this->httpClient = new Client([
-			'base_uri' => self::BASE_API_URL,
+			'base_uri' => $baseUrl,
 			'headers'  => [
 				'Authorization'   => "Basic {$apiKey}",
 				'X-Dation-Handle' => $handle
@@ -75,7 +77,7 @@ class RestApiClient {
 
 		unset($transformedStudentData['issueDate']);
 
-		return $this->post('students', $studentData);
+		return $this->post('students', $transformedStudentData);
 	}
 
 	private function get(string $endpoint, array $query) {

@@ -18,6 +18,10 @@ $dw_options = get_option('dw_settings');
 
 const DW_PLUGIN_FILE = __FILE__;
 
+if(!defined('DW_BASE_HOST')) {
+	define('DW_BASE_HOST', 'https://dashboard.dation.nl');
+}
+
 // Includes
 
 require 'vendor/autoload.php';

@@ -24,6 +24,11 @@ class RestApiClientFactory {
     private static function constructClient(): RestApiClient {
         global $dw_options;
 
-        return new RestApiClient($dw_options['api_key'], $dw_options['handle']);
+        if(defined('DW_BASE_HOST')) {
+        	$baseUrl = constant('DW_BASE_HOST') . RestApiClient::BASE_PATH;
+        } else {
+        	$baseUrl = RestApiClient::BASE_API_URL ;
+        }
+        return new RestApiClient($dw_options['api_key'], $dw_options['handle'], $baseUrl);
     }
 }
