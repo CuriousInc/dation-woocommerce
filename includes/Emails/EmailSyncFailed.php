@@ -125,7 +125,7 @@ class EmailSyncFailed extends WC_Email {
 				'default'     => ''
 			),
 			'recipient'  => array(
-				'title'       => 'Recipient(s)',
+				'title'       => __('Recipient(s)'),
 				'type'        => 'text',
 				'description' => sprintf( 'Enter recipients (comma separated) for this email. Defaults to <code>%s</code>.', esc_attr( get_option( 'admin_email' ) ) ),
 				'placeholder' => '',
