@@ -178,7 +178,7 @@ add_action('woocommerce_admin_order_data_after_shipping_address', 'dw_admin_orde
  *
  * @param WC_Order $order
  */
-function dw_admin_order_render_extra_fields($order) {
+function dw_admin_order_render_extra_fields(WC_Order $order) {
 	echo '<p><strong>' . __('Geboortedatum') . ':</strong> <br/>'
 		. get_post_meta($order->get_id(), DW_DATE_OF_BIRTH, true) . '</p>';
 	echo '<p><strong>' . __('Rijksregisternummer') . ':</strong> <br/>'
@@ -191,15 +191,15 @@ function dw_admin_order_render_extra_fields($order) {
 
 add_action('woocommerce_order_status_processing', 'dw_woocommerce_order_status_processing', 10, 1);
 
-function dw_woocommerce_order_status_processing($orderId) {
+function dw_woocommerce_order_status_processing(int $orderId) {
 	$order = wc_get_order($orderId);
 	$orderManager = OrderManagerFactory::getManager();
-	$orderManager->procesOrder($order);
+	$orderManager->sendToDation($order);
 }
 
 add_action('woocommerce_order_actions', 'dw_order_meta_box_actions');
 
-function dw_order_meta_box_actions($actions) {
+function dw_order_meta_box_actions(array $actions): array {
     $actions['dw_send_student_to_dashboard'] = __('Leerling aanmaken in Dation');
 
     return $actions;
@@ -209,7 +209,7 @@ add_action('woocommerce_order_action_dw_send_student_to_dashboard', 'dw_send_stu
 
 function dw_send_student_to_dashboard(WC_Order $order) {
     $orderManager = OrderManagerFactory::getManager();
-    $orderManager->procesOrder($order);
+    $orderManager->sendToDation($order);
 }
 
 
