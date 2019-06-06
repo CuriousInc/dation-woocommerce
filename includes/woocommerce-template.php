@@ -177,10 +177,14 @@ add_action('woocommerce_admin_order_data_after_shipping_address', 'dw_admin_orde
  * @param WC_Order $order
  */
 function dw_admin_order_render_extra_fields($order) {
+	$registryNumber = RijksregisternummerHelper::format(
+		get_post_meta($order->get_id(), DW_NATIONAL_REGISTRY_NUMBER, true)
+	);
+
 	echo '<p><strong>' . __('Geboortedatum') . ':</strong> <br/>'
 		. get_post_meta($order->get_id(), DW_DATE_OF_BIRTH, true) . '</p>';
 	echo '<p><strong>' . __('Rijksregisternummer') . ':</strong> <br/>'
-		. get_post_meta($order->get_id(), DW_NATIONAL_REGISTRY_NUMBER, true) . '</p>';
+		. $registryNumber . '</p>';
 	echo '<p><strong>' . __('Afgiftedatum rijbewijs') . ':</strong> <br/>'
 		. get_post_meta($order->get_id(), DW_ISSUE_DATE_DRIVING_LICENSE, true) . '</p>';
 	echo '<p><strong>' . __('Automaat') . ':</strong> <br/>'
