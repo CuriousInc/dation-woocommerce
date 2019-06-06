@@ -18,9 +18,10 @@ use GuzzleHttp\Client;
  */
 class RestApiClient {
 
-	const BASE_HOST = 'https://dashboard.dation.nl';
-	const BASE_PATH = '/api/v1/';
-	const BASE_API_URL = self::BASE_HOST . self::BASE_PATH;
+	const BASE_HOST       = 'https://dashboard.dation.nl';
+	const BASE_PATH       = '/api/v1/';
+	const BASE_API_URL    = self::BASE_HOST . self::BASE_PATH;
+	const API_DATE_FORMAT = 'Y-m-d';
 
 	/**
 	 * @var \GuzzleHttp\Client
@@ -72,8 +73,8 @@ class RestApiClient {
 		$issueDateDrivingLicense = $studentData['issueDate'];
 
 		$transformedStudentData = $studentData;
-		$transformedStudentData['dateOfBirth'] = $birthDate->format(DW_API_DATE_FORMAT);
-		$transformedStudentData['issueDateCategoryBDrivingLicense '] = $issueDateDrivingLicense->format(DW_API_DATE_FORMAT);
+		$transformedStudentData['dateOfBirth'] = $birthDate->format(self::API_DATE_FORMAT);
+		$transformedStudentData['issueDateCategoryBDrivingLicense '] = $issueDateDrivingLicense->format(self::API_DATE_FORMAT);
 
 		unset($transformedStudentData['issueDate']);
 
