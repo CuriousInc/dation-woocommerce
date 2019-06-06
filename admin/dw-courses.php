@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use Dation\Woocommerce\Admin\ProductList;
@@ -19,4 +20,5 @@ function dw_render_course_page() {
 		<?php $table->display(); ?>
 	</div>
 	<?php
+
 }

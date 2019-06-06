@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -48,7 +49,7 @@ function dw_render_options_page() {
 							<code>https://dashboard.dation.nl/{UWRIJSCHOOLCODE}</code>.
 						</p>
 						<p class="description">
-						Als u uw login-link niet meer weet, of als u nog geen login-link hebt,
+							Als u uw login-link niet meer weet, of als u nog geen login-link hebt,
 							kunt u contact opnemen met de Dation service desk op +31 85 – 2085 205.
 						</p>
 					</td>
@@ -99,4 +100,5 @@ function dw_render_options_page() {
 		</form>
 	</div>
 	<?php
+
 }

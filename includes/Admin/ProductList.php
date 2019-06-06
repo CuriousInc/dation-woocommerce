@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Dation\Woocommerce\Admin;
@@ -8,26 +9,27 @@ use WC_Product_Query;
 use WP_List_Table;
 
 class ProductList extends WP_List_Table {
+
 	public function prepare_items() {
-		$columns = $this->get_columns();
-		$hidden = $this->get_hidden_columns();
+		$columns  = $this->get_columns();
+		$hidden   = $this->get_hidden_columns();
 		$sortable = $this->get_sortable_columns();
 
 		$data = $this->table_data();
 
-		$perPage = 25;
+		$perPage     = 25;
 		$currentPage = $this->get_pageNum();
-		$totalItems = count($data);
+		$totalItems  = count($data);
 
 		$this->set_pagination_args([
 			'total_items' => $totalItems,
-			'per_page' => $perPage
+			'per_page'    => $perPage
 		]);
 
-		$data = array_slice($data, (($currentPage -1) * $perPage), $perPage);
+		$data = array_slice($data, (($currentPage - 1) * $perPage), $perPage);
 
 		$this->_column_headers = [$columns, $hidden, $sortable];
-		$this->items = $data;
+		$this->items           = $data;
 	}
 
 	public function get_columns() {
@@ -53,11 +55,11 @@ class ProductList extends WP_List_Table {
 	}
 
 	private function table_data() {
-		$query = new WC_Product_Query();
+		$query    = new WC_Product_Query();
 		$products = $query->get_products();
-		$data = [];
+		$data     = [];
 		/** @var WC_Product $product */
-		foreach($products as $product) {
+		foreach ($products as $product) {
 			$data[] = [
 				'sku'      => $product->get_sku(),
 				'id'       => $product->get_id(),
@@ -74,9 +76,9 @@ class ProductList extends WP_List_Table {
 		global $dw_options;
 		switch ($column_name) {
 			case 'sku':
-				return '<a target="_blank" href="' . DW_BASE_HOST . '/' . $dw_options['handle'] . '/nascholing/details?id='. $item[$column_name]. '">Openen in Dation</a>';
+				return '<a target="_blank" href="' . DW_BASE_HOST . '/' . $dw_options['handle'] . '/nascholing/details?id=' . $item[$column_name] . '">Openen in Dation</a>';
 			case 'id':
-				return '<a target="_blank" href="'. get_edit_post_link($item[$column_name]). '">'. $item['name'] . '</a>';
+				return '<a target="_blank" href="' . get_edit_post_link($item[$column_name]) . '">' . $item['name'] . '</a>';
 			case 'location':
 				return $item[$column_name];
 			case 'stock':

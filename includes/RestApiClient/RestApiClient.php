@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Dation\Woocommerce\RestApiClient;
 
 use DateTime;
 use GuzzleHttp\Client;
+use function array_merge;
 
 /**
  * The RestApiClient is a service that deals with the communication with the
@@ -59,40 +61,51 @@ class RestApiClient {
 		return $this->get('course-instances', $query) ?? [];
 	}
 
-	/**
-	 * Create a new Student
-	 *
-	 * @param mixed[] $studentData Associative array of student data, e.g. ['firstName' => 'Piet', ...]
-	 *
-	 * @return mixed[] Associative array of student data, as returned by the response
-	 */
-	public function postStudent(array $studentData): array {
-		/** @var DateTime $birthDate */
-		$birthDate = $studentData['dateOfBirth'];
-		/** @var DateTime $issueDateDrivingLicense */
-		$issueDateDrivingLicense = $studentData['issueDate'];
-
-		$transformedStudentData = $studentData;
-		$transformedStudentData['dateOfBirth'] =
-			$birthDate ? $birthDate->format(self::API_DATE_FORMAT) : null;
-		$transformedStudentData['issueDateCategoryBDrivingLicense '] =
-			$issueDateDrivingLicense ? $issueDateDrivingLicense->format(self::API_DATE_FORMAT) : null;
-
-		unset($transformedStudentData['issueDate']);
-
-		return $this->post('students', $transformedStudentData);
-	}
-
 	private function get(string $endpoint, array $query) {
-		$response        = $this->httpClient->get($endpoint, ['query' => $query]);
+		$response = $this->httpClient->get($endpoint, ['query' => $query]);
 
 		return \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
 	}
 
+	/**
+	 * Create a new Student
+	 *
+	 * @param mixed[] $student Associative array of student data, e.g. ['firstName' => 'Piet', ...]
+	 *
+	 * @return mixed[] Associative array of student data, as returned by the response
+	 */
+	public function postStudent(array $student): array {
+		/** @var DateTime $birthDate */
+		$birthDate = $student['dateOfBirth'];
+		/** @var DateTime $issueDateDrivingLicense */
+		$issueDateDrivingLicense = $student['issueDate'];
+
+		$transformedStudent = $student;
+		$transformedStudent['dateOfBirth']
+		                    = $this->dateOrNull($birthDate);
+		$transformedStudent['issueDateCategoryBDrivingLicense']
+		                    = $this->dateOrNull($issueDateDrivingLicense);
+
+		unset($transformedStudent['issueDate']);
+
+		return $this->post('students', $transformedStudent);
+	}
+
 	private function post(string $endpoint, array $data): array {
-		$response = $this->httpClient->post($endpoint, ['form_params' => $data]);
+		$response     = $this->httpClient->post($endpoint, ['form_params' => $data]);
 		$responseData = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
 
-		return \array_merge($data, $responseData);
+		return array_merge($data, $responseData);
 	}
+
+	/**
+	 * dateOrNull${CARET}
+	 *
+	 * @param \DateTime $birthDate
+	 *
+	 * @return string|null
+	 */
+	private function dateOrNull(DateTime $birthDate) {
+		return $birthDate ? $birthDate->format(self::API_DATE_FORMAT) : null;
+}
 }

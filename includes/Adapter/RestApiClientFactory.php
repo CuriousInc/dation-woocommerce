@@ -11,24 +11,25 @@ use Dation\Woocommerce\RestApiClient\RestApiClient;
  */
 class RestApiClientFactory {
 
-    private static $client;
+	private static $client;
 
-    public static function getClient(): RestApiClient {
-        if (null === self::$client) {
-            self::$client = self::constructClient();
-        }
+	public static function getClient(): RestApiClient {
+		if(null === self::$client) {
+			self::$client = self::constructClient();
+		}
 
-        return self::$client;
-    }
+		return self::$client;
+	}
 
-    private static function constructClient(): RestApiClient {
-        global $dw_options;
+	private static function constructClient(): RestApiClient {
+		global $dw_options;
 
-        if(defined('DW_BASE_HOST')) {
-        	$baseUrl = constant('DW_BASE_HOST') . RestApiClient::BASE_PATH;
-        } else {
-        	$baseUrl = RestApiClient::BASE_API_URL ;
-        }
-        return new RestApiClient($dw_options['api_key'], $dw_options['handle'], $baseUrl);
-    }
+		if(defined('DW_BASE_HOST')) {
+			$baseUrl = constant('DW_BASE_HOST') . RestApiClient::BASE_PATH;
+		} else {
+			$baseUrl = RestApiClient::BASE_API_URL;
+		}
+
+		return new RestApiClient($dw_options['api_key'], $dw_options['handle'], $baseUrl);
+	}
 }
