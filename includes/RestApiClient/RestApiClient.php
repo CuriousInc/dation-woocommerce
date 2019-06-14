@@ -1,23 +1,38 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Dation\Woocommerce\RestApiClient;
 
 use DateTime;
 use GuzzleHttp\Client;
+use function array_merge;
 
+/**
+ * The RestApiClient is a service that deals with the communication with the
+ * Dation API.
+ *
+ * It works at the level of functional objects (e.g. students,
+ * course-instances etc.) in contrast to technical details (like
+ * requests, connections, etc.).
+ *
+ * @internal THe actual transport is delegated to a HTTP client
+ */
 class RestApiClient {
 
-	const BASE_API_URL = 'https://dashboard.dation.nl/api/v1/';
+	const BASE_HOST       = 'https://dashboard.dation.nl';
+	const BASE_PATH       = '/api/v1/';
+	const BASE_API_URL    = self::BASE_HOST . self::BASE_PATH;
+	const API_DATE_FORMAT = 'Y-m-d';
 
 	/**
 	 * @var \GuzzleHttp\Client
 	 */
 	protected $httpClient;
 
-	public function __construct(string $apiKey, string $handle) {
+	public function __construct(string $apiKey, string $handle, string $baseUrl = self::BASE_API_URL) {
 		$this->httpClient = new Client([
-			'base_uri' => self::BASE_API_URL,
+			'base_uri' => $baseUrl,
 			'headers'  => [
 				'Authorization'   => "Basic {$apiKey}",
 				'X-Dation-Handle' => $handle
@@ -26,10 +41,12 @@ class RestApiClient {
 	}
 
 	/**
+	 * Search Course Instances
+	 *
 	 * @param DateTime|null $startDateAfter
 	 * @param DateTime|null $startDateBefore
 	 *
-	 * @return mixed[]
+	 * @return mixed[][] Array of Course Instances data (associative array's)
 	 */
 	public function getCourseInstances(DateTime $startDateAfter = null, DateTime $startDateBefore = null): array {
 		// Prepare query
@@ -41,10 +58,54 @@ class RestApiClient {
 			$query['startDateAfter'] = $startDateAfter->format('Y-m-d');
 		}
 
-		// Send request, parse response
-		$response        = $this->httpClient->get('course-instances', ['query' => $query]);
-		$courseInstances = json_decode($response->getBody()->getContents(), true) ?? [];
-
-		return $courseInstances;
+		return $this->get('course-instances', $query) ?? [];
 	}
+
+	private function get(string $endpoint, array $query) {
+		$response = $this->httpClient->get($endpoint, ['query' => $query]);
+
+		return \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+	}
+
+	/**
+	 * Create a new Student
+	 *
+	 * @param mixed[] $student Associative array of student data, e.g. ['firstName' => 'Piet', ...]
+	 *
+	 * @return mixed[] Associative array of student data, as returned by the response
+	 */
+	public function postStudent(array $student): array {
+		/** @var DateTime $birthDate */
+		$birthDate = $student['dateOfBirth'];
+		/** @var DateTime $issueDateDrivingLicense */
+		$issueDateDrivingLicense = $student['issueDate'];
+
+		$transformedStudent = $student;
+		$transformedStudent['dateOfBirth']
+		                    = $this->dateOrNull($birthDate);
+		$transformedStudent['issueDateCategoryBDrivingLicense']
+		                    = $this->dateOrNull($issueDateDrivingLicense);
+
+		unset($transformedStudent['issueDate']);
+
+		return $this->post('students', $transformedStudent);
+	}
+
+	private function post(string $endpoint, array $data): array {
+		$response     = $this->httpClient->post($endpoint, ['form_params' => $data]);
+		$responseData = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+
+		return array_merge($data, $responseData);
+	}
+
+	/**
+	 * dateOrNull${CARET}
+	 *
+	 * @param \DateTime $birthDate
+	 *
+	 * @return string|null
+	 */
+	private function dateOrNull(DateTime $birthDate) {
+		return $birthDate ? $birthDate->format(self::API_DATE_FORMAT) : null;
+}
 }

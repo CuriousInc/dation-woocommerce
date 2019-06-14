@@ -1,5 +1,8 @@
 <?php
+
 declare(strict_types=1);
+
+use Dation\Woocommerce\Adapter\RestApiClientFactory;
 
 const DW_DEFAULT_PRODUCT_PROPERTIES = [
 	'virtual'           => true,
@@ -14,14 +17,12 @@ const DW_DEFAULT_PRODUCT_PROPERTIES = [
  * @throws WC_Data_Exception
  */
 function dw_import_products() {
-	global $dw_options;
-
-	$client = new Dation\Woocommerce\RestApiClient\RestApiClient($dw_options['api_key'], $dw_options['handle']);
+	$client  = RestApiClientFactory::getClient();
 	$courses = $client->getCourseInstances(new DateTime(), null) ?? [];
 
 	$createdProducts = [];
 
-	foreach($courses as $dationProduct) {
+	foreach ($courses as $dationProduct) {
 		if(dw_get_product_by_sku($dationProduct['id']) === null) {
 			$product           = dw_add_woocommerce_product($dationProduct);
 			$createdProducts[] = $product;
@@ -33,7 +34,7 @@ function dw_import_products() {
 
 /**
  * Get product by unique `stock keep unit`.
- * When creating a product, dation course ID is set to the sku of a woocommerce product.
+ * When creating a product, Dation course ID is set to the sku of a woocommerce product.
  * When synchronizing with Dation, we can use this to find Dation courses that are not in Woocommerce
  *
  * @param $sku
@@ -43,7 +44,12 @@ function dw_import_products() {
 function dw_get_product_by_sku($sku) {
 	global $wpdb;
 
-	$productId = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $sku));
+	$productId = $wpdb->get_var(
+		$wpdb->prepare(
+			"SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1",
+			$sku
+		)
+	);
 
 	if($productId) {
 		return new WC_Product($productId);
