@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -9,7 +10,7 @@ declare(strict_types=1);
  * Description: Je website altijd up-to-date met je Dation planning. Importeer je Dation cursussen als Woocommerce producten.
  * Author: Dation
  * Author URI: http://www.dation.nl
- * Version: 1.0.4
+ * Version: 1.1.1
  */
 
 // Global variables
@@ -17,6 +18,10 @@ declare(strict_types=1);
 $dw_options = get_option('dw_settings');
 
 const DW_PLUGIN_FILE = __FILE__;
+
+if(!defined('DW_BASE_HOST')) {
+	define('DW_BASE_HOST', 'https://dashboard.dation.nl');
+}
 
 // Includes
 
@@ -42,5 +47,5 @@ if(is_admin()) {
  * with our own template functions file
  */
 function dw_override_woo_templates() {
-	include 'includes/woocommerce-template.php';
+	require_once 'includes/woocommerce-template.php';
 }
