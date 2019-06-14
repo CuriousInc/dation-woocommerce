@@ -142,7 +142,8 @@ function dw_is_match_national_registry_number_and_birth_date(
 	DateTime $birthDate
 ): bool {
 	$registryNumber = new Rijksregisternummer($registryNumberString);
-	return $registryNumber->getBirthday() === $birthDate->format('Y-m-d');
+	return null === $registryNumber->getBirthday()
+	       || $registryNumber->getBirthday() === $birthDate->format('Y-m-d');
 }
 
 /**
@@ -175,11 +176,15 @@ add_action('woocommerce_admin_order_data_after_shipping_address', 'dw_admin_orde
  *
  * @param WC_Order $order
  */
-function dw_admin_order_render_extra_fields(WC_Order $order) {
+function dw_admin_order_render_extra_fields($order) {
+	$registryNumber = RijksregisternummerHelper::format(
+		get_post_meta($order->get_id(), OrderManager::KEY_NATIONAL_REGISTRY_NUMBER, true)
+	);
+
 	echo '<p><strong>' . __('Geboortedatum') . ':</strong> <br/>'
 		. get_post_meta($order->get_id(), OrderManager::KEY_DATE_OF_BIRTH, true) . '</p>';
 	echo '<p><strong>' . __('Rijksregisternummer') . ':</strong> <br/>'
-		. get_post_meta($order->get_id(), OrderManager::KEY_NATIONAL_REGISTRY_NUMBER, true) . '</p>';
+		. $registryNumber . '</p>';
 	echo '<p><strong>' . __('Afgiftedatum rijbewijs') . ':</strong> <br/>'
 		. get_post_meta($order->get_id(), OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE, true) . '</p>';
 	echo '<p><strong>' . __('Automaat') . ':</strong> <br/>'
