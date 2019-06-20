@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Dation\Woocommerce\RestApiClient;
 
 use DateTime;
+use Dation\Woocommerce\RestApiClient\Model\CourseInstance;
+use Dation\Woocommerce\RestApiClient\Model\CourseInstancePart;
+use Dation\Woocommerce\RestApiClient\Model\CourseInstanceSlot;
 use Dation\Woocommerce\RestApiClient\Model\Student;
 use GuzzleHttp\Client;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -94,5 +97,41 @@ class RestApiClient {
 			'json',
 			['object_to_populate' => $student]
 		);
+	}
+
+	public function getCourseInstance(int $courseInstanceId) {
+		$response = $this->httpClient->get("course-instances/$courseInstanceId", [
+			'headers' => ['Content-Type' => 'application/json'],
+		]);
+		$contents = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+
+		$parts = [];
+		foreach($contents['parts'] as $part) {
+			$slots = [];
+
+			foreach($part['slots'] as $slot) {
+				$slotObject = $this->serializer->deserialize(json_encode($slot), CourseInstanceSlot::class, 'json');
+				$slots[] = $slotObject;
+			}
+
+				$partObject = new CourseInstancePart();
+			$partObject
+				->setName($part['name'])
+				->setCourseInstanceSlots($slots);
+
+			$parts[] = $partObject;
+		}
+
+		$courseInstance = (new CourseInstance())
+			->setId($contents['id'])
+			->setName($contents['name'])
+			->setCode95PracticeHours($contents['code95PracticeHours'])
+			->setCode95TheoryHours($contents['code95TheoryHours'])
+			->setStartDate(DateTime::createFromFormat(\DateTimeInterface::ATOM, $contents['startDate']) ?: null)
+			->setRemainingAttendeeCapacity($contents['remainingAttendeeCapacity'])
+			->setCcvCode($contents['ccvCode'])
+			->setParts($parts);
+
+		return $courseInstance;
 	}
 }
