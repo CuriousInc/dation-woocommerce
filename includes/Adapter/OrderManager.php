@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Dation\Woocommerce\Adapter;
 
 use DateTime;
+use Dation\Woocommerce\RestApiClient\Model\Address;
+use Dation\Woocommerce\RestApiClient\Model\Student;
 use Dation\Woocommerce\RestApiClient\RestApiClient;
 use Throwable;
 use WC_Order;
@@ -39,10 +41,10 @@ class OrderManager {
 	 *
 	 * @param \WC_Order $order
 	 */
-	public function sendToDation(WC_Order $order) {
+	public function sendToDation(WC_Order $order): void {
 		try {
-			$student = $this->getStudentDataFromOrder($order);
-			if(empty($student['id'])) {
+			$student = $this->getStudentFromOrder($order);
+			if(empty($student->getId())) {
 				$student = $this->sendStudentToDation($student);
 				update_post_meta($order->get_id(), self::KEY_STUDENT_ID, $student['id']);
 				$order->add_order_note($this->syncSuccesNote($student));
@@ -56,7 +58,7 @@ class OrderManager {
 		}
 	}
 
-	public function getStudentDataFromOrder(WC_Order $order): array {
+	public function getStudentFromOrder(WC_Order $order): Student {
 		$birthDate = DateTime::createFromFormat(
 			DW_BELGIAN_DATE_FORMAT,
 			get_post_meta($order->get_id(), self::KEY_DATE_OF_BIRTH, true)
@@ -69,37 +71,41 @@ class OrderManager {
 
 		$addressInfo = explode(' ', $order->get_billing_address_1());
 
-		return [
-			'id'                     => get_post_meta($order->get_id(), self::KEY_STUDENT_ID, true),
-			'firstName'              => $order->get_billing_first_name(),
-			'lastName'               => $order->get_billing_last_name(),
-			'dateOfBirth'            => $birthDate ?: null,
-			'residentialAddress'     => [
-				'streetName'  => $addressInfo[0],
-				'houseNumber' => $addressInfo[1],//TODO: verify
-				'postalCode'  => $order->get_billing_postcode(),
-				'city'        => $order->get_billing_city(),
-			],
-			'emailAddress'           => $order->get_billing_email(),
-			'mobileNumber'           => $order->get_billing_phone(),
-			'nationalRegistryNumber' => get_post_meta($order->get_id(), self::KEY_NATIONAL_REGISTRY_NUMBER, true),
-			'issueDate'              => $issueDateDrivingLicense ?: null,
-			'planAsIndependent'      => true,
-			'comments'               => $this->getTransmissionComment($order)
-		];
+		$student = new Student();
+		$student->setId(((int)get_post_meta($order->get_id(), self::KEY_STUDENT_ID, true)) ?: null);
+		$student->setFirstName($order->get_billing_first_name());
+		$student->setLastName($order->get_billing_last_name());
+		$student->setDateOfBirth($birthDate ?: null);
+		$student->setResidentialAddress(
+			(new Address())
+				->setStreetName($addressInfo[0])
+				->setHouseNumber($addressInfo[1])//TODO: verify
+				->setPostalCode($order->get_billing_postcode())
+				->setCity($order->get_billing_city())
+		);
+		$student->setEmail($order->get_billing_email());
+		$student->setPhone($order->get_billing_phone());
+		$student->setNationalRegistryNumber(
+			get_post_meta($order->get_id(), self::KEY_NATIONAL_REGISTRY_NUMBER, true)
+		);
+		$student->setIssueDateCategoryBDrivingLicense($issueDateDrivingLicense ?: null);
+		$student->setPlanAsIndependent(true);
+		$student->setComments($this->getTransmissionComment($order));
+
+		return $student;
 	}
 
-	public function sendStudentToDation(array $student): array {
+	public function sendStudentToDation(Student $student): Student {
 		return $this->client->postStudent($student);
 	}
 
-	private function syncSuccesNote(array $student): string {
+	private function syncSuccesNote(Student $student): string {
 		global $dw_options;
 
 		$link = sprintf('<a target="_blank" href="%s/%s/leerlingen/%s">Dation</a>',
 			DW_BASE_HOST,
 			$dw_options['handle'],
-			$student['id']
+			$student->getId()
 		);
 
 		return sprintf(__('Leerling aangemaakt in %s'), $link);

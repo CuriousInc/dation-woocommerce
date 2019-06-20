@@ -11,11 +11,18 @@
     ],
     "require": {
         "guzzlehttp/guzzle": "^6.3",
-        "setbased/rijksregisternummer": "^0.10.1"
+        "setbased/rijksregisternummer": "^0.10.1",
+        "symfony/serializer": "^4.3",
+        "symfony/property-access": "^4.3"
     },
     "autoload": {
         "psr-4": {
             "Dation\\Woocommerce\\": "includes/"
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "7.2.19"
         }
     }
 }

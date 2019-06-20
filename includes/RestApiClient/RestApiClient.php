@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Dation\Woocommerce\RestApiClient;
 
 use DateTime;
+use Dation\Woocommerce\RestApiClient\Model\Student;
 use GuzzleHttp\Client;
-use function array_merge;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 /**
  * The RestApiClient is a service that deals with the communication with the
@@ -20,15 +23,19 @@ use function array_merge;
  */
 class RestApiClient {
 
-	const BASE_HOST       = 'https://dashboard.dation.nl';
-	const BASE_PATH       = '/api/v1/';
-	const BASE_API_URL    = self::BASE_HOST . self::BASE_PATH;
-	const API_DATE_FORMAT = 'Y-m-d';
+	public const BASE_HOST       = 'https://dashboard.dation.nl';
+	public const BASE_PATH       = '/api/v1/';
+	public const BASE_API_URL    = self::BASE_HOST . self::BASE_PATH;
 
 	/**
 	 * @var \GuzzleHttp\Client
 	 */
 	protected $httpClient;
+
+	/**
+	 * @var \Symfony\Component\Serializer\Serializer
+	 */
+	protected $serializer;
 
 	public function __construct(string $apiKey, string $handle, string $baseUrl = self::BASE_API_URL) {
 		$this->httpClient = new Client([
@@ -38,6 +45,8 @@ class RestApiClient {
 				'X-Dation-Handle' => $handle
 			]
 		]);
+
+		$this->serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
 	}
 
 	/**
@@ -70,42 +79,20 @@ class RestApiClient {
 	/**
 	 * Create a new Student
 	 *
-	 * @param mixed[] $student Associative array of student data, e.g. ['firstName' => 'Piet', ...]
+	 * @param Student $student The student data to post
 	 *
-	 * @return mixed[] Associative array of student data, as returned by the response
+	 * @return Student The same student, augmented with data returned by the API
 	 */
-	public function postStudent(array $student): array {
-		/** @var DateTime $birthDate */
-		$birthDate = $student['dateOfBirth'];
-		/** @var DateTime $issueDateDrivingLicense */
-		$issueDateDrivingLicense = $student['issueDate'];
-
-		$transformedStudent = $student;
-		$transformedStudent['dateOfBirth']
-		                    = $this->dateOrNull($birthDate);
-		$transformedStudent['issueDateCategoryBDrivingLicense']
-		                    = $this->dateOrNull($issueDateDrivingLicense);
-
-		unset($transformedStudent['issueDate']);
-
-		return $this->post('students', $transformedStudent);
+	public function postStudent(Student $student): Student {
+		$response     = $this->httpClient->post('students', [
+			'headers' => ['Content-Type' => 'application/json'],
+			'body' => $this->serializer->serialize($student, 'json')
+		]);
+		return $this->serializer->deserialize(
+			$response->getBody()->getContents(),
+			Student::class,
+			'json',
+			['object_to_populate' => $student]
+		);
 	}
-
-	private function post(string $endpoint, array $data): array {
-		$response     = $this->httpClient->post($endpoint, ['form_params' => $data]);
-		$responseData = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
-
-		return array_merge($data, $responseData);
-	}
-
-	/**
-	 * dateOrNull${CARET}
-	 *
-	 * @param \DateTime $birthDate
-	 *
-	 * @return string|null
-	 */
-	private function dateOrNull(DateTime $birthDate) {
-		return $birthDate ? $birthDate->format(self::API_DATE_FORMAT) : null;
-}
 }
