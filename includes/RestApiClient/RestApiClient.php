@@ -8,6 +8,7 @@ use DateTime;
 use Dation\Woocommerce\RestApiClient\Model\CourseInstance;
 use Dation\Woocommerce\RestApiClient\Model\CourseInstancePart;
 use Dation\Woocommerce\RestApiClient\Model\CourseInstanceSlot;
+use Dation\Woocommerce\RestApiClient\Model\Enrollment;
 use Dation\Woocommerce\RestApiClient\Model\Student;
 use GuzzleHttp\Client;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -114,7 +115,7 @@ class RestApiClient {
 				$slots[] = $slotObject;
 			}
 
-				$partObject = new CourseInstancePart();
+			$partObject = new CourseInstancePart();
 			$partObject
 				->setName($part['name'])
 				->setCourseInstanceSlots($slots);
@@ -133,5 +134,19 @@ class RestApiClient {
 			->setParts($parts);
 
 		return $courseInstance;
+	}
+
+	public function postEnrollment(int $instanceId, Enrollment $enrollment) {
+		$response = $this->httpClient->post("course-instances/$instanceId/enrollments", [
+			'headers' => ['Content-Type' => 'application/json'],
+			'body' => $this->serializer->serialize($enrollment, 'json')
+		]);
+
+		return $this->serializer->deserialize(
+			$response->getBody()->getContents(),
+			Enrollment::class,
+			'json',
+			['object_to_populate' => $enrollment]
+		);
 	}
 }
