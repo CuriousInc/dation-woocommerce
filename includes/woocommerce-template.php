@@ -161,9 +161,20 @@ function dw_checkout_update_order_meta($orderId) {
 
 	foreach($fields as $field) {
 		if(!empty($_POST[$field])) {
-			update_post_meta($orderId, $field, sanitize_text_field($_POST[$field]));
+			update_post_meta($orderId, $field, dw_sanitize_text_field($field, $_POST[$field]));
 		}
 	}
+}
+
+function dw_sanitize_text_field($key, $value) {
+	if($key === OrderManager::KEY_NATIONAL_REGISTRY_NUMBER) {
+		$registryNumber = new Rijksregisternummer($value);
+		$value = $registryNumber->machineFormat();
+	} else {
+		$value = sanitize_text_field($value);
+	}
+
+	return $value;
 }
 
 /**
