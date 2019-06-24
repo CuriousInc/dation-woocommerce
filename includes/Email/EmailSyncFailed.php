@@ -11,7 +11,7 @@ if(!defined('ABSPATH')) {
 	exit;
 }
 
-require_once(ABSPATH . '/wp-content/plugins/woocommerce/includes/emails/class-wc-email.php');
+require_once(WP_PLUGIN_DIR . '/woocommerce/includes/emails/class-wc-email.php');
 
 class EmailSyncFailed extends WC_Email {
 	/**
