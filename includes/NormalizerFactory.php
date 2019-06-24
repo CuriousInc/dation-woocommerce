@@ -12,10 +12,10 @@ class NormalizerFactory {
 	private static $normalizer;
 
 	public static function getNormalizer(): ObjectNormalizer{
-		if(null !== self::$normalizer) {
-			return self::$normalizer;
-		} else {
+		if(null === self::$normalizer) {
 			return self::createNormalizer();
+		} else {
+			return self::$normalizer;
 		}
 	}
 

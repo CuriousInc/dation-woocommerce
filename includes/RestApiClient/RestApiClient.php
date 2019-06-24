@@ -45,7 +45,7 @@ class RestApiClient {
 		$this->httpClient = $httpClient;
 
 		$normalizer = NormalizerFactory::getNormalizer();
-		$this->serializer = new Serializer([new DateTimeNormalizer(), $normalizer, new ArrayDenormalizer()], [new JsonEncoder()]);
+		$this->serializer = new Serializer([new DateTimeNormalizer('Y-m-d'), $normalizer, new ArrayDenormalizer()], [new JsonEncoder()]);
 	}
 
 	public static function constructForKey(string $apiKey, string $baseUrl = self::BASE_API_URL) {
