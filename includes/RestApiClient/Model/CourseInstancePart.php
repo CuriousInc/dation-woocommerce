@@ -8,8 +8,8 @@ class CourseInstancePart {
 	/** @var string $name */
 	private $name;
 
-	/** @var CourseInstanceSlot[] $courseInstanceSlots */
-	private $courseInstanceSlots;
+	/** @var CourseInstanceSlot[] $slots */
+	private $slots;
 
 	/**
 	 * @return string
@@ -18,8 +18,8 @@ class CourseInstancePart {
 		return $this->name;
 	}
 
-	public function getCourseInstanceSlots(): array {
-		return $this->courseInstanceSlots;
+	public function getSlots(): ?array {
+		return $this->slots;
 	}
 
 	public function setName(string $name): CourseInstancePart {
@@ -27,8 +27,8 @@ class CourseInstancePart {
 		return $this;
 	}
 
-	public function setCourseInstanceSlots(array $courseInstanceSlots): CourseInstancePart {
-		$this->courseInstanceSlots = $courseInstanceSlots;
+	public function setSlots(array $slots): CourseInstancePart {
+		$this->slots = $slots;
 		return $this;
 	}
 

@@ -25,7 +25,7 @@ class CourseInstance {
 	/** @var string|null $ccvCode  */
 	private $ccvCode;
 
-	/** @var array $parts*/
+	/** @var CourseInstancePart[] $parts*/
 	private $parts;
 
 	public function getId(): int {

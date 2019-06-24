@@ -44,13 +44,13 @@ class CourseInstanceSlot {
 		return $this;
 	}
 
-	public function setStartDate(string $startDate): CourseInstanceSlot {
-		$this->startDate = \DateTime::createFromFormat(\DateTimeInterface::ATOM, $startDate) ?: null;
+	public function setStartDate(\DateTime $startDate): CourseInstanceSlot {
+		$this->startDate = $startDate;
 		return $this;
 	}
 
-	public function setEndDate(string $endDate): CourseInstanceSlot {
-		$this->endDate = \DateTime::createFromFormat(\DateTimeInterface::ATOM, $endDate) ?: null;
+	public function setEndDate(\DateTime $endDate): CourseInstanceSlot {
+		$this->endDate = $endDate;
 
 		return $this;
 	}

@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Dation\Woocommerce\RestApiClient;
 
 use DateTime;
+use Dation\Woocommerce\NormalizerFactory;
 use Dation\Woocommerce\RestApiClient\Model\CourseInstance;
-use Dation\Woocommerce\RestApiClient\Model\CourseInstancePart;
-use Dation\Woocommerce\RestApiClient\Model\CourseInstanceSlot;
 use Dation\Woocommerce\RestApiClient\Model\Enrollment;
 use Dation\Woocommerce\RestApiClient\Model\Student;
 use GuzzleHttp\Client;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 /**
@@ -50,7 +50,8 @@ class RestApiClient {
 			]
 		]);
 
-		$this->serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
+		$normalizer = NormalizerFactory::getNormalizer();
+		$this->serializer = new Serializer([new DateTimeNormalizer(), $normalizer, new ArrayDenormalizer()], [new JsonEncoder()]);
 	}
 
 	/**
@@ -104,40 +105,12 @@ class RestApiClient {
 		$response = $this->httpClient->get("course-instances/$courseInstanceId", [
 			'headers' => ['Content-Type' => 'application/json'],
 		]);
-		$contents = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
 
-		$parts = [];
-		foreach($contents['parts'] as $part) {
-			$slots = [];
-
-			foreach($part['slots'] as $slot) {
-				$slotObject = $this->serializer->deserialize(json_encode($slot), CourseInstanceSlot::class, 'json');
-				$slots[] = $slotObject;
-			}
-
-			$partObject = new CourseInstancePart();
-			$partObject
-				->setName($part['name'])
-				->setCourseInstanceSlots($slots);
-
-			$parts[] = $partObject;
-		}
-
-		$courseInstance = (new CourseInstance())
-			->setId($contents['id'])
-			->setName($contents['name'])
-			->setCode95PracticeHours($contents['code95PracticeHours'])
-			->setCode95TheoryHours($contents['code95TheoryHours'])
-			->setStartDate(DateTime::createFromFormat(\DateTimeInterface::ATOM, $contents['startDate']) ?: null)
-			->setRemainingAttendeeCapacity($contents['remainingAttendeeCapacity'])
-			->setCcvCode($contents['ccvCode'])
-			->setParts($parts);
-
-		return $courseInstance;
+		return $this->serializer->deserialize($response->getBody(), CourseInstance::class, 'json');
 	}
 
-	public function postEnrollment(int $instanceId, Enrollment $enrollment) {
-		$response = $this->httpClient->post("course-instances/$instanceId/enrollments", [
+	public function postEnrollment(int $courseInstanceId, Enrollment $enrollment) {
+		$response = $this->httpClient->post("course-instances/$courseInstanceId/enrollments", [
 			'headers' => ['Content-Type' => 'application/json'],
 			'body' => $this->serializer->serialize($enrollment, 'json')
 		]);
