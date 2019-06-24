@@ -2,7 +2,7 @@
 Contributors: jvanhengeldationnl
 Requires at least: 5.2
 Tested up to: 5.2
-Stable tag: 5.2
+Stable tag: trunk
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://raw.githubusercontent.com/CuriousInc/dation-woocommerce/master/LICENSE
@@ -27,3 +27,14 @@ The ZIP file has to be uploaded to your wordpress installation.
 In the wp-admin environment, go to Plugins > New Plugin and upload the ZIP file.
 
 After activating the plugin 'Dation' will show up in the side-bar
+
+== Changelog ==
+
+= 1.1.2 =
+* Sanitize Rijksregisternummer
+
+= 1.1 =
+* Create students in Dation from order
+
+= 1.0 =
+* Load courses from Dation as products
