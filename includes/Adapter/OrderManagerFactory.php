@@ -20,8 +20,9 @@ class OrderManagerFactory {
 	}
 
 	private static function constructManager(): OrderManager {
+		global $dw_options;
 		$client = RestApiClientFactory::getClient();
 
-		return new OrderManager($client);
+		return new OrderManager($client, $dw_options['handle']);
 	}
 }

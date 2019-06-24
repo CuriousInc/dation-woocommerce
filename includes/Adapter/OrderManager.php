@@ -24,18 +24,23 @@ use WC_Product;
  */
 class OrderManager {
 
-	const KEY_STUDENT_ID                 = 'dw_student_id';
-	const KEY_ISSUE_DATE_DRIVING_LICENSE = 'Afgiftedatum_Rijbewijs';
-	const KEY_DATE_OF_BIRTH              = 'Geboortedatum';
-	const KEY_NATIONAL_REGISTRY_NUMBER   = 'Rijksregisternummer';
-	const KEY_AUTOMATIC_TRANSMISSION     = 'Automaat';
-	const KEY_ENROLLMENT_ID              = 'dw_has_enrollment';
+	public const KEY_ISSUE_DATE_DRIVING_LICENSE = 'Afgiftedatum_Rijbewijs';
+	public const KEY_DATE_OF_BIRTH              = 'Geboortedatum';
+	public const KEY_NATIONAL_REGISTRY_NUMBER   = 'Rijksregisternummer';
+	public const KEY_AUTOMATIC_TRANSMISSION     = 'Automaat';
+	public const KEY_ENROLLMENT_ID              = 'dw_has_enrollment';
+
+	private const KEY_STUDENT_ID = 'dw_student_id';
 
 	/** @var RestApiClient */
 	private $client;
 
-	public function __construct(RestApiClient $client) {
+	/** @var string */
+	private $handle;
+
+	public function __construct(RestApiClient $client, string $handle) {
 		$this->client = $client;
+		$this->handle = $handle;
 	}
 
 	/**
@@ -88,7 +93,6 @@ class OrderManager {
 	 * @return string
 	 */
 	private function synchronizeEnrollment(WC_Order $order, Student $student) {
-		global $dw_options;
 		if(get_post_meta($order->get_id(), self::KEY_ENROLLMENT_ID, true) === '') {
 			foreach ($order->get_items() as $key => $value) {
 				//What if order has multiple items(products) sold?
@@ -117,7 +121,7 @@ class OrderManager {
 
 			$link = sprintf('<a target="_blank" href="%s/%s/nascholing/details?id=%s">Training</a>',
 				DW_BASE_HOST,
-				$dw_options['handle'],
+				$this->handle,
 				$courseInstanceId
 			);
 
@@ -170,11 +174,9 @@ class OrderManager {
 	}
 
 	private function syncSuccesNote(Student $student): string {
-		global $dw_options;
-
 		$link = sprintf('<a target="_blank" href="%s/%s/leerlingen/%s">Dation</a>',
 			DW_BASE_HOST,
-			$dw_options['handle'],
+			$this->handle,
 			$student->getId()
 		);
 
