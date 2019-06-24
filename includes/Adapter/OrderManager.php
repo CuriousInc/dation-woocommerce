@@ -120,7 +120,14 @@ class OrderManager {
 			}
 
 			$courseInstanceId = (int)$product->get_sku();
-			$courseInstance   = $this->client->getCourseInstance($courseInstanceId);
+			try {
+				$courseInstance   = $this->client->getCourseInstance($courseInstanceId);
+			} catch(ClientException $e) {
+				if($e->hasResponse() && $e->getResponse()->getStatusCode() == 404) {
+					throw new \RuntimeException('Cursus niet gevonden', $e->getCode(), $e);
+				}
+				throw new \RuntimeException('Kan cursus niet laden', $e->getCode(), $e);
+			}
 
 			$enrollment = new Enrollment();
 			$slots      = [];
