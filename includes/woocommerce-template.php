@@ -202,7 +202,7 @@ function dw_woocommerce_order_status_processing(int $orderId) {
 add_action('woocommerce_order_actions', 'dw_order_meta_box_actions');
 
 function dw_order_meta_box_actions(array $actions): array {
-    $actions['dw_send_student_to_dashboard'] = __('Leerling aanmaken in Dation');
+    $actions['dw_send_student_to_dashboard'] = __('Bestelling synchroniseren met Dation');
 
     return $actions;
 }
