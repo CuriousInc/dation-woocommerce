@@ -11,7 +11,8 @@
     ],
     "require": {
         "guzzlehttp/guzzle": "^6.3",
-        "setbased/rijksregisternummer": "^0.10.1"
+        "setbased/rijksregisternummer": "^0.10.1",
+        "ralouphie/getallheaders": "3.0.3 as 2.0.5"
     },
     "autoload": {
         "psr-4": {
