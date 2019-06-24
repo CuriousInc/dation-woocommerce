@@ -53,34 +53,30 @@ class RestApiClientTest extends TestCase {
 	}
 
 	public function testGetCourseInstances(): void {
-		$id1   = $this->faker->randomNumber();
-		$name1 = $this->faker->word;
-
-		$id2   = $this->faker->randomNumber();
-		$name2 = $this->faker->word;
+		$mockCourses = [
+			[
+				'id'   => $this->faker->randomNumber(),
+				'name' => $this->faker->word,
+			],
+			[
+				'id'   => $this->faker->randomNumber(),
+				'name' => $this->faker->word,
+			],
+		];
 
 		$mockHttpClient = $this->mockGuzzle([
-			new Response(200, [], json_encode([
-				[
-					'id' => $id1,
-					'name' => $name1
-				],
-				[
-					'id' => $id2,
-					'name' => $name2
-				],
-			]))
+			new Response(200, [], json_encode($mockCourses))
 		]);
 
 		$client = new RestApiClient($mockHttpClient);
 
 		$courseInstances = $client->getCourseInstances();
 
-		$this->assertEquals($courseInstances[0]['id'], $id1);
-		$this->assertEquals($courseInstances[0]['name'], $name1);
+		$this->assertEquals($mockCourses[0]['id'], $courseInstances[0]['id']);
+		$this->assertEquals($mockCourses[0]['name'], $courseInstances[0]['name']);
 
-		$this->assertEquals($courseInstances[1]['id'], $id2);
-		$this->assertEquals($courseInstances[1]['name'], $name2);
+		$this->assertEquals($mockCourses[1]['id'], $courseInstances[1]['id']);
+		$this->assertEquals($mockCourses[1]['name'], $courseInstances[1]['name']);
 	}
 
 	private function mockGuzzle(array $responseQueue): HttpClient {
