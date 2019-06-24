@@ -12,8 +12,6 @@ use Dation\Woocommerce\Email\EmailSyncFailed;
 use SetBased\Rijksregisternummer\Rijksregisternummer;
 use SetBased\Rijksregisternummer\RijksregisternummerHelper;
 
-const DW_BELGIAN_DATE_FORMAT = 'd.m.Y';
-
 // Register override for checkout and order email
 add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
 add_filter('woocommerce_email_order_meta', 'dw_email_order_render_extra_fields', 10, 3);
@@ -108,7 +106,7 @@ function dw_process_checkout() {
 			!$invalidDate
 			&& !dw_is_match_national_registry_number_and_birth_date(
 				$_POST[OrderManager::KEY_NATIONAL_REGISTRY_NUMBER],
-				DateTime::createFromFormat(DW_BELGIAN_DATE_FORMAT, $_POST[OrderManager::KEY_DATE_OF_BIRTH])
+				DateTime::createFromFormat(OrderManager::BELGIAN_DATE_FORMAT, $_POST[OrderManager::KEY_DATE_OF_BIRTH])
 			)
 		) {
 			wc_add_notice(__('Rijksregsternummer komt niet overeen met geboortedatum'), 'error');
@@ -123,8 +121,8 @@ function dw_process_checkout() {
 }
 
 function dw_is_valid_date(string $input): bool {
-	$dateTime = DateTime::createFromFormat(DW_BELGIAN_DATE_FORMAT, $input);
-	return $dateTime && $dateTime->format(DW_BELGIAN_DATE_FORMAT) === $input;
+	$dateTime = DateTime::createFromFormat(OrderManager::BELGIAN_DATE_FORMAT, $input);
+	return $dateTime && $dateTime->format(OrderManager::BELGIAN_DATE_FORMAT) === $input;
 }
 
 function dw_is_valid_national_registry_number_format(string $registryNumberString): bool {

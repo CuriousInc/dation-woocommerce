@@ -125,8 +125,8 @@ class Student {
 		return $this->issueDateCategoryBDrivingLicense;
 	}
 
-	public function setIssueDateCategoryBDrivingLicense(?DateTime $issueDateCategoryBDrivingLicense): Student {
-		$this->issueDateCategoryBDrivingLicense = $issueDateCategoryBDrivingLicense;
+	public function setIssueDateCategoryBDrivingLicense(?DateTime $issueDate): Student {
+		$this->issueDateCategoryBDrivingLicense = $issueDate;
 
 		return $this;
 	}
