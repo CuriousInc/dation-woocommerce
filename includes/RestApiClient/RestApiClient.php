@@ -41,17 +41,20 @@ class RestApiClient {
 	 */
 	protected $serializer;
 
-	public function __construct(string $apiKey, string $handle, string $baseUrl = self::BASE_API_URL) {
-		$this->httpClient = new Client([
-			'base_uri' => $baseUrl,
-			'headers'  => [
-				'Authorization'   => "Basic {$apiKey}",
-				'X-Dation-Handle' => $handle
-			]
-		]);
+	public function __construct(Client $httpClient) {
+		$this->httpClient = $httpClient;
 
 		$normalizer = NormalizerFactory::getNormalizer();
 		$this->serializer = new Serializer([new DateTimeNormalizer(), $normalizer, new ArrayDenormalizer()], [new JsonEncoder()]);
+	}
+
+	public static function constructForKey(string $apiKey, string $baseUrl = self::BASE_API_URL) {
+		return new static(new Client([
+			'base_uri' => $baseUrl,
+			'headers'  => [
+				'Authorization' => "Basic {$apiKey}",
+			]
+		]));
 	}
 
 	/**

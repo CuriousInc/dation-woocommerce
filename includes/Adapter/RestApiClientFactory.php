@@ -30,6 +30,6 @@ class RestApiClientFactory {
 			$baseUrl = RestApiClient::BASE_API_URL;
 		}
 
-		return new RestApiClient($dw_options['api_key'], $dw_options['handle'], $baseUrl);
+		return RestApiClient::constructForKey($dw_options['api_key'], $baseUrl);
 	}
 }
