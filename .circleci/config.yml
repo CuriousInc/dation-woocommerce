@@ -6,7 +6,22 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Composer install with production libraries
+          name: Composer install
+          command: |
+            set -x
+            docker run --rm --interactive --tty \
+              --volume $(pwd)/:/app \
+                composer install --ignore-platform-reqs --no-scripts --no-progress
+      - run:
+          name: Run tests
+          command: |
+            set -x
+            docker run --rm --interactive --tty \
+              --volume $(pwd)/:/app \
+              -w /app \
+              php:7.2-cli ./vendor/bin/phpunit --bootstrap vendor/autoload.php tests
+      - run:
+          name: Composer remove dev libraries
           command: |
             set -x
             docker run --rm --interactive --tty \
@@ -14,7 +29,7 @@ jobs:
                 composer install --no-dev --ignore-platform-reqs --no-scripts --no-progress
       - run:
           name: Create ZIP file
-          command: zip -r dation-woocommerce.zip . -x *.git* -x *.circleci*
+          command: zip -r dation-woocommerce.zip . -x *.git* -x *.circleci* -x tests
       - store_artifacts:
           path: dation-woocommerce.zip
           destination: dation-woocommerce.zip

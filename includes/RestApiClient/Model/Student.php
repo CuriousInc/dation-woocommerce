@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Dation\Woocommerce\RestApiClient\Model;
 
+use DateTime;
+
 class Student {
 
 	/** @var int|null */
@@ -30,13 +32,13 @@ class Student {
 	/** @var \DateTime|null */
 	protected $issueDateCategoryBDrivingLicense;
 
-	/** @var string */
+	/** @var string|null */
 	protected $nationalRegistryNumber;
 
 	/** @var bool */
-	protected $planAsIndependent;
+	protected $planAsIndependent = false;
 
-	/** @var string */
+	/** @var string|null */
 	protected $comments;
 
 	public function getId(): ?int {
@@ -89,11 +91,11 @@ class Student {
 		return $this;
 	}
 
-	public function getComments(): string {
+	public function getComments(): ?string {
 		return $this->comments;
 	}
 
-	public function setComments(string $comments): Student {
+	public function setComments(?string $comments): Student {
 		$this->comments = $comments;
 
 		return $this;
@@ -109,31 +111,31 @@ class Student {
 		return $this;
 	}
 
-	public function getNationalRegistryNumber(): string {
+	public function getNationalRegistryNumber(): ?string {
 		return $this->nationalRegistryNumber;
 	}
 
-	public function setNationalRegistryNumber(string $nationalRegistryNumber): Student {
+	public function setNationalRegistryNumber(?string $nationalRegistryNumber): Student {
 		$this->nationalRegistryNumber = $nationalRegistryNumber;
 
 		return $this;
 	}
 
-	public function getIssueDateCategoryBDrivingLicense(): ?\DateTime {
+	public function getIssueDateCategoryBDrivingLicense(): ?DateTime {
 		return $this->issueDateCategoryBDrivingLicense;
 	}
 
-	public function setIssueDateCategoryBDrivingLicense(?\DateTime $issueDateCategoryBDrivingLicense): Student {
+	public function setIssueDateCategoryBDrivingLicense(?DateTime $issueDateCategoryBDrivingLicense): Student {
 		$this->issueDateCategoryBDrivingLicense = $issueDateCategoryBDrivingLicense;
 
 		return $this;
 	}
 
-	public function getDateOfBirth(): ?\DateTime {
+	public function getDateOfBirth(): ?DateTime {
 		return $this->dateOfBirth;
 	}
 
-	public function setDateOfBirth(?\DateTime $dateOfBirth): Student {
+	public function setDateOfBirth(?DateTime $dateOfBirth): Student {
 		$this->dateOfBirth = $dateOfBirth;
 
 		return $this;
