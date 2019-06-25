@@ -23,6 +23,6 @@ class OrderManagerFactory {
 		global $dw_options;
 		$client = RestApiClientFactory::getClient();
 
-		return new OrderManager($client, $dw_options['handle']);
+		return new OrderManager($client, $dw_options['handle'], 'get_post_meta', '__');
 	}
 }
