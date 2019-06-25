@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Dation\Woocommerce\RestApiClient\Model\Student;
+use Dation\Woocommerce\Model\Student;
 use Dation\Woocommerce\RestApiClient\RestApiClient;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Handler\MockHandler;
@@ -45,7 +45,7 @@ class RestApiClientTest extends TestCase {
 		]);
 
 		$client = new RestApiClient($mockHttpClient);
-		/** @var \Dation\Woocommerce\RestApiClient\Model\CourseInstance $courseInstance */
+		/** @var \Dation\Woocommerce\Model\CourseInstance $courseInstance */
 		$courseInstance = $client->getCourseInstance($id);
 
 		$this->assertEquals($id, $courseInstance->getId());

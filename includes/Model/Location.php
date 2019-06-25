@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dation\Woocommerce\RestApiClient\Model;
+namespace Dation\Woocommerce\Model;
 
 
 class Location {

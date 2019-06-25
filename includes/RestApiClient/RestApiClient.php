@@ -6,9 +6,9 @@ namespace Dation\Woocommerce\RestApiClient;
 
 use DateTime;
 use Dation\Woocommerce\ObjectNormalizerFactory;
-use Dation\Woocommerce\RestApiClient\Model\CourseInstance;
-use Dation\Woocommerce\RestApiClient\Model\Enrollment;
-use Dation\Woocommerce\RestApiClient\Model\Student;
+use Dation\Woocommerce\Model\CourseInstance;
+use Dation\Woocommerce\Model\Enrollment;
+use Dation\Woocommerce\Model\Student;
 use GuzzleHttp\Client;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;

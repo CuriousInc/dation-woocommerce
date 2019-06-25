@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Dation\Woocommerce\Adapter;
 
 use DateTime;
-use Dation\Woocommerce\RestApiClient\Model\Address;
-use Dation\Woocommerce\RestApiClient\Model\CourseInstancePart;
-use Dation\Woocommerce\RestApiClient\Model\Enrollment;
-use Dation\Woocommerce\RestApiClient\Model\Student;
+use Dation\Woocommerce\Model\Address;
+use Dation\Woocommerce\Model\CourseInstancePart;
+use Dation\Woocommerce\Model\Enrollment;
+use Dation\Woocommerce\Model\Student;
 use Dation\Woocommerce\RestApiClient\RestApiClient;
 use GuzzleHttp\Exception\ClientException;
 use Throwable;
