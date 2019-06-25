@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Dation\Woocommerce\RestApiClient;
 
 use DateTime;
-use Dation\Woocommerce\NormalizerFactory;
+use Dation\Woocommerce\ObjectNormalizerFactory;
 use Dation\Woocommerce\RestApiClient\Model\CourseInstance;
 use Dation\Woocommerce\RestApiClient\Model\Enrollment;
 use Dation\Woocommerce\RestApiClient\Model\Student;
@@ -44,7 +44,7 @@ class RestApiClient {
 	public function __construct(Client $httpClient) {
 		$this->httpClient = $httpClient;
 
-		$normalizer = NormalizerFactory::getNormalizer();
+		$normalizer = ObjectNormalizerFactory::getNormalizer();
 		$this->serializer = new Serializer([new DateTimeNormalizer('Y-m-d'), $normalizer, new ArrayDenormalizer()], [new JsonEncoder()]);
 	}
 

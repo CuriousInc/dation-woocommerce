@@ -7,16 +7,15 @@ use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class NormalizerFactory {
+class ObjectNormalizerFactory {
 	/** @var ObjectNormalizer $normalizer */
 	private static $normalizer;
 
 	public static function getNormalizer(): ObjectNormalizer{
 		if(null === self::$normalizer) {
-			return self::createNormalizer();
-		} else {
-			return self::$normalizer;
+			self::$normalizer = self::createNormalizer();
 		}
+		return self::$normalizer;
 	}
 
 	private static function createNormalizer(): ObjectNormalizer {
