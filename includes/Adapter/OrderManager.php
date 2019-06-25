@@ -68,6 +68,9 @@ class OrderManager {
 
 			$order->add_order_note("{$note}: <code>{$message}</code>");
 		} catch (Throwable $e) {
+			do_action('woocommerce_email_classes');
+			do_action('dw_synchronize_failed_email_action', $order);
+
 			$note = __('Het synchroniseren met Dation is mislukt');
 			$order->add_order_note("{$note}: <code>{$e->getMessage()}</code>");
 		}
