@@ -223,8 +223,8 @@ class OrderManager {
 	 * @return string
 	 */
 	private function getTransmissionComment(WC_Order $order): string {
-		$answer = (bool)$this->postMetaData->getPostMeta($order->get_id(),
-			OrderManager::KEY_AUTOMATIC_TRANSMISSION, true);
+		$answer = $this->postMetaData->getPostMeta($order->get_id(),
+			OrderManager::KEY_AUTOMATIC_TRANSMISSION, true) === 'yes';
 
 		return $this->translator->translate('Ik rijd enkel met een automaat')
 			. ': '

@@ -197,7 +197,7 @@ function dw_admin_order_render_extra_fields($order) {
 	echo '<p><strong>' . __('Afgiftedatum rijbewijs') . ':</strong> <br/>'
 		. get_post_meta($order->get_id(), OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE, true) . '</p>';
 	echo '<p><strong>' . __('Automaat') . ':</strong> <br/>'
-		. (get_post_meta($order->get_id(), OrderManager::KEY_AUTOMATIC_TRANSMISSION, true) ? __('Ja') : __('Nee')) . '</p>';
+		. (get_post_meta($order->get_id(), OrderManager::KEY_AUTOMATIC_TRANSMISSION, true) === 'yes' ? __('Ja') : __('Nee')) . '</p>';
 }
 
 add_action('woocommerce_order_status_processing', 'dw_woocommerce_order_status_processing', 10, 1);
