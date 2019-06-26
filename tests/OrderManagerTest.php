@@ -2,10 +2,16 @@
 
 declare(strict_types=1);
 
+namespace Dation\Tests;
+
 use Dation\Woocommerce\Adapter\OrderManager;
+use Dation\Woocommerce\PostMetaDataInterface;
 use Dation\Woocommerce\RestApiClient\RestApiClient;
+use Dation\WooCommerce\TranslatorInterface;
+use Faker\Factory;
 use GuzzleHttp\Client as HttpClient;
 use PHPUnit\Framework\TestCase;
+use WC_Order;
 
 class OrderManagerTest extends TestCase {
 
@@ -13,7 +19,7 @@ class OrderManagerTest extends TestCase {
 	protected $faker;
 
 	public function setUp(): void {
-		$this->faker = Faker\Factory::create('nl_BE');
+		$this->faker = Factory::create('nl_BE');
 	}
 
 	/**
@@ -38,7 +44,7 @@ class OrderManagerTest extends TestCase {
 		// Mocks
 		$stubApiClient = new RestApiClient(new HttpClient());
 
-		$getPostMeta = $this->mockGetPostMeta([
+		$postMetaData = [
 			$orderId => [
 				'Geboortedatum'          => $dateOfBirth->format('d.m.Y'),
 				'Afgiftedatum_Rijbewijs' => $issueDate->format('d.m.Y'),
@@ -46,13 +52,28 @@ class OrderManagerTest extends TestCase {
 				'Rijksregisternummer'    => $registryNumber,
 				'Automaat'               => $isAutomatic
 			]
-		]);
+		];
 
-		$translate = static function ($s) {
-			return $s;
-		};
+		$translate = $this->getMockBuilder(TranslatorInterface::class)
+			->setMethods(['translate'])
+			->getMock();
+		$translate
+			->method('translate')
+			->willReturnCallback(function($message) {
+				return $message;
+			});
 
-		$manager = new OrderManager($stubApiClient, $this->faker->name(), $getPostMeta, $translate);
+		$postMeta = $this->getMockBuilder(PostMetaDataInterface::class)
+			->setMethods(['getPostMeta'])
+			->getMock();
+
+		$postMeta
+			->method('getPostMeta')
+			->willReturnCallback(function($orderId, $propertyName, $single) use ($postMetaData) {
+				return $postMetaData[$orderId][$propertyName];
+			});
+
+		$manager = new OrderManager($stubApiClient, $this->faker->name(), $postMeta, $translate);
 
 		$order = $this->mockOrder([
 			'get_id'                 => $orderId,
@@ -62,7 +83,7 @@ class OrderManagerTest extends TestCase {
 			'get_billing_postcode'   => $postcode,
 			'get_billing_city'       => $city,
 			'get_billing_email'      => $emailAddress,
-			'get_billing_phone'      => $phoneNumber
+			'get_billing_phone'      => $phoneNumber,
 		]);
 
 		// The actual test
@@ -108,7 +129,7 @@ class OrderManagerTest extends TestCase {
 	 */
 	private function mockOrder(array $replacements) {
 		$orderMockBuilder = $this->getMockBuilder('WC_Order')
-		                         ->setMethods(array_keys($replacements));
+			->setMethods(array_keys($replacements));
 		$order            = $orderMockBuilder->getMock();
 		foreach ($replacements as $methodName => $returnValue) {
 			$order->method($methodName)->willReturn($returnValue);

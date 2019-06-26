@@ -10,6 +10,7 @@ use Dation\Woocommerce\Model\CourseInstance;
 use Dation\Woocommerce\Model\Enrollment;
 use Dation\Woocommerce\Model\Student;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
@@ -90,6 +91,8 @@ class RestApiClient {
 	 * @param Student $student The student data to post
 	 *
 	 * @return Student The same student, augmented with data returned by the API
+	 *
+	 * @throws ClientException
 	 */
 	public function postStudent(Student $student): Student {
 		$response     = $this->httpClient->post('students', [
@@ -109,7 +112,7 @@ class RestApiClient {
 			'headers' => ['Content-Type' => 'application/json'],
 		]);
 
-		return $this->serializer->deserialize($response->getBody(), CourseInstance::class, 'json');
+		return $this->serializer->deserialize($response->getBody()->getContents(), CourseInstance::class, 'json');
 	}
 
 	public function postEnrollment(int $courseInstanceId, Enrollment $enrollment) {

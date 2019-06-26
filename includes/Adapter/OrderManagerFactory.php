@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Dation\Woocommerce\Adapter;
 
+use Dation\Woocommerce\WordpressPostMetaData;
+use Dation\Woocommerce\WordpressTranslator;
+
 /**
  * The OrderManagerFactory is a service to create an instance of OrderManager
  */
@@ -23,6 +26,11 @@ class OrderManagerFactory {
 		global $dw_options;
 		$client = RestApiClientFactory::getClient();
 
-		return new OrderManager($client, $dw_options['handle'], 'get_post_meta', '__');
+		return new OrderManager(
+			$client,
+			$dw_options['handle'],
+			new WordpressPostMetaData(),
+			new WordpressTranslator()
+		);
 	}
 }

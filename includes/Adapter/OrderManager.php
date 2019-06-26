@@ -9,7 +9,9 @@ use Dation\Woocommerce\Model\Address;
 use Dation\Woocommerce\Model\CourseInstancePart;
 use Dation\Woocommerce\Model\Enrollment;
 use Dation\Woocommerce\Model\Student;
+use Dation\Woocommerce\PostMetaDataInterface;
 use Dation\Woocommerce\RestApiClient\RestApiClient;
+use Dation\Woocommerce\TranslatorInterface;
 use GuzzleHttp\Exception\ClientException;
 use Throwable;
 use WC_Order;
@@ -40,22 +42,22 @@ class OrderManager {
 	/** @var string */
 	private $handle;
 
-	/** @var callable */
-	private $getPostMetaCallable;
+	/** @var PostMetaDataInterface */
+	private $postMetaData;
 
-	/** @var callable */
-	protected $translateCallable;
+	/** @var TranslatorInterface */
+	protected $translator;
 
 	public function __construct(
 		RestApiClient $client,
 		string $handle,
-		callable $getPostMeta,
-		callable $translateCallable
+		PostMetaDataInterface $postMetaData,
+		TranslatorInterface $translator
 	) {
 		$this->client              = $client;
 		$this->handle              = $handle;
-		$this->getPostMetaCallable = $getPostMeta;
-		$this->translateCallable = $translateCallable;
+		$this->postMetaData        = $postMetaData;
+		$this->translator          = $translator;
 	}
 
 	/**
@@ -78,7 +80,7 @@ class OrderManager {
 
 			$reason = json_decode($e->getResponse()->getBody()->getContents(), true);
 
-			$note = $this->translate('Het synchroniseren met Dation is mislukt');
+			$note = $this->translator->translate('Het synchroniseren met Dation is mislukt');
 			$message = isset($reason['detail']) ? $reason['detail'] : $reason;
 
 			$order->add_order_note("{$note}: <code>{$message}</code>");
@@ -86,7 +88,7 @@ class OrderManager {
 			do_action('woocommerce_email_classes');
 			do_action('dw_synchronize_failed_email_action', $order);
 
-			$note = $this->translate('Het synchroniseren met Dation is mislukt');
+			$note = $this->translator->translate('Het synchroniseren met Dation is mislukt');
 			$order->add_order_note("{$note}: <code>{$e->getMessage()}</code>");
 		}
 	}
@@ -114,7 +116,7 @@ class OrderManager {
 	 * @return string
 	 */
 	private function synchronizeEnrollment(WC_Order $order, Student $student) {
-		if($this->getPostMeta($order->get_id(), self::KEY_ENROLLMENT_ID, true) === '') {
+		if($this->postMetaData->getPostMeta($order->get_id(), self::KEY_ENROLLMENT_ID, true) === '') {
 			foreach ($order->get_items() as $key => $value) {
 				//What if order has multiple items(products) sold?
 				/** @var WC_Order_Item_Product $value */
@@ -155,25 +157,27 @@ class OrderManager {
 
 			update_post_meta($order->get_id(), self::KEY_ENROLLMENT_ID, true);
 
-			$order->add_order_note(sprintf($this->translate('Leerling ingeschreven op %s'), $link));
+			$order->add_order_note(sprintf($this->translator->translate('Leerling ingeschreven op %s'), $link));
 		}
 	}
 
 	public function getStudentFromOrder(WC_Order $order): Student {
 		$birthDate = DateTime::createFromFormat(
 			self::BELGIAN_DATE_FORMAT,
-			$this->getPostMeta($order->get_id(), self::KEY_DATE_OF_BIRTH, true)
+			$this->postMetaData->getPostMeta($order->get_id(), self::KEY_DATE_OF_BIRTH, true)
 		);
 
 		$issueDateLicense = DateTime::createFromFormat(
 			self::BELGIAN_DATE_FORMAT,
-			$this->getPostMeta($order->get_id(), self::KEY_ISSUE_DATE_DRIVING_LICENSE, true)
+			$this->postMetaData->getPostMeta($order->get_id(), self::KEY_ISSUE_DATE_DRIVING_LICENSE, true)
 		);
 
 		$addressInfo = explode(' ', $order->get_billing_address_1());
 
 		$student = new Student();
-		$student->setId(((int)$this->getPostMeta($order->get_id(), self::KEY_STUDENT_ID, true)) ?: null);
+		$student->setId(
+			(int)$this->postMetaData->getPostMeta($order->get_id(), self::KEY_STUDENT_ID, true)
+			?: null);
 		$student->setFirstName($order->get_billing_first_name());
 		$student->setLastName($order->get_billing_last_name());
 		$student->setDateOfBirth($birthDate ? $birthDate->setTime(0,0): null);
@@ -187,7 +191,7 @@ class OrderManager {
 		$student->setEmail($order->get_billing_email());
 		$student->setPhone($order->get_billing_phone());
 		$student->setNationalRegistryNumber(
-			$this->getPostMeta($order->get_id(), self::KEY_NATIONAL_REGISTRY_NUMBER, true)
+			$this->postMetaData->getPostMeta($order->get_id(), self::KEY_NATIONAL_REGISTRY_NUMBER, true)
 		);
 		$student->setIssueDateCategoryBDrivingLicense(
 			$issueDateLicense ? $issueDateLicense->setTime(0,0) : null);
@@ -208,7 +212,7 @@ class OrderManager {
 			$student->getId()
 		);
 
-		return sprintf($this->translate('Leerling aangemaakt in %s'), $link);
+		return sprintf($this->translator->translate('Leerling aangemaakt in %s'), $link);
 	}
 
 	/**
@@ -219,17 +223,11 @@ class OrderManager {
 	 * @return string
 	 */
 	private function getTransmissionComment(WC_Order $order): string {
-		$answer = (bool)$this->getPostMeta($order->get_id(),
+		$answer = (bool)$this->postMetaData->getPostMeta($order->get_id(),
 			OrderManager::KEY_AUTOMATIC_TRANSMISSION, true);
 
-		return $this->translate('Ik rijd enkel met een automaat') . ': ' . ($answer ? $this->translate('Ja') : $this->translate('Nee'));
-	}
-
-	private function getPostMeta(int $postId, string $metaKey, bool $single) {
-		return call_user_func($this->getPostMetaCallable, $postId, $metaKey, $single);
-	}
-
-	private function translate(string $string) {
-		return call_user_func($this->translateCallable, $string);
+		return $this->translator->translate('Ik rijd enkel met een automaat')
+			. ': '
+			. ($answer ? $this->translator->translate('Ja') : $this->translator->translate('Nee'));
 	}
 }
