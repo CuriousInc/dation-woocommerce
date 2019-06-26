@@ -5,4 +5,4 @@ if(!defined('ABSPATH')) {
 }
 
 echo "Het is niet gelukt om leerling $studentName te synchroniseren met Dation. \n\n";
-echo "Ga naar de Orderdetails voor meer informatie: $link";
+echo "Ga naar de details van de bestelling voor meer informatie: $link";

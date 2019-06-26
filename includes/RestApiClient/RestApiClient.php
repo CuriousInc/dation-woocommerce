@@ -5,8 +5,16 @@ declare(strict_types=1);
 namespace Dation\Woocommerce\RestApiClient;
 
 use DateTime;
+use Dation\Woocommerce\ObjectNormalizerFactory;
+use Dation\Woocommerce\Model\CourseInstance;
+use Dation\Woocommerce\Model\Enrollment;
+use Dation\Woocommerce\Model\Student;
 use GuzzleHttp\Client;
-use function array_merge;
+use GuzzleHttp\Exception\ClientException;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 /**
  * The RestApiClient is a service that deals with the communication with the
@@ -20,24 +28,34 @@ use function array_merge;
  */
 class RestApiClient {
 
-	const BASE_HOST       = 'https://dashboard.dation.nl';
-	const BASE_PATH       = '/api/v1/';
-	const BASE_API_URL    = self::BASE_HOST . self::BASE_PATH;
-	const API_DATE_FORMAT = 'Y-m-d';
+	public const BASE_HOST       = 'https://dashboard.dation.nl';
+	public const BASE_PATH       = '/api/v1/';
+	public const BASE_API_URL    = self::BASE_HOST . self::BASE_PATH;
 
 	/**
 	 * @var \GuzzleHttp\Client
 	 */
 	protected $httpClient;
 
-	public function __construct(string $apiKey, string $handle, string $baseUrl = self::BASE_API_URL) {
-		$this->httpClient = new Client([
+	/**
+	 * @var \Symfony\Component\Serializer\Serializer
+	 */
+	protected $serializer;
+
+	public function __construct(Client $httpClient) {
+		$this->httpClient = $httpClient;
+
+		$normalizer = ObjectNormalizerFactory::getNormalizer();
+		$this->serializer = new Serializer([new DateTimeNormalizer('Y-m-d'), $normalizer, new ArrayDenormalizer()], [new JsonEncoder()]);
+	}
+
+	public static function constructForKey(string $apiKey, string $baseUrl = self::BASE_API_URL) {
+		return new static(new Client([
 			'base_uri' => $baseUrl,
 			'headers'  => [
-				'Authorization'   => "Basic {$apiKey}",
-				'X-Dation-Handle' => $handle
+				'Authorization' => "Basic {$apiKey}",
 			]
-		]);
+		]));
 	}
 
 	/**
@@ -70,42 +88,44 @@ class RestApiClient {
 	/**
 	 * Create a new Student
 	 *
-	 * @param mixed[] $student Associative array of student data, e.g. ['firstName' => 'Piet', ...]
+	 * @param Student $student The student data to post
 	 *
-	 * @return mixed[] Associative array of student data, as returned by the response
+	 * @return Student The same student, augmented with data returned by the API
+	 *
+	 * @throws ClientException
 	 */
-	public function postStudent(array $student): array {
-		/** @var DateTime $birthDate */
-		$birthDate = $student['dateOfBirth'];
-		/** @var DateTime $issueDateDrivingLicense */
-		$issueDateDrivingLicense = $student['issueDate'];
-
-		$transformedStudent = $student;
-		$transformedStudent['dateOfBirth']
-		                    = $this->dateOrNull($birthDate);
-		$transformedStudent['issueDateCategoryBDrivingLicense']
-		                    = $this->dateOrNull($issueDateDrivingLicense);
-
-		unset($transformedStudent['issueDate']);
-
-		return $this->post('students', $transformedStudent);
+	public function postStudent(Student $student): Student {
+		$response     = $this->httpClient->post('students', [
+			'headers' => ['Content-Type' => 'application/json'],
+			'body' => $this->serializer->serialize($student, 'json')
+		]);
+		return $this->serializer->deserialize(
+			$response->getBody()->getContents(),
+			Student::class,
+			'json',
+			['object_to_populate' => $student]
+		);
 	}
 
-	private function post(string $endpoint, array $data): array {
-		$response     = $this->httpClient->post($endpoint, ['json' => $data]);
-		$responseData = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+	public function getCourseInstance(int $courseInstanceId) {
+		$response = $this->httpClient->get("course-instances/$courseInstanceId", [
+			'headers' => ['Content-Type' => 'application/json'],
+		]);
 
-		return array_merge($data, $responseData);
+		return $this->serializer->deserialize($response->getBody()->getContents(), CourseInstance::class, 'json');
 	}
 
-	/**
-	 * dateOrNull${CARET}
-	 *
-	 * @param \DateTime $birthDate
-	 *
-	 * @return string|null
-	 */
-	private function dateOrNull(DateTime $birthDate) {
-		return $birthDate ? $birthDate->format(self::API_DATE_FORMAT) : null;
-}
+	public function postEnrollment(int $courseInstanceId, Enrollment $enrollment) {
+		$response = $this->httpClient->post("course-instances/$courseInstanceId/enrollments", [
+			'headers' => ['Content-Type' => 'application/json'],
+			'body' => $this->serializer->serialize($enrollment, 'json')
+		]);
+
+		return $this->serializer->deserialize(
+			$response->getBody()->getContents(),
+			Enrollment::class,
+			'json',
+			['object_to_populate' => $enrollment]
+		);
+	}
 }

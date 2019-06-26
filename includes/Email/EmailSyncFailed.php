@@ -25,7 +25,7 @@ class EmailSyncFailed extends WC_Email {
 		$this->customer_email = false;
 
 		// Description field in WooCommerce email settings
-		$this->description    = __( 'Email die gestuurd wordt op het moment dat een leerling niet kan worden toegevoegd aan Dation Dashboard' );
+		$this->description    = __( 'Email die gestuurd wordt op het moment dat een bestelling niet kan worden gesynchroniseerd met Dation Dashboard' );
 
 		// Default heading and subject lines in WooCommerce email settings
 		$this->subject        = apply_filters( 'dation_student_failed_email_default_subject', __( 'Synchroniseren mislukt' ) );
