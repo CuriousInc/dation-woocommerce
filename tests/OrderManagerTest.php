@@ -91,8 +91,8 @@ class OrderManagerTest extends TestCase {
 
 		$this->assertEquals($firstName, $student->getFirstName());
 		$this->assertEquals($lastName, $student->getLastName());
-		$this->assertEquals($emailAddress, $student->getEmail());
-		$this->assertEquals($phoneNumber, $student->getPhone());
+		$this->assertEquals($emailAddress, $student->getEmailAddress());
+		$this->assertEquals($phoneNumber, $student->getMobileNumber());
 		$this->assertEquals($city, $student->getResidentialAddress()->getCity());
 		$this->assertEquals($postcode, $student->getResidentialAddress()->getPostalCode());
 		$this->assertEquals($streetName, $student->getResidentialAddress()->getStreetName());
