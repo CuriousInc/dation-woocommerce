@@ -1,16 +1,37 @@
 version: 2
+
+references:
+  container_config: &container_config
+    docker:
+      - image: circleci/php:7.2
+    working_directory: ~/dation-woocommerce
+
+  workspace_root: &workspace_root
+    /tmp
+
+  attach_workspace: &attach_workspace
+    attach_workspace:
+      at: *workspace_root
+
 jobs:
   # Job 'build': create zip file for install
   build:
-    docker:
-      - image: circleci/php:7.2
+    <<: *container_config
     steps:
       - checkout
       - run:
-          name: Composer install
+          name: Install dependencies with Composer
           command: |
             set -x
-            composer install --ignore-platform-reqs --no-scripts --no-progress
+            composer install --no-dev --ignore-platform-reqs --no-scripts --no-progress
+      - persist_to_workspace:
+          root: .
+          paths:
+            - vendor
+
+  test:
+    <<: *container_config
+      - *attach_workspace
       - run:
           name: Run tests
           command: |
@@ -20,10 +41,25 @@ jobs:
           name: Composer remove dev libraries
           command: |
             set -x
-            composer install --no-dev --ignore-platform-reqs --no-scripts --no-progress
-      - run:
-          name: Create ZIP file
-          command: zip -r dation-woocommerce.zip . -x *.git* -x *.circleci* -x tests
-      - store_artifacts:
-          path: dation-woocommerce.zip
-          destination: dation-woocommerce.zip
+            composer install --ignore-platform-reqs --no-scripts --no-progress
+
+  package:
+    <<: *container_config
+    - *attach_workspace
+    - run:
+        name: Create ZIP file
+        command: zip -r dation-woocommerce.zip . -x *.git* -x *.circleci* -x tests
+    - store_artifacts:
+        path: dation-woocommerce.zip
+        destination: dation-woocommerce.zip
+
+workflows:
+  version: 2
+    build_test_deploy:
+      - build
+      - test:
+          requires:
+            - build
+      - package:
+          requires:
+            - test
