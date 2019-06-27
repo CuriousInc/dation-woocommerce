@@ -7,7 +7,7 @@ references:
     working_directory: ~/dation-woocommerce
 
   workspace_root: &workspace_root
-    /tmp
+    ~/dation-woocommerce
 
   attach_workspace: &attach_workspace
     attach_workspace:
