@@ -4,7 +4,22 @@ PLUGIN_BUILD_FILES=(LICENSE dation-woocommerce.php readme.txt)
 PLUGIN_BUILD_PATH="/tmp/build"
 PLUGIN_SVN_PATH="/tmp/svn"
 
-LATEST_SVN_TAG="v1.0.4"
+# Figure out the most recent git tag
+LATEST_GIT_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+# Remove the "v" at the beginning of the git tag
+LATEST_SVN_TAG=${LATEST_GIT_TAG:1}
+
+# Check if the latest SVN tag exists already
+TAG=$(svn ls "https://plugins.svn.wordpress.org/$WP_ORG_PLUGIN_NAME/tags/$LATEST_SVN_TAG")
+error=$?
+if [ $error == 0 ]; then
+    # Tag exists, don't deploy
+    echo "Latest tag ($LATEST_SVN_TAG) already exists on the WordPress directory. No deployment needed!"
+    exit 0
+fi
+
+# Checkout the git tag
+git checkout tags/$LATEST_GIT_TAG
 
 # Create the build directory
 mkdir $PLUGIN_BUILD_PATH
