@@ -32,6 +32,7 @@ jobs:
   test:
     <<: *container_config
     steps:
+      - checkout
       - *attach_workspace
       - run:
           name: Install test depedencies with Composer
@@ -47,13 +48,14 @@ jobs:
   package:
     <<: *container_config
     steps:
-    - *attach_workspace
-    - run:
-        name: Create ZIP file
-        command: zip -r dation-woocommerce.zip . -x *.git* -x *.circleci* -x tests
-    - store_artifacts:
-        path: dation-woocommerce.zip
-        destination: dation-woocommerce.zip
+      - checkout
+      - *attach_workspace
+      - run:
+          name: Create ZIP file
+          command: zip -r dation-woocommerce.zip . -x *.git* -x *.circleci* -x tests
+      - store_artifacts:
+          path: dation-woocommerce.zip
+          destination: dation-woocommerce.zip
 
 workflows:
   version: 2
