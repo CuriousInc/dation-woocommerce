@@ -1,5 +1,8 @@
 version: 2
 
+# This configuration is largely inspired by Carl Alexander's article
+# https://carlalexander.ca/continuous-deployment-wordpress-directory-circleci/
+
 references:
   WP_ORG_PLUGIN_NAME: &WP_ORG_PLUGIN_NAME
     dation-woocommerce
