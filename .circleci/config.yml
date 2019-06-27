@@ -34,15 +34,15 @@ jobs:
     steps:
       - *attach_workspace
       - run:
+          name: Install test depedencies with Composer
+          command: |
+            set -x
+            composer install --ignore-platform-reqs --no-scripts --no-progress
+      - run:
           name: Run tests
           command: |
             set -x
             ./vendor/bin/phpunit --bootstrap vendor/autoload.php tests
-      - run:
-          name: Composer remove dev libraries
-          command: |
-            set -x
-            composer install --ignore-platform-reqs --no-scripts --no-progress
 
   package:
     <<: *container_config
