@@ -28,9 +28,9 @@ use Symfony\Component\Serializer\Serializer;
  */
 class RestApiClient {
 
-	public const BASE_HOST       = 'https://dashboard.dation.nl';
-	public const BASE_PATH       = '/api/v1/';
-	public const BASE_API_URL    = self::BASE_HOST . self::BASE_PATH;
+	const BASE_HOST       = 'https://dashboard.dation.nl';
+	const BASE_PATH       = '/api/v1/';
+	const BASE_API_URL    = self::BASE_HOST . self::BASE_PATH;
 
 	/**
 	 * @var \GuzzleHttp\Client

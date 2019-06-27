@@ -26,15 +26,15 @@ use WC_Product;
  */
 class OrderManager {
 
-	public const KEY_ISSUE_DATE_DRIVING_LICENSE = 'Afgiftedatum_Rijbewijs';
-	public const KEY_DATE_OF_BIRTH              = 'Geboortedatum';
-	public const KEY_NATIONAL_REGISTRY_NUMBER   = 'Rijksregisternummer';
-	public const KEY_AUTOMATIC_TRANSMISSION     = 'Automaat';
-	public const KEY_ENROLLMENT_ID              = 'dw_has_enrollment';
+	const KEY_ISSUE_DATE_DRIVING_LICENSE = 'Afgiftedatum_Rijbewijs';
+	const KEY_DATE_OF_BIRTH              = 'Geboortedatum';
+	const KEY_NATIONAL_REGISTRY_NUMBER   = 'Rijksregisternummer';
+	const KEY_AUTOMATIC_TRANSMISSION     = 'Automaat';
+	const KEY_ENROLLMENT_ID              = 'dw_has_enrollment';
 
-	public const BELGIAN_DATE_FORMAT = 'd.m.Y';
+	const BELGIAN_DATE_FORMAT = 'd.m.Y';
 
-	private const KEY_STUDENT_ID = 'dw_student_id';
+	const KEY_STUDENT_ID = 'dw_student_id';
 
 	/** @var RestApiClient */
 	private $client;
