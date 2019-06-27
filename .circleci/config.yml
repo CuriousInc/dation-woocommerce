@@ -95,5 +95,9 @@ workflows:
           requires:
             - test
       - deploy_plugin:
+          filters:
+            branches:
+              only:
+                - master
           requires:
             - test
