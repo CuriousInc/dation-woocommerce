@@ -31,6 +31,7 @@ jobs:
 
   test:
     <<: *container_config
+    steps:
       - *attach_workspace
       - run:
           name: Run tests
@@ -45,6 +46,7 @@ jobs:
 
   package:
     <<: *container_config
+    steps:
     - *attach_workspace
     - run:
         name: Create ZIP file
