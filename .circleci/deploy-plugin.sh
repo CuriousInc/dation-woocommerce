@@ -4,7 +4,6 @@ PLUGIN_BUILD_FILES=(LICENSE dation-woocommerce.php readme.txt)
 PLUGIN_BUILD_PATH="/tmp/build"
 PLUGIN_SVN_PATH="/tmp/svn"
 
-WP_ORG_PLUGIN_NAME="dation-woocommerce"
 LATEST_SVN_TAG="v1.0.4"
 
 # Create the build directory

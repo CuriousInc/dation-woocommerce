@@ -1,9 +1,14 @@
 version: 2
 
 references:
+  WP_ORG_PLUGIN_NAME: &WP_ORG_PLUGIN_NAME
+    dation-woocommerce
+
   container_config: &container_config
     docker:
       - image: circleci/php:7.2
+    environment:
+      - WP_ORG_PLUGIN_NAME: *WP_ORG_PLUGIN_NAME
     working_directory: ~/dation-woocommerce
 
   workspace_root: &workspace_root
