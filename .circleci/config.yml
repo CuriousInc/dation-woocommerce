@@ -26,6 +26,22 @@ references:
        name: Install subversion
        command: sudo apt-get install subversion
 
+  phpunit_job: &phpunit_job
+    <<: *container_config
+    steps:
+      - checkout
+      - *attach_workspace
+      - run:
+          name: Install test depedencies with Composer
+          command: |
+            set -x
+            composer install --ignore-platform-reqs --no-scripts --no-progress
+      - run:
+          name: Run tests
+          command: |
+            set -x
+            ./vendor/bin/phpunit --bootstrap vendor/autoload.php tests
+
 jobs:
   # Build dependencies
   build:
@@ -42,22 +58,17 @@ jobs:
           paths:
             - vendor
 
-  # Unit tests
-  test:
-    <<: *container_config
-    steps:
-      - checkout
-      - *attach_workspace
-      - run:
-          name: Install test depedencies with Composer
-          command: |
-            set -x
-            composer install --ignore-platform-reqs --no-scripts --no-progress
-      - run:
-          name: Run tests
-          command: |
-            set -x
-            ./vendor/bin/phpunit --bootstrap vendor/autoload.php tests
+  # Unit tests for PHP version 7.0 (Wordpress Plugin Directory environment)
+  test_php70:
+    <<: *phpunit_job
+    docker:
+      - image: circleci/php:7.0
+
+  # Unit tests for PHP version 7.2 (Wordpress.com environment)
+  test_php72:
+    <<: *phpunit_job
+    docker:
+      - image: circleci/php:7.2
 
   # Create ZIP file for manual install
   package:
@@ -88,16 +99,21 @@ workflows:
   build_test_deploy:
     jobs:
       - build
-      - test:
+      - test_php70:
+          requires:
+            - build
+      - test_php72:
           requires:
             - build
       - package:
           requires:
-            - test
+            - test_php70
+            - test_php72
       - deploy_plugin:
           filters:
             branches:
               only:
                 - master
           requires:
-            - test
+            - test_php70
+            - test_php72
