@@ -2,7 +2,8 @@ version: 2
 jobs:
   # Job 'build': create zip file for install
   build:
-    machine: true
+    docker:
+      - image: circleci/php:7.2
     steps:
       - checkout
       - run:
