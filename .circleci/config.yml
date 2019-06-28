@@ -59,6 +59,18 @@ jobs:
             set -x
             ./vendor/bin/phpunit --bootstrap vendor/autoload.php tests
 
+  # Lint ALL php files, for the Wordpress directory blocks invalid PHP 7.0 syntax
+  lint_php70:
+    <<: *container_config
+    docker:
+      - image: circleci/php:7.0
+    steps:
+      - checkout
+      - *attach_workspace
+      - run:
+          name: Lint PHP files for PHP version 7.0
+          command: .circleci/deploy-plugin.sh
+
   # Create ZIP file for manual install
   package:
     <<: *container_config
@@ -91,6 +103,9 @@ workflows:
       - test:
           requires:
             - build
+      - lint_php70:
+          requires:
+            - build
       - package:
           requires:
             - test
@@ -101,3 +116,4 @@ workflows:
                 - master
           requires:
             - test
+            - lint_php70
