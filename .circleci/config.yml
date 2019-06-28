@@ -68,7 +68,7 @@ jobs:
       - checkout
       - *attach_workspace
       - run:
-          name: Lint PHP files for PHP version 7.0
+          name: Lint PHP files for PHP version 7.1
           command: .circleci/phplint.sh
 
   # Create ZIP file for manual install
