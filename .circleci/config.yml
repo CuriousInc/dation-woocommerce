@@ -103,12 +103,13 @@ workflows:
       - test:
           requires:
             - build
-      - lint_php70:
+      - lint_php71:
           requires:
             - build
       - package:
           requires:
             - test
+            - lint_php71
       - deploy_plugin:
           filters:
             branches:
@@ -116,4 +117,4 @@ workflows:
                 - master
           requires:
             - test
-            - lint_php70
+            - lint_php71
