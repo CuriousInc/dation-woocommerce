@@ -69,7 +69,7 @@ jobs:
       - *attach_workspace
       - run:
           name: Lint PHP files for PHP version 7.0
-          command: .circleci/deploy-plugin.sh
+          command: .circleci/phplint.sh
 
   # Create ZIP file for manual install
   package:
