@@ -110,11 +110,12 @@ workflows:
           requires:
             - test
             - lint_php71
-      - deploy_plugin:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - test
-            - lint_php71
+# The plugin requires PHP 7.1, the Directory linter requires 7.0 syntax
+#      - deploy_plugin:
+#          filters:
+#            branches:
+#              only:
+#                - master
+#          requires:
+#            - test
+#            - lint_php71
