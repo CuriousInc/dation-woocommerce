@@ -14,6 +14,7 @@ use Dation\Woocommerce\RestApiClient\RestApiClient;
 use Dation\Woocommerce\TranslatorInterface;
 use GuzzleHttp\Exception\ClientException;
 use Throwable;
+use VIISON\AddressSplitter\AddressSplitter;
 use WC_Order;
 use WC_Order_Item_Product;
 use WC_Product;
@@ -172,8 +173,6 @@ class OrderManager {
 			$this->postMetaData->getPostMeta($order->get_id(), self::KEY_ISSUE_DATE_DRIVING_LICENSE, true)
 		);
 
-		$addressInfo = explode(' ', $order->get_billing_address_1());
-
 		$student = new Student();
 		$student->setId(
 			(int)$this->postMetaData->getPostMeta($order->get_id(), self::KEY_STUDENT_ID, true)
@@ -181,13 +180,7 @@ class OrderManager {
 		$student->setFirstName($order->get_billing_first_name());
 		$student->setLastName($order->get_billing_last_name());
 		$student->setDateOfBirth($birthDate ? $birthDate->setTime(0,0): null);
-		$student->setResidentialAddress(
-			(new Address())
-				->setStreetName($addressInfo[0])
-				->setHouseNumber($addressInfo[1])//TODO: verify
-				->setPostalCode($order->get_billing_postcode())
-				->setCity($order->get_billing_city())
-		);
+		$student->setResidentialAddress($this->getAddressFromOrder($order));
 		$student->setEmailAddress($order->get_billing_email());
 		$student->setMobileNumber($order->get_billing_phone());
 		$student->setNationalRegistryNumber(
@@ -199,6 +192,27 @@ class OrderManager {
 		$student->setComments($this->getTransmissionComment($order));
 
 		return $student;
+	}
+
+	/**
+	 * Gets the residential address from the order.
+	 *
+	 * @param WC_Order $order
+	 *
+	 * @return Address
+	 */
+	private function getAddressFromOrder(WC_Order $order): Address {
+		$address              = AddressSplitter::splitAddress($order->get_billing_address_1());
+
+		$streetName           = $address['streetName'];
+		$houseNumberExtension = empty($address['extension']) ? '' : $address['extension'];
+		$houseNumber          = $address['houseNumber'] . $houseNumberExtension;
+
+		return (new Address())
+			->setStreetName($streetName)
+			->setHouseNumber($houseNumber)
+			->setPostalCode($order->get_billing_postcode())
+			->setCity($order->get_billing_city());
 	}
 
 	private function sendStudentToDation(Student $student): Student {

@@ -3,3 +3,6 @@
 
 # Ignore composer libraries
 /vendor/
+
+# Ignore PHPUnit cache
+.phpunit.result.cache
