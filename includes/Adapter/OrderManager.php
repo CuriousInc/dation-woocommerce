@@ -276,7 +276,7 @@ class OrderManager {
 					->setPayee($bankParty)
 					->setAmount(floatval($order->get_total()))
 					->setDescription('Betaling gedaan via mygenerationdrive.be');
-				$postedPayement = $this->client->postPayment($payment);
+				$this->client->postPayment($payment);
 
 				update_post_meta($order->get_id(), self::KEY_PAYMENT_ID, true);
 

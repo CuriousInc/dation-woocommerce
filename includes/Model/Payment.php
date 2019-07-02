@@ -52,27 +52,27 @@ class Payment {
 		return $this;
 	}
 
-	public function setPayer(PaymentParty $payer): Payment {
+	public function setPayer(?PaymentParty $payer): Payment {
 		$this->payer = $payer;
 		return $this;
 	}
 
-	public function setPayee(PaymentParty $payee): Payment {
+	public function setPayee(?PaymentParty $payee): Payment {
 		$this->payee = $payee;
 		return $this;
 	}
 
-	public function setAmount(float $amount): Payment {
+	public function setAmount(?float $amount): Payment {
 		$this->amount = $amount;
 		return $this;
 	}
 
-	public function setDescription(string $description): Payment {
+	public function setDescription(?string $description): Payment {
 		$this->description = $description;
 		return $this;
 	}
 
-	public function setGatewayTransactionId(string $gatewayTransactionId): Payment {
+	public function setGatewayTransactionId(?string $gatewayTransactionId): Payment {
 		$this->gatewayTransactionId = $gatewayTransactionId;
 		return $this;
 	}
