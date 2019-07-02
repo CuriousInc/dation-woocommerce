@@ -26,9 +26,16 @@ class OrderManagerFactory {
 		global $dw_options;
 		$client = RestApiClientFactory::getClient();
 
+		$options = [
+			'handle' => $dw_options['handle'],
+//			BankId cannot be fetched from the Api, but for 99% of the cases it is 1.
+//			If there is a use case for another bankId, the field kan be added to dw-options page and set there.
+			'bankId' => 1
+		];
+
 		return new OrderManager(
 			$client,
-			$dw_options['handle'],
+			$options,
 			new WordpressPostMetaData(),
 			new WordpressTranslator()
 		);
