@@ -30,17 +30,19 @@ use Symfony\Component\Serializer\Serializer;
  */
 class RestApiClient {
 
-	const BASE_HOST       = 'https://dashboard.dation.nl';
-	const BASE_PATH       = '/api/v1/';
-	const BASE_API_URL    = self::BASE_HOST . self::BASE_PATH;
+	public const BASE_HOST    = 'https://dashboard.dation.nl';
+	public const BASE_PATH    = '/api/v1/';
+	public const BASE_API_URL = self::BASE_HOST . self::BASE_PATH;
+
+	private const DEFAULT_CONTENT_TYPE_HEADER = ['Content-Type' => 'application/json'];
 
 	/**
-	 * @var \GuzzleHttp\Client
+	 * @var Client
 	 */
 	protected $httpClient;
 
 	/**
-	 * @var \Symfony\Component\Serializer\Serializer
+	 * @var Serializer
 	 */
 	protected $serializer;
 
@@ -105,10 +107,11 @@ class RestApiClient {
 	 * @throws ClientException
 	 */
 	public function postStudent(Student $student): Student {
-		$response     = $this->httpClient->post('students', [
-			'headers' => ['Content-Type' => 'application/json'],
-			'body' => $this->serializer->serialize($student, 'json')
+		$response = $this->httpClient->post('students', [
+			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER,
+			'body'    => $this->serializer->serialize($student, 'json')
 		]);
+
 		return $this->serializer->deserialize(
 			$response->getBody()->getContents(),
 			Student::class,
@@ -124,9 +127,9 @@ class RestApiClient {
 	 *
 	 * @throws ClientException
 	 */
-	public function getCourseInstance(int $courseInstanceId) {
+	public function getCourseInstance(int $courseInstanceId): CourseInstance {
 		$response = $this->httpClient->get("course-instances/$courseInstanceId", [
-			'headers' => ['Content-Type' => 'application/json'],
+			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER,
 		]);
 
 		return $this->serializer->deserialize($response->getBody()->getContents(), CourseInstance::class, 'json');
@@ -140,10 +143,10 @@ class RestApiClient {
 	 *
 	 * @throws ClientException
 	 */
-	public function postEnrollment(int $courseInstanceId, Enrollment $enrollment) {
+	public function postEnrollment(int $courseInstanceId, Enrollment $enrollment): Enrollment {
 		$response = $this->httpClient->post("course-instances/$courseInstanceId/enrollments", [
-			'headers' => ['Content-Type' => 'application/json'],
-			'body' => $this->serializer->serialize($enrollment, 'json')
+			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER,
+			'body'    => $this->serializer->serialize($enrollment, 'json')
 		]);
 
 		return $this->serializer->deserialize(
@@ -161,9 +164,9 @@ class RestApiClient {
 	 *
 	 * @throws ClientException
 	 */
-	public function postPayment(Payment $payment) {
+	public function postPayment(Payment $payment): Payment {
 		$response = $this->httpClient->post('payments', [
-			'headers' => ['Content-Type' => 'applications/json'],
+			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER,
 			'body'    => $this->serializer->serialize($payment, 'json')
 		]);
 

@@ -3,35 +3,41 @@ declare(strict_types=1);
 
 namespace Dation\Woocommerce\Model;
 
-
 class Payment {
-	/** @var PaymentParty */
+
+	/** @var int|null $id */
+	private $id;
+
+	/** @var PaymentParty|null */
 	private $payer;
 
-	/** @var PaymentParty */
+	/** @var PaymentParty|null */
 	private $payee;
 
-	/** @var float */
+	/** @var float|null */
 	private $amount;
 
-	/** @var string */
+	/** @var string|null */
 	private $description;
 
-	/** @var string */
+	/** @var string|null */
 	private $gatewayTransactionId;
 
-	public function getPayer(): PaymentParty {
+	public function getId(): ?int {
+		return $this->id;
+	}
+
+	public function getPayer(): ?PaymentParty {
 		return $this->payer;
 	}
 
-	public function getPayee(): PaymentParty {
+	public function getPayee(): ?PaymentParty {
 		return $this->payee;
 	}
 
-	public function getAmount(): float {
+	public function getAmount(): ?float {
 		return $this->amount;
 	}
-
 
 	public function getDescription(): ?string {
 		return $this->description;
@@ -39,6 +45,11 @@ class Payment {
 
 	public function getGatewayTransactionId(): ?string {
 		return $this->gatewayTransactionId;
+	}
+
+	public function setId(?int $id): Payment {
+		$this->id = $id;
+		return $this;
 	}
 
 	public function setPayer(PaymentParty $payer): Payment {
@@ -65,5 +76,4 @@ class Payment {
 		$this->gatewayTransactionId = $gatewayTransactionId;
 		return $this;
 	}
-
 }

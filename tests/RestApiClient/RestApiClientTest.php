@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Dation\Woocommerce\Model\CourseInstance;
+use Dation\Woocommerce\Model\Payment;
+use Dation\Woocommerce\Model\PaymentParty;
 use Dation\Woocommerce\Model\Student;
 use Dation\Woocommerce\RestApiClient\RestApiClient;
 use GuzzleHttp\Client as HttpClient;
@@ -45,7 +48,7 @@ class RestApiClientTest extends TestCase {
 		]);
 
 		$client = new RestApiClient($mockHttpClient);
-		/** @var \Dation\Woocommerce\Model\CourseInstance $courseInstance */
+		/** @var CourseInstance $courseInstance */
 		$courseInstance = $client->getCourseInstance($id);
 
 		$this->assertEquals($id, $courseInstance->getId());
@@ -77,6 +80,28 @@ class RestApiClientTest extends TestCase {
 
 		$this->assertEquals($mockCourses[1]['id'], $courseInstances[1]['id']);
 		$this->assertEquals($mockCourses[1]['name'], $courseInstances[1]['name']);
+	}
+
+	public function testPostPayment() {
+		$payer   = (new PaymentParty())->setType(PaymentParty::STUDENT_TYPE)->setId($this->faker->randomNumber());
+		$payee   = (new PaymentParty())->setType(PaymentParty::BANK_TYPE)->setId(1);
+		$payment = (new Payment())
+			->setPayer($payer)
+			->setPayer($payee)
+			->setAmount(108);
+
+		$newPaymentId = $this->faker->randomNumber();
+
+		$mockHttpClient = $this->mockGuzzle([
+			new Response(201, [], json_encode([
+				'id' => $newPaymentId
+			])),
+		]);
+
+		$client     = new RestApiClient($mockHttpClient);
+		$newPayment = $client->postPayment($payment);
+
+		$this->assertEquals($newPaymentId, $newPayment->getId());
 	}
 
 	private function mockGuzzle(array $responseQueue): HttpClient {
