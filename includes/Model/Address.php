@@ -20,7 +20,6 @@ class Address {
 
 	public function setStreetName(?string $streetName): Address {
 		$this->streetName = $streetName;
-
 		return $this;
 	}
 
@@ -34,7 +33,6 @@ class Address {
 
 	public function setHouseNumber(?string $houseNumber): Address {
 		$this->houseNumber = $houseNumber;
-
 		return $this;
 	}
 
@@ -44,7 +42,6 @@ class Address {
 
 	public function setPostalCode(?string $postalCode): Address {
 		$this->postalCode = $postalCode;
-
 		return $this;
 	}
 
@@ -54,7 +51,6 @@ class Address {
 
 	public function setCity(?string $city): Address {
 		$this->city = $city;
-
 		return $this;
 	}
 }
