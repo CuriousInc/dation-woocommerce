@@ -90,7 +90,7 @@ class OrderManager {
 		}
 	}
 
-	private function coughtErrorActions(WC_Order $order, string $errorType, mixed $message) {
+	private function coughtErrorActions(WC_Order $order, string $errorType, $message) {
 		do_action('woocommerce_email_classes');
 		do_action('dw_synchronize_failed_email_action', $order);
 
@@ -137,14 +137,7 @@ class OrderManager {
 				}
 
 				$courseInstanceId = (int)$product->get_sku();
-				try {
-					$courseInstance   = $this->client->getCourseInstance($courseInstanceId);
-				} catch(ClientException $e) {
-					if($e->hasResponse() && $e->getResponse()->getStatusCode() == 404) {
-						throw new \RuntimeException('Cursus niet gevonden', $e->getCode(), $e);
-					}
-					throw new \RuntimeException('Kan cursus niet laden', $e->getCode(), $e);
-				}
+				$courseInstance   = $this->client->getCourseInstance($courseInstanceId);
 
 				$enrollment = new Enrollment();
 				$slots      = [];
@@ -172,6 +165,9 @@ class OrderManager {
 				$order->add_order_note(sprintf($this->translator->translate('Leerling ingeschreven op %s'), $link));
 			}
 		} catch (ClientException $e) {
+			if($e->hasResponse() && $e->getResponse()->getStatusCode() == 404) {
+				$message = 'Cursus niet gevonden';
+			}
 			$reason = json_decode($e->getResponse()->getBody()->getContents(), true);
 			$message = isset($reason['detail']) ? $reason['detail'] : $reason;
 
@@ -280,12 +276,7 @@ class OrderManager {
 					->setPayee($bankParty)
 					->setAmount(floatval($order->get_total()))
 					->setDescription('Betaling gedaan via mygenerationdrive.be');
-
-				try {
-					$postedPayement = $this->client->postPayment($payment);
-				} catch(ClientException $e) {
-					throw new \RuntimeException('Kan betaling niet toevoegen', $e->getCode(), $e);
-				}
+				$postedPayement = $this->client->postPayment($payment);
 
 				update_post_meta($order->get_id(), self::KEY_PAYMENT_ID, true);
 
