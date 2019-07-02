@@ -188,8 +188,8 @@ class OrderManager {
 				->setPostalCode($order->get_billing_postcode())
 				->setCity($order->get_billing_city())
 		);
-		$student->setEmail($order->get_billing_email());
-		$student->setPhone($order->get_billing_phone());
+		$student->setEmailAddress($order->get_billing_email());
+		$student->setMobileNumber($order->get_billing_phone());
 		$student->setNationalRegistryNumber(
 			$this->postMetaData->getPostMeta($order->get_id(), self::KEY_NATIONAL_REGISTRY_NUMBER, true)
 		);
@@ -223,8 +223,8 @@ class OrderManager {
 	 * @return string
 	 */
 	private function getTransmissionComment(WC_Order $order): string {
-		$answer = (bool)$this->postMetaData->getPostMeta($order->get_id(),
-			OrderManager::KEY_AUTOMATIC_TRANSMISSION, true);
+		$answer = $this->postMetaData->getPostMeta($order->get_id(),
+			OrderManager::KEY_AUTOMATIC_TRANSMISSION, true) === 'yes';
 
 		return $this->translator->translate('Ik rijd enkel met een automaat')
 			. ': '

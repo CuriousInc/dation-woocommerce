@@ -21,10 +21,10 @@ class Student {
 	protected $residentialAddress;
 
 	/** @var string|null */
-	protected $email;
+	protected $emailAddress;
 
 	/** @var string|null */
-	protected $phone;
+	protected $mobileNumber;
 
 	/** @var \DateTime|null */
 	protected $dateOfBirth;
@@ -71,22 +71,22 @@ class Student {
 		return $this;
 	}
 
-	public function getEmail(): ?string {
-		return $this->email;
+	public function getEmailAddress(): ?string {
+		return $this->emailAddress;
 	}
 
-	public function setEmail(?string $email): Student {
-		$this->email = $email;
+	public function setEmailAddress(?string $emailAddress): Student {
+		$this->emailAddress = $emailAddress;
 
 		return $this;
 	}
 
-	public function getPhone(): ?string {
-		return $this->phone;
+	public function getMobileNumber(): ?string {
+		return $this->mobileNumber;
 	}
 
-	public function setPhone(?string $phone): Student {
-		$this->phone = $phone;
+	public function setMobileNumber(?string $mobileNumber): Student {
+		$this->mobileNumber = $mobileNumber;
 
 		return $this;
 	}
