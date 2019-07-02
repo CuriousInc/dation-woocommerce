@@ -1,10 +1,13 @@
 <?php
+declare(strict_types=1);
 
 namespace Dation\Woocommerce\Model;
 
 
 class PaymentParty {
-//	TODO: Add payment party types?
+	public const STUDENT_TYPE = 'student';
+	public const BANK_TYPE    = 'bank';
+
 	/** @var string */
 	private $type;
 

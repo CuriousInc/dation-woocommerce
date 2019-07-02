@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Dation\Woocommerce\Model;
 
@@ -10,20 +11,11 @@ class Payment {
 	/** @var PaymentParty */
 	private $payee;
 
-	/** @var int */
+	/** @var float */
 	private $amount;
-
-	/** @var \DateTime */
-	private $date;
-
-	/** @var Invoice */
-	private $invoice;
 
 	/** @var string */
 	private $description;
-
-	/** @var Administration */
-	private $administration;
 
 	/** @var string */
 	private $gatewayTransactionId;
@@ -36,27 +28,16 @@ class Payment {
 		return $this->payee;
 	}
 
-	public function getAmount(): int {
+	public function getAmount(): float {
 		return $this->amount;
 	}
 
-	public function getDate(): \DateTime {
-		return $this->date;
-	}
 
-	public function getInvoice(): Invoice {
-		return $this->invoice;
-	}
-
-	public function getDescription(): string {
+	public function getDescription(): ?string {
 		return $this->description;
 	}
 
-	public function getAdministration(): Administration {
-		return $this->administration;
-	}
-
-	public function getGatewayTransactionId(): string {
+	public function getGatewayTransactionId(): ?string {
 		return $this->gatewayTransactionId;
 	}
 
@@ -70,18 +51,8 @@ class Payment {
 		return $this;
 	}
 
-	public function setAmount(int $amount): Payment {
+	public function setAmount(float $amount): Payment {
 		$this->amount = $amount;
-		return $this;
-	}
-
-	public function setDate(\DateTime $date): Payment {
-		$this->date = $date;
-		return $this;
-	}
-
-	public function setInvoice(Invoice $invoice): Payment {
-		$this->invoice = $invoice;
 		return $this;
 	}
 
@@ -90,43 +61,9 @@ class Payment {
 		return $this;
 	}
 
-	public function setAdministration(Administration $administration): Payment {
-		$this->administration = $administration;
-		return $this;
-	}
-
 	public function setGatewayTransactionId(string $gatewayTransactionId): Payment {
 		$this->gatewayTransactionId = $gatewayTransactionId;
 		return $this;
 	}
 
-}
-
-
-class Administration {
-	/** @var int */
-	private $id;
-
-	public function getId(): int {
-		return $this->id;
-	}
-
-	public function setId(int $id): Administration {
-		$this->id = $id;
-		return $this;
-	}
-}
-
-class Invoice {
-	/** @var int */
-	private $id;
-
-	public function getId(): int {
-		return $this->id;
-	}
-
-	public function setId(int $id): Invoice {
-		$this->id = $id;
-		return $this;
-	}
 }

@@ -12,6 +12,7 @@ use Dation\Woocommerce\Model\Enrollment;
 use Dation\Woocommerce\Model\Student;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
@@ -47,7 +48,15 @@ class RestApiClient {
 		$this->httpClient = $httpClient;
 
 		$normalizer = ObjectNormalizerFactory::getNormalizer();
-		$this->serializer = new Serializer([new DateTimeNormalizer('Y-m-d'), $normalizer, new ArrayDenormalizer()], [new JsonEncoder()]);
+		$this->serializer = new Serializer(
+			[
+				new DateTimeNormalizer('Y-m-d'),
+				$normalizer, new ArrayDenormalizer()
+			],
+			[
+				new JsonEncoder(new JsonEncode(JSON_PRESERVE_ZERO_FRACTION))
+			]
+		);
 	}
 
 	public static function constructForKey(string $apiKey, string $baseUrl = self::BASE_API_URL) {
@@ -152,7 +161,7 @@ class RestApiClient {
 	 *
 	 * @throws ClientException
 	 */
-	public function addPayment(Payment $payment) {
+	public function postPayment(Payment $payment) {
 		$response = $this->httpClient->post('payments', [
 			'headers' => ['Content-Type' => 'applications/json'],
 			'body'    => $this->serializer->serialize($payment, 'json')
