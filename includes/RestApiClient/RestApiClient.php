@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dation\Woocommerce\RestApiClient;
 
 use DateTime;
+use Dation\Woocommerce\Model\Payment;
 use Dation\Woocommerce\ObjectNormalizerFactory;
 use Dation\Woocommerce\Model\CourseInstance;
 use Dation\Woocommerce\Model\Enrollment;
@@ -107,6 +108,13 @@ class RestApiClient {
 		);
 	}
 
+	/**
+	 * @param int $courseInstanceId
+	 *
+	 * @return CourseInstance
+	 *
+	 * @throws ClientException
+	 */
 	public function getCourseInstance(int $courseInstanceId) {
 		$response = $this->httpClient->get("course-instances/$courseInstanceId", [
 			'headers' => ['Content-Type' => 'application/json'],
@@ -115,6 +123,14 @@ class RestApiClient {
 		return $this->serializer->deserialize($response->getBody()->getContents(), CourseInstance::class, 'json');
 	}
 
+	/**
+	 * @param int $courseInstanceId
+	 * @param Enrollment $enrollment
+	 *
+	 * @return Enrollment
+	 *
+	 * @throws ClientException
+	 */
 	public function postEnrollment(int $courseInstanceId, Enrollment $enrollment) {
 		$response = $this->httpClient->post("course-instances/$courseInstanceId/enrollments", [
 			'headers' => ['Content-Type' => 'application/json'],
@@ -126,6 +142,27 @@ class RestApiClient {
 			Enrollment::class,
 			'json',
 			['object_to_populate' => $enrollment]
+		);
+	}
+
+	/**
+	 * @param Payment $payment
+	 *
+	 * @return Payment
+	 *
+	 * @throws ClientException
+	 */
+	public function addPayment(Payment $payment) {
+		$response = $this->httpClient->post('payments', [
+			'headers' => ['Content-Type' => 'applications/json'],
+			'body'    => $this->serializer->serialize($payment, 'json')
+		]);
+
+		return $this->serializer->deserialize(
+			$response->getBody()->getContents(),
+			Payment::class,
+			'json',
+			['object_to_populate' => $payment]
 		);
 	}
 }
