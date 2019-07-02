@@ -73,7 +73,12 @@ class OrderManagerTest extends TestCase {
 				return $postMetaData[$orderId][$propertyName];
 			});
 
-		$manager = new OrderManager($stubApiClient, $this->faker->name(), $postMeta, $translate);
+		$orderManagerOptions = [
+			'handle' => $this->faker->name(),
+			'bankId' => $this->faker->numberBetween()
+		];
+
+		$manager = new OrderManager($stubApiClient, $orderManagerOptions, $postMeta, $translate);
 
 		$order = $this->mockOrder([
 			'get_id'                 => $orderId,
