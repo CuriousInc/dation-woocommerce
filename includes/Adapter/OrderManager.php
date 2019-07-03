@@ -76,8 +76,8 @@ class OrderManager {
 	 *
 	 * In our context, fulfillment means synchronizing
 	 * - the student,
-	 * -the payment,
-	 * -the enrollment
+	 * - the payment,
+	 * - the enrollment
 	 * to Dation.
 	 *
 	 * Next steps are generating an invoice for the enrollment and linking the payment to that invoice.
@@ -99,7 +99,7 @@ class OrderManager {
 
 	/**
 	 * Actions to be taken when one of the steps in synchronizing the order to Dation fails.
-	 * Sends email a specified to wordpress user and generates a note on the order of the failure.
+	 * Sends an email to a specified wordpress user and generates a failure note on the order.
 	 *
 	 * @param WC_Order $order
 	 * @param string $errorType
@@ -135,7 +135,7 @@ class OrderManager {
 	private function synchronizeEnrollmentToDation(WC_Order $order, Student $student):void {
 		try {
 			if($this->postMetaData->getPostMeta($order->get_id(), self::KEY_ENROLLMENT_ID, true) === '') {
-				foreach ($order->get_items() as $key => $value) {
+				foreach($order->get_items() as $key => $value) {
 					//What if order has multiple items(products) sold?
 					/** @var WC_Order_Item_Product $value */
 					$product = new WC_Product($value->get_data()['product_id']);
@@ -148,7 +148,7 @@ class OrderManager {
 				$enrollment = new Enrollment();
 				$slots      = [];
 
-				foreach ($courseInstance->getParts() as $part) {
+				foreach($courseInstance->getParts() as $part) {
 					//What if a part has more slots?
 					/** @var CourseInstancePart $part */
 					$slots[] = $part->getSlots()[0];
@@ -223,7 +223,7 @@ class OrderManager {
 	private function getAddressFromOrder(WC_Order $order): Address {
 		try {
 			$address = AddressSplitter::splitAddress($order->get_billing_address_1());
-		} catch (SplittingException $e) {
+		} catch(SplittingException $e) {
 //			Add note, don't stop functionality
 			$order->add_order_note('Let op! Er is iets misgegaan bij het synchroniseren van het adres van de leerling');
 		}
@@ -286,7 +286,7 @@ class OrderManager {
 					->setPayer($studentParty)
 					->setPayee($bankParty)
 					->setAmount(floatval($order->get_total()))
-					->setDescription('Betaald via Dation-Woocommerce');
+					->setDescription('Betaald via websitekoppeling');
 
 				$this->client->postPayment($payment);
 

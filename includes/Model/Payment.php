@@ -5,9 +5,6 @@ namespace Dation\Woocommerce\Model;
 
 class Payment {
 
-	/** @var int|null $id */
-	private $id;
-
 	/** @var PaymentParty|null */
 	private $payer;
 
@@ -19,10 +16,6 @@ class Payment {
 
 	/** @var string|null */
 	private $description;
-
-	public function getId(): ?int {
-		return $this->id;
-	}
 
 	public function getPayer(): ?PaymentParty {
 		return $this->payer;
@@ -38,11 +31,6 @@ class Payment {
 
 	public function getDescription(): ?string {
 		return $this->description;
-	}
-
-	public function setId(?int $id): Payment {
-		$this->id = $id;
-		return $this;
 	}
 
 	public function setPayer(?PaymentParty $payer): Payment {

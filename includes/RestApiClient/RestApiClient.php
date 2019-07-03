@@ -158,20 +158,14 @@ class RestApiClient {
 	/**
 	 * @param Payment $payment
 	 *
-	 * @return Payment
+	 * @return void
 	 *
 	 * @throws ClientException
 	 */
-	public function postPayment(Payment $payment): Payment {
-		$response = $this->httpClient->post('payments', [
+	public function postPayment(Payment $payment): void {
+		$this->httpClient->post('payments', [
 			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER,
 			'body'    => $this->serializer->serialize($payment, 'json')
 		]);
-
-		return $this->serializer->deserialize(
-			$response->getBody()->getContents(),
-			Payment::class,
-			'json'
-		);
 	}
 }

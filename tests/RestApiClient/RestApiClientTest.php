@@ -100,9 +100,8 @@ class RestApiClientTest extends TestCase {
 		]);
 
 		$client     = new RestApiClient($mockHttpClient);
-		$newPayment = $client->postPayment($payment);
 
-		$this->assertEquals($newPaymentId, $newPayment->getId());
+		$client->postPayment($payment);
 	}
 
 	private function mockGuzzle(array $responseQueue): HttpClient {
