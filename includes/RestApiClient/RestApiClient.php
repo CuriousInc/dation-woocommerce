@@ -115,8 +115,7 @@ class RestApiClient {
 		return $this->serializer->deserialize(
 			$response->getBody()->getContents(),
 			Student::class,
-			'json',
-			['object_to_populate' => $student]
+			'json'
 		);
 	}
 

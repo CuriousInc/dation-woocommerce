@@ -117,7 +117,7 @@ class OrderManager {
 		try {
 			$student = $this->getStudentFromOrder($order);
 			if(empty($student->getId())) {
-				$this->sendStudentToDation($student);
+				$student = $this->sendStudentToDation($student);
 				update_post_meta($order->get_id(), self::KEY_STUDENT_ID, $student->getId());
 				$order->add_order_note($this->syncSuccessNote($student));
 			}
