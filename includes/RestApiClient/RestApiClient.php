@@ -152,8 +152,7 @@ class RestApiClient {
 		return $this->serializer->deserialize(
 			$response->getBody()->getContents(),
 			Enrollment::class,
-			'json',
-			['object_to_populate' => $enrollment]
+			'json'
 		);
 	}
 
@@ -173,8 +172,7 @@ class RestApiClient {
 		return $this->serializer->deserialize(
 			$response->getBody()->getContents(),
 			Payment::class,
-			'json',
-			['object_to_populate' => $payment]
+			'json'
 		);
 	}
 }

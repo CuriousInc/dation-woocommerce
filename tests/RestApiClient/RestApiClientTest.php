@@ -31,6 +31,7 @@ class RestApiClientTest extends TestCase {
 		]);
 
 		$client = new RestApiClient($mockHttpClient);
+
 		$newStudent = $client->postStudent($student);
 
 		$this->assertEquals($newId, $newStudent->getId());
@@ -83,12 +84,12 @@ class RestApiClientTest extends TestCase {
 	}
 
 	public function testPostPayment() {
-		$payer   = (new PaymentParty())->setType(PaymentParty::STUDENT_TYPE)->setId($this->faker->randomNumber());
-		$payee   = (new PaymentParty())->setType(PaymentParty::BANK_TYPE)->setId(1);
+		$payer   = (new PaymentParty())->setType(PaymentParty::TYPE_STUDENT)->setId($this->faker->randomNumber());
+		$payee   = (new PaymentParty())->setType(PaymentParty::TYPE_BANK)->setId(1);
 		$payment = (new Payment())
 			->setPayer($payer)
 			->setPayer($payee)
-			->setAmount(108);
+			->setAmount($this->faker->randomFloat(2));
 
 		$newPaymentId = $this->faker->randomNumber();
 

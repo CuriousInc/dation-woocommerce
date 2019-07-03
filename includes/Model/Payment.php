@@ -20,9 +20,6 @@ class Payment {
 	/** @var string|null */
 	private $description;
 
-	/** @var string|null */
-	private $gatewayTransactionId;
-
 	public function getId(): ?int {
 		return $this->id;
 	}
@@ -41,10 +38,6 @@ class Payment {
 
 	public function getDescription(): ?string {
 		return $this->description;
-	}
-
-	public function getGatewayTransactionId(): ?string {
-		return $this->gatewayTransactionId;
 	}
 
 	public function setId(?int $id): Payment {
@@ -72,8 +65,4 @@ class Payment {
 		return $this;
 	}
 
-	public function setGatewayTransactionId(?string $gatewayTransactionId): Payment {
-		$this->gatewayTransactionId = $gatewayTransactionId;
-		return $this;
-	}
 }

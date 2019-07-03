@@ -15,6 +15,7 @@ const DW_DEFAULT_PRODUCT_PROPERTIES = [
  * @return WC_Product[]
  *
  * @throws WC_Data_Exception
+ * @throws Exception
  */
 function dw_import_products() {
 	$client  = RestApiClientFactory::getClient();

@@ -17,6 +17,7 @@ use Dation\Woocommerce\TranslatorInterface;
 use GuzzleHttp\Exception\ClientException;
 use Throwable;
 use VIISON\AddressSplitter\AddressSplitter;
+use VIISON\AddressSplitter\Exceptions\SplittingException;
 use WC_Order;
 use WC_Order_Item_Product;
 use WC_Product;
@@ -73,24 +74,38 @@ class OrderManager {
 	 * This means payment has been received (paid) and stock reduced; order is
 	 * awaiting fulfillment.
 	 *
-	 * In our context, fulfillment means synchronizing its changes to Dation
+	 * In our context, fulfillment means synchronizing
+	 * - the student,
+	 * -the payment,
+	 * -the enrollment
+	 * to Dation.
+	 *
+	 * Next steps are generating an invoice for the enrollment and linking the payment to that invoice.
 	 *
 	 * @param \WC_Order $order
 	 */
 	public function sendToDation(WC_Order $order): void {
 		try {
-			$student = $this->synchronizeStudent($order);
+			$student = $this->synchronizeStudentToDation($order);
 
-			$this->synchronizePayment($student, $order);
+			$this->synchronizePaymentToDation($student, $order);
 
-			$this->synchronizeEnrollment($order, $student);
+			$this->synchronizeEnrollmentToDation($order, $student);
 
-		} catch (Throwable $e) {
+		} catch(Throwable $e) {
 			$this->coughtErrorActions($order,'Synchronisatie mislukt', $e->getMessage());
 		}
 	}
 
-	private function coughtErrorActions(WC_Order $order, string $errorType, $message) {
+	/**
+	 * Actions to be taken when one of the steps in synchronizing the order to Dation fails.
+	 * Sends email a specified to wordpress user and generates a note on the order of the failure.
+	 *
+	 * @param WC_Order $order
+	 * @param string $errorType
+	 * @param $message
+	 */
+	private function coughtErrorActions(WC_Order $order, string $errorType, $message):void {
 		do_action('woocommerce_email_classes');
 		do_action('dw_synchronize_failed_email_action', $order);
 
@@ -98,18 +113,13 @@ class OrderManager {
 		$order->add_order_note("{$note}: <code>{$message}</code>");
 	}
 
-	/**
-	 * @param WC_Order $order
-	 *
-	 * @return Student
-	 */
-	private function synchronizeStudent(WC_Order $order): Student {
+	private function synchronizeStudentToDation(WC_Order $order): Student {
 		try {
 			$student = $this->getStudentFromOrder($order);
 			if(empty($student->getId())) {
-				$student = $this->sendStudentToDation($student);
+				$this->sendStudentToDation($student);
 				update_post_meta($order->get_id(), self::KEY_STUDENT_ID, $student->getId());
-				$order->add_order_note($this->syncSuccesNote($student));
+				$order->add_order_note($this->syncSuccessNote($student));
 			}
 
 			return $student;
@@ -122,11 +132,7 @@ class OrderManager {
 
 	}
 
-	/**
-	 * @param WC_Order $order
-	 * @param Student $student
-	 */
-	private function synchronizeEnrollment(WC_Order $order, Student $student) {
+	private function synchronizeEnrollmentToDation(WC_Order $order, Student $student):void {
 		try {
 			if($this->postMetaData->getPostMeta($order->get_id(), self::KEY_ENROLLMENT_ID, true) === '') {
 				foreach ($order->get_items() as $key => $value) {
@@ -164,7 +170,7 @@ class OrderManager {
 
 				$order->add_order_note(sprintf($this->translator->translate('Leerling ingeschreven op %s'), $link));
 			}
-		} catch (ClientException $e) {
+		} catch(ClientException $e) {
 			if($e->hasResponse() && $e->getResponse()->getStatusCode() == 404) {
 				$message = 'Cursus niet gevonden';
 			}
@@ -175,6 +181,13 @@ class OrderManager {
 		}
 	}
 
+	/**
+	 * Create a Student object from Woocommerce order data
+	 *
+	 * @param WC_Order $order
+	 *
+	 * @return Student
+	 */
 	public function getStudentFromOrder(WC_Order $order): Student {
 		$birthDate = DateTime::createFromFormat(
 			self::BELGIAN_DATE_FORMAT,
@@ -207,15 +220,13 @@ class OrderManager {
 		return $student;
 	}
 
-	/**
-	 * Gets the residential address from the order.
-	 *
-	 * @param WC_Order $order
-	 *
-	 * @return Address
-	 */
 	private function getAddressFromOrder(WC_Order $order): Address {
-		$address              = AddressSplitter::splitAddress($order->get_billing_address_1());
+		try {
+			$address = AddressSplitter::splitAddress($order->get_billing_address_1());
+		} catch (SplittingException $e) {
+//			Add note, don't stop functionality
+			$order->add_order_note('Let op! Er is iets misgegaan bij het synchroniseren van het adres van de leerling');
+		}
 
 		$streetName           = $address['streetName'];
 		$houseNumberExtension = empty($address['extension']) ? '' : $address['extension'];
@@ -232,7 +243,7 @@ class OrderManager {
 		return $this->client->postStudent($student);
 	}
 
-	private function syncSuccesNote(Student $student): string {
+	private function syncSuccessNote(Student $student): string {
 		$link = sprintf('<a target="_blank" href="%s/%s/leerlingen/%s">Dation</a>',
 			DW_BASE_HOST,
 			$this->handle,
@@ -243,7 +254,7 @@ class OrderManager {
 	}
 
 	/**
-	 * Generate comment on transmission usage
+	 * Generate comment on usage of manual/automatic car transmission
 	 *
 	 * @param \WC_Order $order
 	 *
@@ -251,38 +262,39 @@ class OrderManager {
 	 */
 	private function getTransmissionComment(WC_Order $order): string {
 		$answer = $this->postMetaData->getPostMeta($order->get_id(),
-				OrderManager::KEY_AUTOMATIC_TRANSMISSION, true) === 'yes';
+			OrderManager::KEY_AUTOMATIC_TRANSMISSION, true) === 'yes';
 
 		return $this->translator->translate('Ik rijd enkel met een automaat')
 			. ': '
 			. ($answer ? $this->translator->translate('Ja') : $this->translator->translate('Nee'));
 	}
 
-	public function synchronizePayment(Student $student, WC_Order $order) {
+	private function synchronizePaymentToDation(Student $student, WC_Order $order) {
 		try {
 			if($this->postMetaData->getPostMeta($order->get_id(), self::KEY_PAYMENT_ID, true) === '' && !empty($student->getId())) {
 				$payment = new Payment();
 
 				$studentParty = (new PaymentParty())
-					->setType(PaymentParty::STUDENT_TYPE)
+					->setType(PaymentParty::TYPE_STUDENT)
 					->setId($student->getId());
 
 				$bankParty = (new PaymentParty())
-					->setType(PaymentParty::BANK_TYPE)
+					->setType(PaymentParty::TYPE_BANK)
 					->setId($this->bankId);
 
 				$payment
 					->setPayer($studentParty)
 					->setPayee($bankParty)
 					->setAmount(floatval($order->get_total()))
-					->setDescription('Betaling gedaan via mygenerationdrive.be');
+					->setDescription('Betaald via Dation-Woocommerce');
+
 				$this->client->postPayment($payment);
 
 				update_post_meta($order->get_id(), self::KEY_PAYMENT_ID, true);
 
 				$order->add_order_note($this->translator->translate('Betaling toegevoegd'));
 			}
-		} catch (ClientException $e) {
+		} catch(ClientException $e) {
 			$reason = json_decode($e->getResponse()->getBody()->getContents(), true);
 			$message = isset($reason['detail']) ? $reason['detail'] : $reason;
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Dation\Woocommerce\Model;
 
 class PaymentParty {
-	public const STUDENT_TYPE = 'student';
-	public const BANK_TYPE    = 'bank';
+	public const TYPE_STUDENT = 'student';
+	public const TYPE_BANK    = 'bank';
 
 	/** @var string */
 	private $type;
