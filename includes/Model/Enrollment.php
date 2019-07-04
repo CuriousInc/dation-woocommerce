@@ -19,7 +19,7 @@ class Enrollment {
 		return $this->student;
 	}
 
-	public function getSlots(): array {
+	public function getSlots(): ?array {
 		return $this->slots;
 	}
 
