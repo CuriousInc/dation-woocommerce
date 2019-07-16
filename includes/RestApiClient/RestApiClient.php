@@ -172,7 +172,7 @@ class RestApiClient {
 
 	public function billEnrollment(Enrollment $enrollment) {
 		$response = $this->httpClient->put("enrollments/{$enrollment->getId()}/bill", [
-			'headers' => ['Content-Type' => 'application/json']
+			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER
 		]);
 
 		return $this->serializer->deserialize(

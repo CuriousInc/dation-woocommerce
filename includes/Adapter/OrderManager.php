@@ -96,7 +96,7 @@ class OrderManager {
 			$this->synchronizePaymentToDation($student, $order);
 
 		} catch(Throwable $e) {
-			$this->coughtErrorActions($order,'Synchronisatie mislukt', $e->getMessage());
+			$this->caughtErrorActions($order,'Synchronisatie mislukt', $e->getMessage());
 		}
 	}
 
@@ -108,7 +108,7 @@ class OrderManager {
 	 * @param string $errorType
 	 * @param $message
 	 */
-	private function coughtErrorActions(WC_Order $order, string $errorType, $message):void {
+	private function caughtErrorActions(WC_Order $order, string $errorType, $message):void {
 		do_action('woocommerce_email_classes');
 		do_action('dw_synchronize_failed_email_action', $order);
 
@@ -130,7 +130,7 @@ class OrderManager {
 			$reason = json_decode($e->getResponse()->getBody()->getContents(), true);
 			$message = isset($reason['detail']) ? $reason['detail'] : $reason;
 
-			$this->coughtErrorActions($order,'Het synchroniseren van de student is mislukt', $message);
+			$this->caughtErrorActions($order,'Het synchroniseren van de student is mislukt', $message);
 		}
 
 	}
@@ -180,7 +180,7 @@ class OrderManager {
 			$reason = json_decode($e->getResponse()->getBody()->getContents(), true);
 			$message = isset($reason['detail']) ? $reason['detail'] : $reason;
 
-			$this->coughtErrorActions($order, 'Het synchroniseren van de inschrijving is mislukt', $message);
+			$this->caughtErrorActions($order, 'Het synchroniseren van de inschrijving is mislukt', $message);
 		}
 	}
 
@@ -304,7 +304,7 @@ class OrderManager {
 			$reason = json_decode($e->getResponse()->getBody()->getContents(), true);
 			$message = isset($reason['detail']) ? $reason['detail'] : $reason;
 
-			$this->coughtErrorActions($order, 'Het synchroniseren van de betaling is mislukt', $message);
+			$this->caughtErrorActions($order, 'Het synchroniseren van de betaling is mislukt', $message);
 		}
 	}
 
@@ -327,7 +327,7 @@ class OrderManager {
 			$reason = json_decode($e->getResponse()->getBody()->getContents(), true);
 			$message = isset($reason['detail']) ? $reason['detail'] : $reason;
 
-			$this->coughtErrorActions($order, 'Het factureren van de inschrijving is mislukt', $message);
+			$this->caughtErrorActions($order, 'Het factureren van de inschrijving is mislukt', $message);
 		}
 	}
 }
