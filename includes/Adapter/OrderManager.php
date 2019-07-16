@@ -323,7 +323,7 @@ class OrderManager {
 			) {
 				$enrollment = (new Enrollment())->setId((int)$enrollmentId);
 				/** @var Invoice $invoice */
-				$invoice = $this->client->billEnrollment($enrollment);
+				$invoice = $this->client->billEnrollment($enrollment)[0];
 
 				update_post_meta($order->get_id(), self::KEY_INVOICE_ID, $invoice->getId());
 

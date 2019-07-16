@@ -121,7 +121,7 @@ class RestApiClientTest extends TestCase {
 
 		$result = $client->billEnrollment($enrollment);
 
-		$this->assertInstanceOf(Invoice::class, $result);
+		$this->assertInstanceOf(Invoice::class, $result[0]);
 
 	}
 
