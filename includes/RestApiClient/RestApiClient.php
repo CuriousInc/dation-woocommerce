@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dation\Woocommerce\RestApiClient;
 
 use DateTime;
+use Dation\Woocommerce\Model\Invoice;
 use Dation\Woocommerce\Model\Payment;
 use Dation\Woocommerce\ObjectNormalizerFactory;
 use Dation\Woocommerce\Model\CourseInstance;
@@ -167,5 +168,17 @@ class RestApiClient {
 			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER,
 			'body'    => $this->serializer->serialize($payment, 'json')
 		]);
+	}
+
+	public function billEnrollment(Enrollment $enrollment) {
+		$response = $this->httpClient->put("enrollments/{$enrollment->getId()}/bill", [
+			'headers' => ['Content-Type' => 'application/json']
+		]);
+
+		return $this->serializer->deserialize(
+			$response->getBody()->getContents(),
+			Invoice::class,
+			'json'
+		);
 	}
 }
