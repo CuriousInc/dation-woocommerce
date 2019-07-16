@@ -175,10 +175,15 @@ class RestApiClient {
 			'headers' => ['Content-Type' => 'application/json']
 		]);
 
-		return $this->serializer->deserialize(
-			$response->getBody()->getContents(),
+
+		$result = $this->serializer->deserialize(
+//			The assumption here is that a TKM will always be invoiced on a single invoice.
+			$response->getBody()->getContents()[0],
 			Invoice::class,
 			'json'
 		);
+
+		var_dump($result);
+		return $result;
 	}
 }

@@ -17,6 +17,9 @@ class Payment {
 	/** @var string|null */
 	private $description;
 
+	/** @var Invoice */
+	private $invoice;
+
 	public function getPayer(): ?PaymentParty {
 		return $this->payer;
 	}
@@ -50,6 +53,15 @@ class Payment {
 
 	public function setDescription(?string $description): Payment {
 		$this->description = $description;
+		return $this;
+	}
+
+	public function getInvoice(): Invoice {
+		return $this->invoice;
+	}
+
+	public function setInvoice(Invoice $invoice): Payment {
+		$this->invoice = $invoice;
 		return $this;
 	}
 

@@ -274,11 +274,16 @@ class OrderManager {
 
 	private function synchronizePaymentToDation(Student $student, WC_Order $order) {
 		$paymentId = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_PAYMENT_ID, true);
+		$invoiceId = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_INVOICE_ID, true);
+		var_dump($invoiceId);
 		try {
 			if($paymentId === ''
+				&& $invoiceId !== ''
 				&& !empty($student->getId())
 			) {
 				$payment = new Payment();
+
+				$invoice = (new Invoice())->setId($invoiceId);
 
 				$studentParty = (new PaymentParty())
 					->setType(PaymentParty::TYPE_STUDENT)
@@ -291,6 +296,7 @@ class OrderManager {
 				$payment
 					->setPayer($studentParty)
 					->setPayee($bankParty)
+					->setInvoice($invoice)
 					->setAmount(floatval($order->get_total()))
 					->setDescription('Betaald via websitekoppeling');
 
