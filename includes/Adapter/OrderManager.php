@@ -8,6 +8,7 @@ use DateTime;
 use Dation\Woocommerce\Model\Address;
 use Dation\Woocommerce\Model\CourseInstancePart;
 use Dation\Woocommerce\Model\Enrollment;
+use Dation\Woocommerce\Model\Invoice;
 use Dation\Woocommerce\Model\Payment;
 use Dation\Woocommerce\Model\PaymentParty;
 use Dation\Woocommerce\Model\Student;
@@ -36,10 +37,10 @@ class OrderManager {
 	const KEY_AUTOMATIC_TRANSMISSION     = 'Automaat';
 	const KEY_ENROLLMENT_ID              = 'dw_has_enrollment';
 	const KEY_PAYMENT_ID                 = 'dw_has_payment';
+	const KEY_INVOICE_ID                 = 'dw_has_invoice';
+	const KEY_STUDENT_ID                 = 'dw_student_id';
 
 	const BELGIAN_DATE_FORMAT = 'd.m.Y';
-
-	const KEY_STUDENT_ID = 'dw_student_id';
 
 	/** @var RestApiClient */
 	private $client;
@@ -88,12 +89,14 @@ class OrderManager {
 		try {
 			$student = $this->synchronizeStudentToDation($order);
 
-			$this->synchronizePaymentToDation($student, $order);
-
 			$this->synchronizeEnrollmentToDation($order, $student);
 
+			$this->billEnrollment($order);
+
+			$this->synchronizePaymentToDation($student, $order);
+
 		} catch(Throwable $e) {
-			$this->coughtErrorActions($order,'Synchronisatie mislukt', $e->getMessage());
+			$this->caughtErrorActions($order,'Synchronisatie mislukt', $e->getMessage());
 		}
 	}
 
@@ -105,7 +108,7 @@ class OrderManager {
 	 * @param string $errorType
 	 * @param $message
 	 */
-	private function coughtErrorActions(WC_Order $order, string $errorType, $message):void {
+	private function caughtErrorActions(WC_Order $order, string $errorType, $message):void {
 		do_action('woocommerce_email_classes');
 		do_action('dw_synchronize_failed_email_action', $order);
 
@@ -127,7 +130,7 @@ class OrderManager {
 			$reason = json_decode($e->getResponse()->getBody()->getContents(), true);
 			$message = isset($reason['detail']) ? $reason['detail'] : $reason;
 
-			$this->coughtErrorActions($order,'Het synchroniseren van de student is mislukt', $message);
+			$this->caughtErrorActions($order,'Het synchroniseren van de student is mislukt', $message);
 		}
 
 	}
@@ -166,7 +169,7 @@ class OrderManager {
 					$courseInstanceId
 				);
 
-				update_post_meta($order->get_id(), self::KEY_ENROLLMENT_ID, true);
+				update_post_meta($order->get_id(), self::KEY_ENROLLMENT_ID, $synchedEnrollment->getId());
 
 				$order->add_order_note(sprintf($this->translator->translate('Leerling ingeschreven op %s'), $link));
 			}
@@ -177,7 +180,7 @@ class OrderManager {
 			$reason = json_decode($e->getResponse()->getBody()->getContents(), true);
 			$message = isset($reason['detail']) ? $reason['detail'] : $reason;
 
-			$this->coughtErrorActions($order, 'Het synchroniseren van de inschrijving is mislukt', $message);
+			$this->caughtErrorActions($order, 'Het synchroniseren van de inschrijving is mislukt', $message);
 		}
 	}
 
@@ -224,7 +227,7 @@ class OrderManager {
 		try {
 			$address = AddressSplitter::splitAddress($order->get_billing_address_1());
 		} catch(SplittingException $e) {
-//			Add note, don't stop functionality
+			//Add note, don't stop functionality
 			$order->add_order_note('Let op! Er is iets misgegaan bij het synchroniseren van het adres van de leerling');
 		}
 
@@ -262,7 +265,7 @@ class OrderManager {
 	 */
 	private function getTransmissionComment(WC_Order $order): string {
 		$answer = $this->postMetaData->getPostMeta($order->get_id(),
-			OrderManager::KEY_AUTOMATIC_TRANSMISSION, true) === 'yes';
+				OrderManager::KEY_AUTOMATIC_TRANSMISSION, true) === 'yes';
 
 		return $this->translator->translate('Ik rijd enkel met een automaat')
 			. ': '
@@ -270,8 +273,11 @@ class OrderManager {
 	}
 
 	private function synchronizePaymentToDation(Student $student, WC_Order $order) {
+		$paymentId = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_PAYMENT_ID, true);
 		try {
-			if($this->postMetaData->getPostMeta($order->get_id(), self::KEY_PAYMENT_ID, true) === '' && !empty($student->getId())) {
+			if($paymentId === ''
+				&& !empty($student->getId())
+			) {
 				$payment = new Payment();
 
 				$studentParty = (new PaymentParty())
@@ -298,7 +304,30 @@ class OrderManager {
 			$reason = json_decode($e->getResponse()->getBody()->getContents(), true);
 			$message = isset($reason['detail']) ? $reason['detail'] : $reason;
 
-			$this->coughtErrorActions($order, 'Het synchroniseren van de betaling is mislukt', $message);
+			$this->caughtErrorActions($order, 'Het synchroniseren van de betaling is mislukt', $message);
+		}
+	}
+
+	private function billEnrollment(WC_Order $order): void {
+		try {
+			if(
+				$this->postMetaData->getPostMeta($order->get_id(), self::KEY_INVOICE_ID, true) == ''
+				&& $this->postMetaData->getPostMeta($order->get_id(), self::KEY_ENROLLMENT_ID , true) !== ''
+			) {
+				$enrollmentId = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_ENROLLMENT_ID, true);
+				$enrollment = (new Enrollment())->setId((int)$enrollmentId);
+				/** @var Invoice $invoice */
+				$invoice = $this->client->billEnrollment($enrollment);
+
+				update_post_meta($order->get_id(), self::KEY_INVOICE_ID, $invoice->getId());
+
+				$order->add_order_note($this->translator->translate('Inschrijving gefactureerd'));
+			}
+		} catch (ClientException $e) {
+			$reason = json_decode($e->getResponse()->getBody()->getContents(), true);
+			$message = isset($reason['detail']) ? $reason['detail'] : $reason;
+
+			$this->caughtErrorActions($order, 'Het factureren van de inschrijving is mislukt', $message);
 		}
 	}
 }
