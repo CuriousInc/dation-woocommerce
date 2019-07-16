@@ -275,7 +275,6 @@ class OrderManager {
 	private function synchronizePaymentToDation(Student $student, WC_Order $order) {
 		$paymentId = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_PAYMENT_ID, true);
 		$invoiceId = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_INVOICE_ID, true);
-		var_dump($invoiceId);
 		try {
 			if($paymentId === ''
 				&& $invoiceId !== ''
@@ -283,7 +282,7 @@ class OrderManager {
 			) {
 				$payment = new Payment();
 
-				$invoice = (new Invoice())->setId($invoiceId);
+				$invoice = (new Invoice())->setId((int)$invoiceId);
 
 				$studentParty = (new PaymentParty())
 					->setType(PaymentParty::TYPE_STUDENT)
@@ -315,12 +314,13 @@ class OrderManager {
 	}
 
 	private function billEnrollment(WC_Order $order): void {
+		$invoiceId = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_INVOICE_ID, true);
+		$enrollmentId = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_ENROLLMENT_ID, true);
 		try {
 			if(
 				$this->postMetaData->getPostMeta($order->get_id(), self::KEY_INVOICE_ID, true) == ''
 				&& $this->postMetaData->getPostMeta($order->get_id(), self::KEY_ENROLLMENT_ID , true) !== ''
 			) {
-				$enrollmentId = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_ENROLLMENT_ID, true);
 				$enrollment = (new Enrollment())->setId((int)$enrollmentId);
 				/** @var Invoice $invoice */
 				$invoice = $this->client->billEnrollment($enrollment);

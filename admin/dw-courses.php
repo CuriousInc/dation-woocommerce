@@ -13,8 +13,6 @@ function dw_render_course_page() {
 	$table = new ProductList();
 	$table->prepare_items();
 
-	dw_woocommerce_order_status_processing(430);
-
 	?>
 	<div class="wrap">
 		<h1>Cursussen</h1>
