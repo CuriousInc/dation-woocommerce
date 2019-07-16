@@ -56,7 +56,7 @@ class Payment {
 		return $this;
 	}
 
-	public function getInvoice(): Invoice {
+	public function getInvoice(): ?Invoice {
 		return $this->invoice;
 	}
 
