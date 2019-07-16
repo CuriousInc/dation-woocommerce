@@ -17,6 +17,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 /**
@@ -175,10 +176,14 @@ class RestApiClient {
 			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER
 		]);
 
+		//The assumption here is that a TKM will always be invoiced on a single invoice, so we remove ʻ[ʻ and ʻ]ʻ from the response
 		return $this->serializer->deserialize(
 			$response->getBody()->getContents(),
-			Invoice::class,
-			'json'
+			Invoice::class . '[]',
+			'json',
+			[
+				ObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+			]
 		);
 	}
 }

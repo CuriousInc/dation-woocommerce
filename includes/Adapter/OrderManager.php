@@ -274,11 +274,15 @@ class OrderManager {
 
 	private function synchronizePaymentToDation(Student $student, WC_Order $order) {
 		$paymentId = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_PAYMENT_ID, true);
+		$invoiceId = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_INVOICE_ID, true);
 		try {
 			if($paymentId === ''
+				&& $invoiceId !== ''
 				&& !empty($student->getId())
 			) {
 				$payment = new Payment();
+
+				$invoice = (new Invoice())->setId((int)$invoiceId);
 
 				$studentParty = (new PaymentParty())
 					->setType(PaymentParty::TYPE_STUDENT)
@@ -291,6 +295,7 @@ class OrderManager {
 				$payment
 					->setPayer($studentParty)
 					->setPayee($bankParty)
+					->setInvoice($invoice)
 					->setAmount(floatval($order->get_total()))
 					->setDescription('Betaald via websitekoppeling');
 
@@ -309,15 +314,16 @@ class OrderManager {
 	}
 
 	private function billEnrollment(WC_Order $order): void {
+		$invoiceId = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_INVOICE_ID, true);
+		$enrollmentId = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_ENROLLMENT_ID, true);
 		try {
 			if(
-				$this->postMetaData->getPostMeta($order->get_id(), self::KEY_INVOICE_ID, true) == ''
-				&& $this->postMetaData->getPostMeta($order->get_id(), self::KEY_ENROLLMENT_ID , true) !== ''
+				$invoiceId == ''
+				&& $enrollmentId !== ''
 			) {
-				$enrollmentId = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_ENROLLMENT_ID, true);
 				$enrollment = (new Enrollment())->setId((int)$enrollmentId);
 				/** @var Invoice $invoice */
-				$invoice = $this->client->billEnrollment($enrollment);
+				$invoice = $this->client->billEnrollment($enrollment)[0];
 
 				update_post_meta($order->get_id(), self::KEY_INVOICE_ID, $invoice->getId());
 
