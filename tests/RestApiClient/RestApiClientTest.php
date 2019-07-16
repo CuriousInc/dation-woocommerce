@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 use Dation\Woocommerce\Model\CourseInstance;
+use Dation\Woocommerce\Model\Invoice;
 use Dation\Woocommerce\Model\Payment;
 use Dation\Woocommerce\Model\PaymentParty;
 use Dation\Woocommerce\Model\Student;
 use Dation\Woocommerce\RestApiClient\RestApiClient;
+use Dation\Woocommerce\Model\Enrollment;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
@@ -102,6 +104,25 @@ class RestApiClientTest extends TestCase {
 		$client     = new RestApiClient($mockHttpClient);
 
 		$client->postPayment($payment);
+	}
+
+	public function testBillEnrollment() {
+		$enrollment = (new Enrollment())->setId($this->faker->randomNumber());
+
+		$mockHttpClient = $this->mockGuzzle([
+			new Response(200, [], json_encode([
+				[
+					"id" => 150
+				],
+			])),
+		]);
+
+		$client =  new RestApiClient($mockHttpClient);
+
+		$result = $client->billEnrollment($enrollment);
+
+		$this->assertInstanceOf(Invoice::class, $result);
+
 	}
 
 	private function mockGuzzle(array $responseQueue): HttpClient {
