@@ -177,7 +177,7 @@ class RestApiClient {
 		]);
 
 		//The assumption here is that a TKM will always be invoiced on a single invoice, so we remove ʻ[ʻ and ʻ]ʻ from the response
-		$result = $this->serializer->deserialize(
+		return $this->serializer->deserialize(
 			substr($response->getBody()->getContents(), 1, -1),
 			Invoice::class,
 			'json',
@@ -185,6 +185,5 @@ class RestApiClient {
 				ObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
 			]
 		);
-		return $result;
 	}
 }

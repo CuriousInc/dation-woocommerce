@@ -318,8 +318,8 @@ class OrderManager {
 		$enrollmentId = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_ENROLLMENT_ID, true);
 		try {
 			if(
-				$this->postMetaData->getPostMeta($order->get_id(), self::KEY_INVOICE_ID, true) == ''
-				&& $this->postMetaData->getPostMeta($order->get_id(), self::KEY_ENROLLMENT_ID , true) !== ''
+				$invoiceId == ''
+				&& $enrollmentId !== ''
 			) {
 				$enrollment = (new Enrollment())->setId((int)$enrollmentId);
 				/** @var Invoice $invoice */
