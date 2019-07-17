@@ -32,22 +32,49 @@ function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text)
 	$issueDrivingLicense    = get_post_meta($order->get_id(), OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE, true);
 	$dateOfBirth            = get_post_meta($order->get_id(), OrderManager::KEY_DATE_OF_BIRTH, true);
 	$nationalRegistryNumber = get_post_meta($order->get_id(), OrderManager::KEY_NATIONAL_REGISTRY_NUMBER, true);
-	$automaticTransmission  = get_post_meta($order->get_id(), OrderManager::KEY_AUTOMATIC_TRANSMISSION, true);
+	$automaticTransmission  = get_post_meta($order->get_id(), OrderManager::KEY_AUTOMATIC_TRANSMISSION, true) === 'no' ? 'Nee' : 'Ja' ;
+	$hasReceivedLetter      = get_post_meta($order->get_id(), OrderManager::KEY_HAS_RECEIVED_LETTER, true);
 
-	if(!$plain_text) {
-		echo '<h2>Extra informatie</h2>
+	if($hasReceivedLetter === "no") {
+		$receivedLetterListItem = '<li style="color: red"><strong>Brief ontvangen</strong> Nee</li>';
+	} else {
+		$receivedLetterListItem = '<li><strong>Brief ontvangen</strong> Ja</li>';
+	}
+	$issueDrivingLicenseDateWarning = "";
+	try {
+		canFollowMoment($issueDrivingLicense);
+	} catch (LicenseDateOverTimeException $e) {
+		//Add warning
+		$issueDrivingLicenseDateWarning = 'Let op: TKM later dan 9 maanden';
+	} catch (LicenseDateUnderTimeException $e) {
+		//This should never happen
+		$issueDrivingLicenseDateWarning = 'Let op: TKM eerder dan 6 maanden';
+	}
+
+	if($sent_to_admin) {
+		if(!$plain_text) {
+			echo '<h2>Extra informatie</h2>
 				<ul>
 					<li><strong>Afgiftedatum rijbewijs</strong> ' . $issueDrivingLicense . '</li>
 					<li><strong>Geboortedatum</strong> ' . $dateOfBirth . '</li>
 					<li><strong>Rijksregisternummer</strong> ' . RijksregisternummerHelper::format($nationalRegistryNumber) . '</li>
-					<li><strong>Automaat</strong> ' . $automaticTransmission === 'no' ? 'Nee' : 'Ja' . '</li>
+					<li><strong>Automaat</strong> ' . $automaticTransmission . '</li>
+					' . $receivedLetterListItem . '
 				</ul>';
-	} else {
-		echo "EXTRA INFORMATIE\n
+			if($issueDrivingLicenseDateWarning !== "") {
+				echo $issueDrivingLicenseDateWarning;
+			}
+		} else {
+			echo "EXTRA INFORMATIE\n
 				Afgiftedatum rijbewijs: $issueDrivingLicense
 				Geboortedatum: $dateOfBirth
 				Rijksregisternummer: $nationalRegistryNumber
-				Automaat: $automaticTransmission";
+				Automaat: $automaticTransmission
+				Brief Ontvangen: $hasReceivedLetter";
+			if($issueDrivingLicenseDateWarning !== "") {
+				echo $issueDrivingLicenseDateWarning;
+			}
+		}
 	}
 }
 
@@ -84,6 +111,17 @@ function dw_override_checkout_fields($fields) {
 			'yes' => __('Yes'),
 		],
 		'label'    => __('Ik rijd enkel met een automaat'),
+		'required' => true,
+	];
+
+	$newOrderFields['order'][OrderManager::KEY_HAS_RECEIVED_LETTER] = [
+		'type'     => 'select',
+		'label'    => 'Ik heb een oproepbrief ontvangen van de overheid om een terugkommoment te volgen',
+		'options'  => [
+			''    => __(''),
+			'no'  => __('No'),
+			'yes' => __('Yes'),
+		],
 		'required' => true,
 	];
 
@@ -169,7 +207,7 @@ function dw_is_match_national_registry_number_and_birth_date(
 ): bool {
 	$registryNumber = new Rijksregisternummer($registryNumberString);
 	return null === $registryNumber->getBirthday()
-	       || $registryNumber->getBirthday() === $birthDate->format('Y-m-d');
+		|| $registryNumber->getBirthday() === $birthDate->format('Y-m-d');
 }
 
 /**
@@ -182,7 +220,8 @@ function dw_checkout_update_order_meta($orderId) {
 		OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE,
 		OrderManager::KEY_DATE_OF_BIRTH,
 		OrderManager::KEY_NATIONAL_REGISTRY_NUMBER,
-		OrderManager::KEY_AUTOMATIC_TRANSMISSION
+		OrderManager::KEY_AUTOMATIC_TRANSMISSION,
+		OrderManager::KEY_HAS_RECEIVED_LETTER,
 	];
 
 	foreach($fields as $field) {
@@ -226,6 +265,8 @@ function dw_admin_order_render_extra_fields($order) {
 		. get_post_meta($order->get_id(), OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE, true) . '</p>';
 	echo '<p><strong>' . __('Automaat') . ':</strong> <br/>'
 		. (get_post_meta($order->get_id(), OrderManager::KEY_AUTOMATIC_TRANSMISSION, true) === 'yes' ? __('Ja') : __('Nee')) . '</p>';
+	echo '<p><strong>' . __('Brief ontvangen') . ':</strong> <br/>'
+		. (get_post_meta($order->get_id(), OrderManager::KEY_HAS_RECEIVED_LETTER, true) === "yes" ? __("Ja") : __("Nee"))  . '</p>';
 }
 
 add_action('woocommerce_order_status_processing', 'dw_woocommerce_order_status_processing', 10, 1);
@@ -239,16 +280,16 @@ function dw_woocommerce_order_status_processing(int $orderId) {
 add_action('woocommerce_order_actions', 'dw_order_meta_box_actions');
 
 function dw_order_meta_box_actions(array $actions): array {
-    $actions['dw_send_student_to_dashboard'] = __('Bestelling synchroniseren met Dation');
+	$actions['dw_send_student_to_dashboard'] = __('Bestelling synchroniseren met Dation');
 
-    return $actions;
+	return $actions;
 }
 
 add_action('woocommerce_order_action_dw_send_student_to_dashboard', 'dw_send_student_to_dashboard');
 
 function dw_send_student_to_dashboard(WC_Order $order) {
-    $orderManager = OrderManagerFactory::getManager();
-    $orderManager->sendToDation($order);
+	$orderManager = OrderManagerFactory::getManager();
+	$orderManager->sendToDation($order);
 }
 
 add_filter('woocommerce_email_classes', 'dw_add_synchronizing_failed_email', 10, 1);

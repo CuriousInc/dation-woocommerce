@@ -35,6 +35,7 @@ class OrderManager {
 	const KEY_DATE_OF_BIRTH              = 'Geboortedatum';
 	const KEY_NATIONAL_REGISTRY_NUMBER   = 'Rijksregisternummer';
 	const KEY_AUTOMATIC_TRANSMISSION     = 'Automaat';
+	const KEY_HAS_RECEIVED_LETTER        = 'dw_has_received_letter';
 	const KEY_ENROLLMENT_ID              = 'dw_has_enrollment';
 	const KEY_PAYMENT_ID                 = 'dw_has_payment';
 	const KEY_INVOICE_ID                 = 'dw_has_invoice';
