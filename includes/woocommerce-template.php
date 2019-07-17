@@ -9,8 +9,15 @@ declare(strict_types=1);
 use Dation\Woocommerce\Adapter\OrderManager;
 use Dation\Woocommerce\Adapter\OrderManagerFactory;
 use Dation\Woocommerce\Email\EmailSyncFailed;
+use Dation\Woocommerce\Exceptions\LicenseDateOverTimeException;
+use Dation\Woocommerce\Exceptions\LicenseDateUnderTimeException;
 use SetBased\Rijksregisternummer\Rijksregisternummer;
 use SetBased\Rijksregisternummer\RijksregisternummerHelper;
+
+const TOO_EARLY_MESSAGE = "Het gekozen terugkommoment is te vroeg. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs.";
+const OVERTIME_MESSAGE = "Let op: als u geen uitstel heeft gekregen van de overheid dient u een boete van 51 euro te betalen. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze.";
+const LONG_OVERTIME_MESSAGE = "Let op: als u geen uitstel heeft gekregen van de overheid bestaat de kans dat u een boete van 51 euro moet betalen of dat u helemaal niet mag deelnemen aan het terugkommoment op deze datum. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze.";
+const DW_WARNING = "dw_warning_given";
 
 // Register override for checkout and order email
 add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
@@ -92,6 +99,33 @@ function dw_override_checkout_fields($fields) {
 add_action('woocommerce_checkout_process', 'dw_process_checkout');
 
 function dw_process_checkout() {
+	$driverLicenseIssueDate = $_POST[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE];
+	if(!empty($driverLicenseIssueDate)) {
+		if(!dw_is_valid_date($driverLicenseIssueDate)) {
+			wc_add_notice(__('Afgiftedatum rijbewijs is onjuist, verwacht formaat dd.mm.yyyy'), 'error');
+		} else {
+			try {
+				canFollowMoment($driverLicenseIssueDate);
+			} catch (LicenseDateOverTimeException $e) {
+				if(empty($_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE]) || $_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] === $driverLicenseIssueDate) {
+					//If the dat is the same, and we have nog
+					if($_SESSION[DW_WARNING] !== true) {
+						$_SESSION[DW_WARNING] = true;
+						$_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] = $driverLicenseIssueDate;
+
+						wc_add_notice(__($e->getMessage()), "error");
+					}
+				} else {
+					//If the date is different then before give the warning again.
+					wc_add_notice(__($e->getMessage()), "error");
+					$_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] = $driverLicenseIssueDate;
+				}
+			} catch (LicenseDateUnderTimeException $e) {
+				wc_add_notice(__($e->getMessage()), "error");
+			}
+		}
+	}
+
 	if(!empty($_POST[OrderManager::KEY_DATE_OF_BIRTH])) {
 		if(!dw_is_valid_date($_POST[OrderManager::KEY_DATE_OF_BIRTH])) {
 			wc_add_notice(__('Geboortedatum is onjuist, verwacht formaat dd.mm.yyyy'), 'error');
@@ -110,12 +144,6 @@ function dw_process_checkout() {
 			)
 		) {
 			wc_add_notice(__('Rijksregsternummer komt niet overeen met geboortedatum'), 'error');
-		}
-	}
-
-	if(!empty($_POST[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE])) {
-		if(!dw_is_valid_date($_POST[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE])) {
-			wc_add_notice(__('Afgiftedatum rijbewijs is onjuist, verwacht formaat dd.mm.yyyy'), 'error');
 		}
 	}
 }
@@ -245,4 +273,36 @@ function dw_add_synchronizing_failed_email($email_classes) {
 
 	return $email_classes;
 
+}
+
+/**
+ * @param $input
+ * @return bool
+ * @throws LicenseDateOverTimeException
+ * @throws LicenseDateUnderTimeException
+ */
+function canFollowMoment($input): bool {
+	$dateTime    = DateTime::createFromFormat(OrderManager::BELGIAN_DATE_FORMAT, $input);
+	$dateTime->setTime(0, 0);
+	$currentDate = (new DateTime())->setTime(0, 0);
+
+	if($currentDate < $dateTime) {
+		throw new LicenseDateUnderTimeException( TOO_EARLY_MESSAGE);
+	}
+
+	$diff = $dateTime->diff($currentDate);
+
+	if($diff->y > 0 || ($diff->y === 0 && $diff->m > 12)) {
+		throw new LicenseDateOverTimeException(LONG_OVERTIME_MESSAGE);
+	}
+
+	if($diff->m === 10 || $diff->m === 11) {
+		throw new LicenseDateOverTimeException(OVERTIME_MESSAGE);
+	}
+
+	if($diff->m < 6) {
+		throw new LicenseDateUnderTimeException(TOO_EARLY_MESSAGE);
+	}
+
+	return true;
 }
