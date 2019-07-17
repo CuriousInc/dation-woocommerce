@@ -14,10 +14,10 @@ use Dation\Woocommerce\Exceptions\LicenseDateUnderTimeException;
 use SetBased\Rijksregisternummer\Rijksregisternummer;
 use SetBased\Rijksregisternummer\RijksregisternummerHelper;
 
-const TOO_EARLY_MESSAGE = "Het gekozen terugkommoment is te vroeg. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs.";
-const OVERTIME_MESSAGE = "Let op: als u geen uitstel heeft gekregen van de overheid dient u een boete van 51 euro te betalen. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze.";
+const TOO_EARLY_MESSAGE     = "Het gekozen terugkommoment is te vroeg. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs.";
+const OVERTIME_MESSAGE      = "Let op: als u geen uitstel heeft gekregen van de overheid dient u een boete van 51 euro te betalen. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze.";
 const LONG_OVERTIME_MESSAGE = "Let op: als u geen uitstel heeft gekregen van de overheid bestaat de kans dat u een boete van 51 euro moet betalen of dat u helemaal niet mag deelnemen aan het terugkommoment op deze datum. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze.";
-const DW_WARNING = "dw_warning_given";
+const DW_WARNING            = "dw_warning_given";
 
 // Register override for checkout and order email
 add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
@@ -333,7 +333,7 @@ function canFollowMoment($input): bool {
 
 	$diff = $dateTime->diff($currentDate);
 
-	if($diff->y > 0 || ($diff->y === 0 && $diff->m > 12)) {
+	if($diff->y > 0 || ($diff->y === 0 && $diff->m > 11)) {
 		throw new LicenseDateOverTimeException(LONG_OVERTIME_MESSAGE);
 	}
 
