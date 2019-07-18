@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Dation\Woocommerce\Adapter;
 
 use DateTime;
+use Dation\Woocommerce\Exceptions\LicenseDateOverTimeException;
+use Dation\Woocommerce\Exceptions\LicenseDateUnderTimeException;
 use Dation\Woocommerce\Model\Address;
 use Dation\Woocommerce\Model\CourseInstancePart;
 use Dation\Woocommerce\Model\Enrollment;
@@ -95,6 +97,8 @@ class OrderManager {
 			$this->billEnrollment($order);
 
 			$this->synchronizePaymentToDation($student, $order);
+
+			$this->sendWarningEmail($order);
 
 		} catch(Throwable $e) {
 			$this->coughtErrorActions($order,'Synchronisatie mislukt', $e->getMessage());
@@ -335,6 +339,26 @@ class OrderManager {
 			$message = isset($reason['detail']) ? $reason['detail'] : $reason;
 
 			$this->coughtErrorActions($order, 'Het factureren van de inschrijving is mislukt', $message);
+		}
+	}
+
+	private function sendWarningEmail(WC_Order $order) {
+		$hasReceivedLetter = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_HAS_RECEIVED_LETTER, true);
+		$issueDateDrivingLicense = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_ISSUE_DATE_DRIVING_LICENSE, true);
+
+		if($hasReceivedLetter === 'no' || !$this->orderManagerCanFollowMoment($issueDateDrivingLicense)) {
+			do_action('woocommerce_email_classes');
+			do_action('dw_warning_email_action', $order);
+		}
+	}
+
+	private function orderManagerCanFollowMoment($issueDateDrivingLicense) {
+		try {
+			return canFollowMoment($issueDateDrivingLicense);
+		} catch (LicenseDateOverTimeException $e) {
+			return false;
+		} catch (LicenseDateUnderTimeException $e) {
+			return false;
 		}
 	}
 }

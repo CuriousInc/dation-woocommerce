@@ -9,6 +9,7 @@ declare(strict_types=1);
 use Dation\Woocommerce\Adapter\OrderManager;
 use Dation\Woocommerce\Adapter\OrderManagerFactory;
 use Dation\Woocommerce\Email\EmailSyncFailed;
+use Dation\Woocommerce\Email\InformationWarning;
 use Dation\Woocommerce\Exceptions\LicenseDateOverTimeException;
 use Dation\Woocommerce\Exceptions\LicenseDateUnderTimeException;
 use SetBased\Rijksregisternummer\Rijksregisternummer;
@@ -306,11 +307,15 @@ function dw_add_synchronizing_failed_email($email_classes) {
 	if($email_classes === '') {
 		$email_classes = [];
 	}
-	$emailClass = new EmailSyncFailed();
-	// add the email class to the list of email classes that WooCommerce loads
-	$email_classes['dw_failed_email'] = $emailClass;
+	$syncFailedEmail = new EmailSyncFailed();
+	$warningEmail = new InformationWarning();
 
-	add_action('dw_synchronize_failed_email_action', [$emailClass, 'dw_email_trigger'], 1, 1);
+	// add the email class to the list of email classes that WooCommerce loads
+	$email_classes['dw_failed_email'] = $syncFailedEmail;
+	$email_classes["dw_warning_email"] = $warningEmail;
+
+	add_action('dw_synchronize_failed_email_action', [$syncFailedEmail, 'dw_email_trigger'], 1, 1);
+	add_action("dw_warning_email_action", [$warningEmail, "dw_email_warning_trigger"], 1, 1);
 
 	return $email_classes;
 
