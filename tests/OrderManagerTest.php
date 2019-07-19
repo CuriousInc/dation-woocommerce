@@ -103,7 +103,7 @@ class OrderManagerTest extends TestCase {
 
 		$this->assertEquals(true, $student->isPlanAsIndependent());
 
-		$expectedComment = 'Ik rijd enkel met een automaat: ' . ($isAutomatic ? 'Ja' : 'Nee');
+		$expectedComment = 'Ik rijd enkel met een automaat: ' . ($isAutomatic === 'yes' ? 'Ja' : 'Nee');
 		$this->assertEquals($expectedComment, $student->getComments());
 	}
 
