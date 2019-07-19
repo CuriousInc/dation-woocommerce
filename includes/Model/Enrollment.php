@@ -12,19 +12,12 @@ class Enrollment {
 	/** @var CourseInstanceSlot[] $slots */
 	private $slots;
 
-	/** @var array $company */
-	private $company;
-
 	public function getStudent(): Student {
 		return $this->student;
 	}
 
 	public function getSlots(): array {
 		return $this->slots;
-	}
-
-	public function getCompany(): ?array {
-		return $this->company;
 	}
 
 	public function setStudent(Student $student): Enrollment {
@@ -37,8 +30,4 @@ class Enrollment {
 		return $this;
 	}
 
-	public function setCompany(?array $company): Enrollment {
-		$this->company = $company;
-		return $this;
-	}
 }
