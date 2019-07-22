@@ -90,15 +90,17 @@ class OrderManager {
 	 */
 	public function sendToDation(WC_Order $order): void {
 		try {
-			$student = $this->synchronizeStudentToDation($order);
+			$student = $this->getStudentFromOrder($order);
+
+			$student = $this->verifyStudentInformation($order, $student);
+
+			$student = $this->synchronizeStudentToDation($student, $order);
 
 			$this->synchronizeEnrollmentToDation($order, $student);
 
 			$this->billEnrollment($order);
 
 			$this->synchronizePaymentToDation($student, $order);
-
-			$this->sendWarningEmail($order);
 
 		} catch(Throwable $e) {
 			$this->coughtErrorActions($order,'Synchronisatie mislukt', $e->getMessage());
@@ -121,9 +123,8 @@ class OrderManager {
 		$order->add_order_note("{$note}: <code>{$message}</code>");
 	}
 
-	private function synchronizeStudentToDation(WC_Order $order): Student {
+	private function synchronizeStudentToDation(Student  $student, WC_Order $order): Student {
 		try {
-			$student = $this->getStudentFromOrder($order);
 			if(empty($student->getId())) {
 				$student = $this->sendStudentToDation($student);
 				update_post_meta($order->get_id(), self::KEY_STUDENT_ID, $student->getId());
@@ -342,14 +343,32 @@ class OrderManager {
 		}
 	}
 
-	private function sendWarningEmail(WC_Order $order) {
+	/**
+	 * verify order input and notify if something is wrong
+	 *
+	 * @param WC_Order $order
+	 * @param Student $student
+	 * @return Student
+	 */
+	private function verifyStudentInformation(WC_Order $order, Student $student): Student {
 		$hasReceivedLetter = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_HAS_RECEIVED_LETTER, true);
 		$issueDateDrivingLicense = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_ISSUE_DATE_DRIVING_LICENSE, true);
 
 		if($hasReceivedLetter === 'no' || !$this->orderManagerCanFollowMoment($issueDateDrivingLicense)) {
+			$comments = $student->getComments();
+			if($hasReceivedLetter === "no") {
+				$comments .= " ||| " . "Let op: Student heeft geen brief ontvangen";
+			}
+			if(!$this->orderManagerCanFollowMoment($issueDateDrivingLicense)) {
+				$comments .= " ||| " . "Let op: TKM later dan 9 maanden";
+			}
+			$student->setComments($comments);
+
 			do_action('woocommerce_email_classes');
 			do_action('dw_warning_email_action', $order);
 		}
+
+		return $student;
 	}
 
 	private function orderManagerCanFollowMoment($issueDateDrivingLicense) {
