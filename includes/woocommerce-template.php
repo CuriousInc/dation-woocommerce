@@ -354,11 +354,11 @@ function canFollowMoment(string $licenseIssueDate, string $trainingDate): bool {
 
 	$diff = $licenseDateTime->diff($trainingDateTime);
 
-	if($diff->y > 0 || ($diff->y === 0 && $diff->m > 11)) {
+	if($diff->y > 0 || ($diff->y === 0 && $diff->m > 10)) {
 		throw new LicenseDateOverTimeException(LONG_OVERTIME_MESSAGE);
 	}
 
-	if(($diff->m === 9 && $diff->days > 0) || $diff->m === 10 || $diff->m === 11) {
+	if($diff->m === 9 || $diff->m === 10) {
 		throw new LicenseDateOverTimeException(OVERTIME_MESSAGE);
 	}
 
