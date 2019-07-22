@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Dation\Woocommerce\Adapter;
 
 use DateTime;
+use Dation\Woocommerce\Exceptions\LicenseDateOverTimeException;
+use Dation\Woocommerce\Exceptions\LicenseDateUnderTimeException;
 use Dation\Woocommerce\Model\Address;
 use Dation\Woocommerce\Model\CourseInstancePart;
 use Dation\Woocommerce\Model\Enrollment;
@@ -35,6 +37,7 @@ class OrderManager {
 	const KEY_DATE_OF_BIRTH              = 'Geboortedatum';
 	const KEY_NATIONAL_REGISTRY_NUMBER   = 'Rijksregisternummer';
 	const KEY_AUTOMATIC_TRANSMISSION     = 'Automaat';
+	const KEY_HAS_RECEIVED_LETTER        = 'dw_has_received_letter';
 	const KEY_ENROLLMENT_ID              = 'dw_has_enrollment';
 	const KEY_PAYMENT_ID                 = 'dw_has_payment';
 	const KEY_INVOICE_ID                 = 'dw_has_invoice';
@@ -87,7 +90,11 @@ class OrderManager {
 	 */
 	public function sendToDation(WC_Order $order): void {
 		try {
-			$student = $this->synchronizeStudentToDation($order);
+			$student = $this->getStudentFromOrder($order);
+
+			$student = $this->verifyStudentInformation($order, $student);
+
+			$student = $this->synchronizeStudentToDation($student, $order);
 
 			$this->synchronizeEnrollmentToDation($order, $student);
 
@@ -116,22 +123,20 @@ class OrderManager {
 		$order->add_order_note("{$note}: <code>{$message}</code>");
 	}
 
-	private function synchronizeStudentToDation(WC_Order $order): Student {
+	private function synchronizeStudentToDation(Student  $student, WC_Order $order): Student {
 		try {
-			$student = $this->getStudentFromOrder($order);
 			if(empty($student->getId())) {
 				$student = $this->sendStudentToDation($student);
 				update_post_meta($order->get_id(), self::KEY_STUDENT_ID, $student->getId());
 				$order->add_order_note($this->syncSuccessNote($student));
 			}
-
-			return $student;
 		} catch (ClientException $e) {
 			$reason = json_decode($e->getResponse()->getBody()->getContents(), true);
 			$message = isset($reason['detail']) ? $reason['detail'] : $reason;
 
 			$this->caughtErrorActions($order,'Het synchroniseren van de student is mislukt', $message);
 		}
+		return $student;
 
 	}
 
@@ -334,6 +339,52 @@ class OrderManager {
 			$message = isset($reason['detail']) ? $reason['detail'] : $reason;
 
 			$this->caughtErrorActions($order, 'Het factureren van de inschrijving is mislukt', $message);
+		}
+	}
+
+	/**
+	 * verify order input and notify if something is wrong
+	 *
+	 * @param WC_Order $order
+	 * @param Student $student
+	 * @return Student
+	 */
+	private function verifyStudentInformation(WC_Order $order, Student $student): Student {
+		$hasReceivedLetter       = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_HAS_RECEIVED_LETTER, true);
+
+		if($hasReceivedLetter === 'no' || !$this->orderManagerCanFollowMoment($order)) {
+			$comments = $student->getComments();
+			if($hasReceivedLetter === "no") {
+				$comments .= " ||| " . "Let op: Student heeft geen brief ontvangen";
+			}
+			if(!$this->orderManagerCanFollowMoment($order)) {
+				$comments .= " ||| " . "Let op: TKM later dan 9 maanden";
+			}
+			$student->setComments($comments);
+
+			do_action('woocommerce_email_classes');
+			do_action('dw_warning_email_action', $order);
+		}
+
+		return $student;
+	}
+
+	private function orderManagerCanFollowMoment($order) {
+		$issueDateDrivingLicense = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_ISSUE_DATE_DRIVING_LICENSE, true);
+
+		foreach($order->get_items() as $key => $value) {
+			//What if order has multiple items(products) sold?
+			/** @var WC_Order_Item_Product $value */
+			$product = new WC_Product($value->get_data()['product_id']);
+			continue;
+		}
+		$trainingDate = $product->get_attribute('pa_datum');
+		try {
+			return canFollowMoment($issueDateDrivingLicense, $trainingDate);
+		} catch (LicenseDateOverTimeException $e) {
+			return false;
+		} catch (LicenseDateUnderTimeException $e) {
+			return false;
 		}
 	}
 }

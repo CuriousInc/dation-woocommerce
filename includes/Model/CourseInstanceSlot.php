@@ -18,9 +18,6 @@ class CourseInstanceSlot {
 	/** @var string $city */
 	private $city;
 
-	/** @var int $remainingAttendeeCapacity */
-	private $remainingAttendeeCapacity;
-
 	public function getId(): int {
 		return $this->id;
 	}
@@ -35,10 +32,6 @@ class CourseInstanceSlot {
 
 	public function getCity(): string {
 		return $this->city;
-	}
-
-	public function getRemainingAttendeeCapacity(): int {
-		return $this->remainingAttendeeCapacity;
 	}
 
 	public function setId(int $id): CourseInstanceSlot {
@@ -59,11 +52,6 @@ class CourseInstanceSlot {
 
 	public function setCity(string $city): CourseInstanceSlot {
 		$this->city = $city;
-		return $this;
-	}
-
-	public function setRemainingAttendeeCapacity(int $remainingAttendeeCapacity): CourseInstanceSlot {
-		$this->remainingAttendeeCapacity = $remainingAttendeeCapacity;
 		return $this;
 	}
 }
