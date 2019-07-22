@@ -36,6 +36,13 @@ function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text)
 	$automaticTransmission  = get_post_meta($order->get_id(), OrderManager::KEY_AUTOMATIC_TRANSMISSION, true) === 'no' ? 'Nee' : 'Ja' ;
 	$hasReceivedLetter      = get_post_meta($order->get_id(), OrderManager::KEY_HAS_RECEIVED_LETTER, true);
 
+	foreach($order->get_items() as $key => $value) {
+		//What if order has multiple items(products) sold?
+		/** @var WC_Order_Item_Product $value */
+		$product = new WC_Product($value->get_data()['product_id']);
+		continue;
+	}
+
 	if($hasReceivedLetter === "no") {
 		$receivedLetterListItem = '<li style="color: red"><strong>Brief ontvangen</strong> Nee</li>';
 	} else {
@@ -43,7 +50,7 @@ function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text)
 	}
 	$issueDrivingLicenseDateWarning = "";
 	try {
-		canFollowMoment($issueDrivingLicense);
+		canFollowMoment($issueDrivingLicense, $product->get_attribute('pa_datum'));
 	} catch (LicenseDateOverTimeException $e) {
 		//Add warning
 		$issueDrivingLicenseDateWarning = '<p style="color: red">Let op: TKM later dan 9 maanden</p>';
@@ -138,17 +145,21 @@ function dw_override_checkout_fields($fields) {
 add_action('woocommerce_checkout_process', 'dw_process_checkout');
 
 function dw_process_checkout() {
+	$cart = reset(WC()->cart->get_cart());
+	$product = new WC_Product($cart["product_id"]);
+	$trainingDate = $product->get_attribute("pa_datum");
+
 	$driverLicenseIssueDate = $_POST[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE];
 	if(!empty($driverLicenseIssueDate)) {
 		if(!dw_is_valid_date($driverLicenseIssueDate)) {
 			wc_add_notice(__('Afgiftedatum rijbewijs is onjuist, verwacht formaat dd.mm.yyyy'), 'error');
 		} else {
 			try {
-				canFollowMoment($driverLicenseIssueDate);
+				canFollowMoment($driverLicenseIssueDate, $trainingDate);
 			} catch (LicenseDateOverTimeException $e) {
 				if(empty($_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE]) || $_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] === $driverLicenseIssueDate) {
 					//If the dat is the same, and we have nog
-					if($_SESSION[DW_WARNING] !== true) {
+					if(empty($_SESSION[DW_WARNING])) {
 						$_SESSION[DW_WARNING] = true;
 						$_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] = $driverLicenseIssueDate;
 
@@ -163,7 +174,9 @@ function dw_process_checkout() {
 				wc_add_notice(__($e->getMessage()), "error");
 			}
 		}
+
 	}
+	$invalidDate = false;
 
 	if(!empty($_POST[OrderManager::KEY_DATE_OF_BIRTH])) {
 		if(!dw_is_valid_date($_POST[OrderManager::KEY_DATE_OF_BIRTH])) {
@@ -322,27 +335,30 @@ function dw_add_synchronizing_failed_email($email_classes) {
 }
 
 /**
- * @param $input
+ * @param string $licenseIssueDate
+ * @param string $trainingDate
  * @return bool
  * @throws LicenseDateOverTimeException
  * @throws LicenseDateUnderTimeException
  */
-function canFollowMoment($input): bool {
-	$dateTime    = DateTime::createFromFormat(OrderManager::BELGIAN_DATE_FORMAT, $input);
-	$dateTime->setTime(0, 0);
-	$currentDate = (new DateTime())->setTime(0, 0);
+function canFollowMoment(string $licenseIssueDate, string $trainingDate): bool {
+	$licenseDateTime    = DateTime::createFromFormat(OrderManager::BELGIAN_DATE_FORMAT, $licenseIssueDate);
+	$licenseDateTime->setTime(0, 0);
 
-	if($currentDate < $dateTime) {
+	$trainingDateTime = DateTime::createFromFormat("d-m-Y", $trainingDate);
+	$trainingDateTime->setTime(0, 0);
+
+	if($trainingDateTime < $licenseDateTime) {
 		throw new LicenseDateUnderTimeException( TOO_EARLY_MESSAGE);
 	}
 
-	$diff = $dateTime->diff($currentDate);
+	$diff = $licenseDateTime->diff($trainingDateTime);
 
 	if($diff->y > 0 || ($diff->y === 0 && $diff->m > 11)) {
 		throw new LicenseDateOverTimeException(LONG_OVERTIME_MESSAGE);
 	}
 
-	if($diff->m === 10 || $diff->m === 11) {
+	if(($diff->m === 9 && $diff->days > 0) || $diff->m === 10 || $diff->m === 11) {
 		throw new LicenseDateOverTimeException(OVERTIME_MESSAGE);
 	}
 

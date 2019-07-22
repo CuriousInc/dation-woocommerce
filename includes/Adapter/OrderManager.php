@@ -351,15 +351,15 @@ class OrderManager {
 	 * @return Student
 	 */
 	private function verifyStudentInformation(WC_Order $order, Student $student): Student {
-		$hasReceivedLetter = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_HAS_RECEIVED_LETTER, true);
+		$hasReceivedLetter       = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_HAS_RECEIVED_LETTER, true);
 		$issueDateDrivingLicense = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_ISSUE_DATE_DRIVING_LICENSE, true);
 
-		if($hasReceivedLetter === 'no' || !$this->orderManagerCanFollowMoment($issueDateDrivingLicense)) {
+		if($hasReceivedLetter === 'no' || !$this->orderManagerCanFollowMoment($order)) {
 			$comments = $student->getComments();
 			if($hasReceivedLetter === "no") {
 				$comments .= " ||| " . "Let op: Student heeft geen brief ontvangen";
 			}
-			if(!$this->orderManagerCanFollowMoment($issueDateDrivingLicense)) {
+			if(!$this->orderManagerCanFollowMoment($order)) {
 				$comments .= " ||| " . "Let op: TKM later dan 9 maanden";
 			}
 			$student->setComments($comments);
@@ -371,9 +371,18 @@ class OrderManager {
 		return $student;
 	}
 
-	private function orderManagerCanFollowMoment($issueDateDrivingLicense) {
+	private function orderManagerCanFollowMoment($order) {
+		$issueDateDrivingLicense = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_ISSUE_DATE_DRIVING_LICENSE, true);
+
+		foreach($order->get_items() as $key => $value) {
+			//What if order has multiple items(products) sold?
+			/** @var WC_Order_Item_Product $value */
+			$product = new WC_Product($value->get_data()['product_id']);
+			continue;
+		}
+		$trainingDate = $product->get_attribute('pa_datum');
 		try {
-			return canFollowMoment($issueDateDrivingLicense);
+			return canFollowMoment($issueDateDrivingLicense, $trainingDate);
 		} catch (LicenseDateOverTimeException $e) {
 			return false;
 		} catch (LicenseDateUnderTimeException $e) {

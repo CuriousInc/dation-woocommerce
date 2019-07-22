@@ -61,7 +61,7 @@ class InformationWarning extends WC_Email  {
 			'link'				      => $link,
 			'studentName'             => $this->object->get_formatted_billing_full_name(),
 			"receivedLetter"          => $hasReceivedLetter === "no" ? "Nee" : "Ja",
-			"issueDateDrivingLicense" => $issueDrivingLicense
+			"issueDateDrivingLicense" => $issueDrivingLicense,
 		), '', $this->template_base );
 	}
 
@@ -82,7 +82,7 @@ class InformationWarning extends WC_Email  {
 			'link'                    => $url,
 			'studentName'             => $this->object->get_formatted_billing_full_name(),
 			"receivedLetter"          => $hasReceivedLetter === "no" ? "Nee" : "Ja",
-			"issueDateDrivingLicense" => $issueDrivingLicense
+			"issueDateDrivingLicense" => $issueDrivingLicense,
 		), '', $this->template_base );
 	}
 
