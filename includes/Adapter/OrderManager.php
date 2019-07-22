@@ -130,14 +130,13 @@ class OrderManager {
 				update_post_meta($order->get_id(), self::KEY_STUDENT_ID, $student->getId());
 				$order->add_order_note($this->syncSuccessNote($student));
 			}
-
-			return $student;
 		} catch (ClientException $e) {
 			$reason = json_decode($e->getResponse()->getBody()->getContents(), true);
 			$message = isset($reason['detail']) ? $reason['detail'] : $reason;
 
 			$this->coughtErrorActions($order,'Het synchroniseren van de student is mislukt', $message);
 		}
+		return $student;
 
 	}
 
@@ -352,7 +351,6 @@ class OrderManager {
 	 */
 	private function verifyStudentInformation(WC_Order $order, Student $student): Student {
 		$hasReceivedLetter       = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_HAS_RECEIVED_LETTER, true);
-		$issueDateDrivingLicense = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_ISSUE_DATE_DRIVING_LICENSE, true);
 
 		if($hasReceivedLetter === 'no' || !$this->orderManagerCanFollowMoment($order)) {
 			$comments = $student->getComments();
