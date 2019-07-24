@@ -47,5 +47,9 @@ if(is_admin()) {
  * with our own template functions file
  */
 function dw_override_woo_templates() {
+	if(!session_id()) {
+		session_start();
+	}
+
 	require_once 'includes/woocommerce-template.php';
 }

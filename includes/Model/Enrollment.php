@@ -12,11 +12,14 @@ class Enrollment {
 	/** @var CourseInstanceSlot[] $slots */
 	private $slots;
 
+	/** @var int */
+	private $id;
+
 	public function getStudent(): Student {
 		return $this->student;
 	}
 
-	public function getSlots(): array {
+	public function getSlots(): ?array {   
 		return $this->slots;
 	}
 
@@ -30,4 +33,12 @@ class Enrollment {
 		return $this;
 	}
 
+	public function getId(): ?int {
+		return $this->id;
+	}
+
+	public function setId(?int $id): Enrollment {
+		$this->id = $id;
+		return $this;
+	}
 }

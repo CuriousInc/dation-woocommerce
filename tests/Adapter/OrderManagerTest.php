@@ -9,13 +9,15 @@ use Dation\Woocommerce\PostMetaDataInterface;
 use Dation\Woocommerce\RestApiClient\RestApiClient;
 use Dation\WooCommerce\TranslatorInterface;
 use Faker\Factory;
+use Faker\Generator;
 use GuzzleHttp\Client as HttpClient;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use WC_Order;
 
 class OrderManagerTest extends TestCase {
 
-	/** @var \Faker\Generator */
+	/** @var Generator */
 	protected $faker;
 
 	public function setUp(): void {
@@ -54,6 +56,7 @@ class OrderManagerTest extends TestCase {
 			]
 		];
 
+		/** @var TranslatorInterface $translate */
 		$translate = $this->getMockBuilder(TranslatorInterface::class)
 			->setMethods(['translate'])
 			->getMock();
@@ -63,6 +66,7 @@ class OrderManagerTest extends TestCase {
 				return $message;
 			});
 
+		/** @var PostMetaDataInterface $postMeta */
 		$postMeta = $this->getMockBuilder(PostMetaDataInterface::class)
 			->setMethods(['getPostMeta'])
 			->getMock();
@@ -73,7 +77,12 @@ class OrderManagerTest extends TestCase {
 				return $postMetaData[$orderId][$propertyName];
 			});
 
-		$manager = new OrderManager($stubApiClient, $this->faker->name(), $postMeta, $translate);
+		$orderManagerOptions = [
+			'handle' => $this->faker->name(),
+			'bankId' => $this->faker->numberBetween()
+		];
+
+		$manager = new OrderManager($stubApiClient, $orderManagerOptions, $postMeta, $translate);
 
 		$order = $this->mockOrder([
 			'get_id'                 => $orderId,
@@ -108,24 +117,11 @@ class OrderManagerTest extends TestCase {
 	}
 
 	/**
-	 * Mock Wordpress' get_post_meta function
-	 *
-	 * @param mixed[] $metaMap
-	 *
-	 * @return callable
-	 */
-	private function mockGetPostMeta(array $metaMap): callable {
-		return function (int $postId, string $metaKey, bool $single) use ($metaMap) {
-			return $metaMap[$postId][$metaKey];
-		};
-	}
-
-	/**
 	 * Mock Woocommerce order
 	 *
 	 * @param mixed $replacements List of function to mock [$methodName => $returnValue]
 	 *
-	 * @return \PHPUnit\Framework\MockObject\MockObject|WC_Order
+	 * @return MockObject|WC_Order
 	 */
 	private function mockOrder(array $replacements) {
 		$orderMockBuilder = $this->getMockBuilder('WC_Order')

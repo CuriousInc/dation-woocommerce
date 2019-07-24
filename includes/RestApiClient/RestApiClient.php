@@ -5,15 +5,19 @@ declare(strict_types=1);
 namespace Dation\Woocommerce\RestApiClient;
 
 use DateTime;
+use Dation\Woocommerce\Model\Invoice;
+use Dation\Woocommerce\Model\Payment;
 use Dation\Woocommerce\ObjectNormalizerFactory;
 use Dation\Woocommerce\Model\CourseInstance;
 use Dation\Woocommerce\Model\Enrollment;
 use Dation\Woocommerce\Model\Student;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 /**
@@ -28,17 +32,19 @@ use Symfony\Component\Serializer\Serializer;
  */
 class RestApiClient {
 
-	const BASE_HOST       = 'https://dashboard.dation.nl';
-	const BASE_PATH       = '/api/v1/';
-	const BASE_API_URL    = self::BASE_HOST . self::BASE_PATH;
+	public const BASE_HOST    = 'https://dashboard.dation.nl';
+	public const BASE_PATH    = '/api/v1/';
+	public const BASE_API_URL = self::BASE_HOST . self::BASE_PATH;
+
+	private const DEFAULT_CONTENT_TYPE_HEADER = ['Content-Type' => 'application/json'];
 
 	/**
-	 * @var \GuzzleHttp\Client
+	 * @var Client
 	 */
 	protected $httpClient;
 
 	/**
-	 * @var \Symfony\Component\Serializer\Serializer
+	 * @var Serializer
 	 */
 	protected $serializer;
 
@@ -46,7 +52,15 @@ class RestApiClient {
 		$this->httpClient = $httpClient;
 
 		$normalizer = ObjectNormalizerFactory::getNormalizer();
-		$this->serializer = new Serializer([new DateTimeNormalizer('Y-m-d'), $normalizer, new ArrayDenormalizer()], [new JsonEncoder()]);
+		$this->serializer = new Serializer(
+			[
+				new DateTimeNormalizer('Y-m-d'),
+				$normalizer, new ArrayDenormalizer()
+			],
+			[
+				new JsonEncoder(new JsonEncode(JSON_PRESERVE_ZERO_FRACTION))
+			]
+		);
 	}
 
 	public static function constructForKey(string $apiKey, string $baseUrl = self::BASE_API_URL) {
@@ -95,37 +109,81 @@ class RestApiClient {
 	 * @throws ClientException
 	 */
 	public function postStudent(Student $student): Student {
-		$response     = $this->httpClient->post('students', [
-			'headers' => ['Content-Type' => 'application/json'],
-			'body' => $this->serializer->serialize($student, 'json')
+		$response = $this->httpClient->post('students', [
+			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER,
+			'body'    => $this->serializer->serialize($student, 'json')
 		]);
+
 		return $this->serializer->deserialize(
 			$response->getBody()->getContents(),
 			Student::class,
-			'json',
-			['object_to_populate' => $student]
+			'json'
 		);
 	}
 
-	public function getCourseInstance(int $courseInstanceId) {
+	/**
+	 * @param int $courseInstanceId
+	 *
+	 * @return CourseInstance
+	 *
+	 * @throws ClientException
+	 */
+	public function getCourseInstance(int $courseInstanceId): CourseInstance {
 		$response = $this->httpClient->get("course-instances/$courseInstanceId", [
-			'headers' => ['Content-Type' => 'application/json'],
+			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER,
 		]);
 
 		return $this->serializer->deserialize($response->getBody()->getContents(), CourseInstance::class, 'json');
 	}
 
-	public function postEnrollment(int $courseInstanceId, Enrollment $enrollment) {
+	/**
+	 * @param int $courseInstanceId
+	 * @param Enrollment $enrollment
+	 *
+	 * @return Enrollment
+	 *
+	 * @throws ClientException
+	 */
+	public function postEnrollment(int $courseInstanceId, Enrollment $enrollment): Enrollment {
 		$response = $this->httpClient->post("course-instances/$courseInstanceId/enrollments", [
-			'headers' => ['Content-Type' => 'application/json'],
-			'body' => $this->serializer->serialize($enrollment, 'json')
+			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER,
+			'body'    => $this->serializer->serialize($enrollment, 'json')
 		]);
 
 		return $this->serializer->deserialize(
 			$response->getBody()->getContents(),
 			Enrollment::class,
+			'json'
+		);
+	}
+
+	/**
+	 * @param Payment $payment
+	 *
+	 * @return void
+	 *
+	 * @throws ClientException
+	 */
+	public function postPayment(Payment $payment): void {
+		$this->httpClient->post('payments', [
+			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER,
+			'body'    => $this->serializer->serialize($payment, 'json')
+		]);
+	}
+
+	public function billEnrollment(Enrollment $enrollment) {
+		$response = $this->httpClient->put("enrollments/{$enrollment->getId()}/bill", [
+			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER
+		]);
+
+		//The assumption here is that a TKM will always be invoiced on a single invoice, so we remove ʻ[ʻ and ʻ]ʻ from the response
+		return $this->serializer->deserialize(
+			$response->getBody()->getContents(),
+			Invoice::class . '[]',
 			'json',
-			['object_to_populate' => $enrollment]
+			[
+				ObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+			]
 		);
 	}
 }
