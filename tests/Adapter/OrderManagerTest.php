@@ -28,6 +28,9 @@ class OrderManagerTest extends TestCase {
 	 * Test parsing Order for Student information
 	 */
 	public function testGetStudentFromOrder(): void {
+		global $dw_options;
+		$dw_options['useTkm'] = true;
+
 		// Test data
 		$orderId        = $this->faker->randomNumber();
 		$firstName      = $this->faker->firstName();
