@@ -327,18 +327,21 @@ add_filter('woocommerce_email_classes', 'dw_add_synchronizing_failed_email', 10,
  * @return array filtered available email classes
  */
 function dw_add_synchronizing_failed_email($email_classes) {
+	global $dw_options;
 	if($email_classes === '') {
 		$email_classes = [];
 	}
-	$syncFailedEmail = new EmailSyncFailed();
-	$warningEmail = new InformationWarning();
 
+	if(isset($dw_options['useTkm'])) {
+		$warningEmail = new InformationWarning();
+		$email_classes["dw_warning_email"] = $warningEmail;
+		add_action("dw_warning_email_action", [$warningEmail, "dw_email_warning_trigger"], 1, 1);
+	}
+
+	$syncFailedEmail = new EmailSyncFailed();
 	// add the email class to the list of email classes that WooCommerce loads
 	$email_classes['dw_failed_email'] = $syncFailedEmail;
-	$email_classes["dw_warning_email"] = $warningEmail;
-
 	add_action('dw_synchronize_failed_email_action', [$syncFailedEmail, 'dw_email_trigger'], 1, 1);
-	add_action("dw_warning_email_action", [$warningEmail, "dw_email_warning_trigger"], 1, 1);
 
 	return $email_classes;
 
