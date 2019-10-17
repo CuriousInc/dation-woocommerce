@@ -18,10 +18,25 @@ const DW_DEFAULT_PRODUCT_PROPERTIES = [
  * @throws Exception
  */
 function dw_import_products() {
+	global $dw_options;
+
 	$client  = RestApiClientFactory::getClient();
 	$courses = $client->getCourseInstances(new DateTime(), null) ?? [];
-
 	$createdProducts = [];
+
+	if( $dw_options['ccvCode'] && $dw_options['ccvCode'] !== "") {
+		$codesToFilter = explode(';', $dw_options['ccvCode']);
+
+		$courses = array_filter($courses, function($course) use ($codesToFilter) {
+			foreach($codesToFilter as $code) {
+				if($code !== '' && $course['ccvCode'] === $code) {
+					return true;
+				}
+			}
+			return false;
+		});
+	}
+
 
 	foreach ($courses as $dationProduct) {
 		if(dw_get_product_by_sku($dationProduct['id']) === null) {
@@ -90,22 +105,31 @@ function dw_add_woocommerce_product($course) {
 			'value'       => $startDate->format('H:i'),
 			'is_visible'  => true,
 			'is_taxonomy' => '1'
-		]
+		],
+		'pa_slot_time' => [
+			'name'     => 'pa_slot_time',
+			'is_visible' => true,
+			'is_taxonomy' => true,
+		],
 	];
 	$product    = new WC_Product();
 
 	$prettyDate = date_i18n('l d F Y', $startDate->getTimestamp()) . ' ' . $startDate->format('H:i');
 
-	$product->set_name($course['name'] . ' ' . $prettyDate);
+	if(isset($dw_options['useTkm'])) {
+		$product->set_name($course['name'] . ' ' . $prettyDate);
+	} else {
+		$product->set_name($course['name']);
+	}
 	$product->set_menu_order($startDate->getTimestamp());
 
 	$product->set_description($course['name']);
-	$product->set_short_description($course['ccvCode']);
+	$product->set_short_description($course['ccvCode'] ?? '');
 	$product->set_sku($course['id']);
 	$product->set_regular_price($dw_options['tkm_price']);
 	$product->set_virtual(DW_DEFAULT_PRODUCT_PROPERTIES['virtual']);
 	$product->set_manage_stock(DW_DEFAULT_PRODUCT_PROPERTIES['manage_stock']);
-	$product->set_stock_quantity($dw_options['tkm_capacity']);
+	$product->set_stock_quantity($course['remainingAttendeeCapacity']);
 	$product->set_sold_individually(DW_DEFAULT_PRODUCT_PROPERTIES['sold_individually']);
 	$product->set_low_stock_amount(DW_DEFAULT_PRODUCT_PROPERTIES['low_stock_amount']);
 	$product->save();
@@ -113,6 +137,16 @@ function dw_add_woocommerce_product($course) {
 	wp_set_object_terms($product->get_id(), $startDate->format('d-m-Y'), 'pa_datum', false);
 	wp_set_object_terms($product->get_id(), $startDate->format('H:i'), 'pa_tijd', false);
 	wp_set_object_terms($product->get_id(), $course['parts'][0]['slots'][0]['city'], 'pa_locatie', false);
+
+	foreach($course['parts'] as $part) {
+		$startDate = new DateTime($part['slots'][0]['startDate']);
+		wp_set_object_terms(
+			$product->get_id(),
+			date_i18n('d F Y', $startDate->getTimestamp()) . ' ' . $startDate->format('H:i'),
+			'pa_slot_time',
+			true
+		);
+	}
 
 	update_post_meta($product->get_id(), '_product_attributes', $attributes);
 

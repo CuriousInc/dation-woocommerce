@@ -20,9 +20,13 @@ const OVERTIME_MESSAGE      = "Let op: als u geen uitstel heeft gekregen van de 
 const LONG_OVERTIME_MESSAGE = "Let op: als u geen uitstel heeft gekregen van de overheid bestaat de kans dat u een boete van 51 euro moet betalen of dat u helemaal niet mag deelnemen aan het terugkommoment op deze datum. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze.";
 const DW_WARNING            = "dw_warning_given";
 
+global $dw_options;
 // Register override for checkout and order email
-add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
-add_filter('woocommerce_email_order_meta', 'dw_email_order_render_extra_fields', 10, 3);
+if(isset($dw_options['useTkm'])) {
+	add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
+	add_filter('woocommerce_email_order_meta', 'dw_email_order_render_extra_fields', 10, 3);
+}
+
 
 /**
  * @param WC_Order $order
@@ -142,7 +146,9 @@ function dw_override_checkout_fields($fields) {
 /**
  * Process the checkout
  */
-add_action('woocommerce_checkout_process', 'dw_process_checkout');
+if(isset($dw_options['useTkm'])) {
+	add_action('woocommerce_checkout_process', 'dw_process_checkout');
+}
 
 function dw_process_checkout() {
 	$cart = reset(WC()->cart->get_cart());
@@ -227,7 +233,9 @@ function dw_is_match_national_registry_number_and_birth_date(
 /**
  * Update the order meta with field value
  */
-add_action('woocommerce_checkout_update_order_meta', 'dw_checkout_update_order_meta');
+if(isset($dw_options['useTkm'])) {
+	add_action('woocommerce_checkout_update_order_meta', 'dw_checkout_update_order_meta');
+}
 
 function dw_checkout_update_order_meta($orderId) {
 	$fields = [
@@ -259,7 +267,9 @@ function dw_sanitize_text_field($key, $value) {
 /**
  * Display field value on the order edit page
  */
-add_action('woocommerce_admin_order_data_after_shipping_address', 'dw_admin_order_render_extra_fields', 10, 1);
+if(isset($dw_options['useTkm'])) {
+	add_action('woocommerce_admin_order_data_after_shipping_address', 'dw_admin_order_render_extra_fields', 10, 1);
+}
 
 /**
  * Render extra fields for admin order page

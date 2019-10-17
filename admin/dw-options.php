@@ -60,6 +60,22 @@ function dw_render_options_page() {
 			<table class="form-table">
 				<tr>
 					<th scope="row">
+						<label class="description" for="dw_settings[ccvCode]">
+							<?php _e('Training code'); ?>
+						</label>
+					</th>
+					<td>
+						<input id="dw_settings[ccvCode]" name="dw_settings[ccvCode]"
+							   type="text"
+							   value="<?php echo $dw_options['ccvCode'] ?>"
+						>
+						<p class="description">
+							Trainingcode om op te filteren, gescheiden door een <code>;</code>. Leeg laten als alle trainingen gesynchroniseerd moeten worden
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
 						<label class="description" for="dw_settings[tkm_price]">
 							<?php _e('Prijs'); ?>
 						</label>
@@ -75,20 +91,25 @@ function dw_render_options_page() {
 						</p>
 					</td>
 				</tr>
+			</table>
+
+			<h2 class="title">Terugkommomenten</h2>
+			<table class="form-table">
 				<tr>
 					<th scope="row">
-						<label class="description" for="dw_settings[tkm_capacity]">
-							<?php _e('Beschikbare plaatsen'); ?>
+						<label class="description" for="dw_settings[useTkm]">
+							<?php _e('Gebruik terugkommoment opties'); ?>
 						</label>
 					</th>
 					<td>
-						<input id="dw_settings[tkm_capacity]" name="dw_settings[tkm_capacity]"
-							   type="text" class="small-text"
-							   value="<?php echo $dw_options['tkm_capacity'] ?>"
+						<input id="dw_settings[useTkm]" name="dw_settings[useTkm]"
+							   type="checkbox" value="1"
+							   <?php if(isset($dw_options['useTkm'])) {
+							   	echo "checked";
+							   } ?>
 						>
 						<p class="description">
-							Aantal vrije plaatsen dat voor iedere nieuwe cursus wordt ingesteld. Deze kan je later
-							aanpassen in het product-scherm
+							Gebruik de extra opties voor Terugkommomenten (Alleen voor Belgie)
 						</p>
 					</td>
 				</tr>
