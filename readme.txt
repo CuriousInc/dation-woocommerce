@@ -29,6 +29,8 @@ In the wp-admin environment, go to Plugins > New Plugin and upload the ZIP file.
 After activating the plugin 'Dation' will show up in the side-bar
 
 == Changelog ==
+= 1.2.- =
+* Generalize plugin. TKM options behind checkbox. Added filter for training(ccv) codes.
 
 = 1.1.2 =
 * Sanitize Rijksregisternummer
