@@ -116,7 +116,7 @@ function dw_add_woocommerce_product($course) {
 	$product->set_description($course['name']);
 	$product->set_short_description($course['ccv_code'] ?? '');
 	$product->set_sku($course['id']);
-	$product->set_regular_price($dw_options['tkm_price']);
+	$product->set_regular_price($dw_options['default_course_price']);
 	$product->set_virtual(DW_DEFAULT_PRODUCT_PROPERTIES['virtual']);
 	$product->set_manage_stock(DW_DEFAULT_PRODUCT_PROPERTIES['manage_stock']);
 	$product->set_stock_quantity($course['remainingAttendeeCapacity']);

@@ -77,14 +77,14 @@ function dw_render_options_page() {
 				</tr>
 				<tr>
 					<th scope="row">
-						<label class="description" for="dw_settings[tkm_price]">
+						<label class="description" for="dw_settings[default_course_price]">
 							<?php _e('Prijs'); ?>
 						</label>
 					</th>
 					<td>
-						<input id="dw_settings[tkm_price]" name="dw_settings[tkm_price]"
+						<input id="dw_settings[default_course_price]" name="dw_settings[default_course_price]"
 							   type="text"
-							   value="<?php echo $dw_options['tkm_price'] ?>"
+							   value="<?php echo $dw_options['default_course_price'] ?>"
 						>
 						<p class="description">
 							Prijs die voor iedere nieuwe cursus wordt ingesteld. Deze kan je later aanpassen
