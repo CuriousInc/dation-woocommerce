@@ -60,17 +60,18 @@ function dw_render_options_page() {
 			<table class="form-table">
 				<tr>
 					<th scope="row">
-						<label class="description" for="dw_settings[ccvCode]">
+						<label class="description" for="dw_settings[ccv_code]">
 							<?php _e('Training code'); ?>
 						</label>
 					</th>
 					<td>
-						<input id="dw_settings[ccvCode]" name="dw_settings[ccvCode]"
+						<input id="dw_settings[ccv_code]]" name="dw_settings[ccv_code]"
 							   type="text"
-							   value="<?php echo $dw_options['ccvCode'] ?>"
+							   value="<?php echo $dw_options['ccv_code'] ?>"
 						>
 						<p class="description">
-							Trainingcode om op te filteren, gescheiden door een <code>;</code>. Leeg laten als alle trainingen gesynchroniseerd moeten worden
+							Trainingscodes gescheiden door een <code>;</code>. Alleen trainingen waarvan de trainingscode in de lijst staat worden gesynchroniseerd.
+							Indien het veld leeg is, worden alle trainingen gesynchroniseerd.
 						</p>
 					</td>
 				</tr>
@@ -97,14 +98,14 @@ function dw_render_options_page() {
 			<table class="form-table">
 				<tr>
 					<th scope="row">
-						<label class="description" for="dw_settings[useTkm]">
+						<label class="description" for="dw_settings[use_tkm]">
 							<?php _e('Gebruik terugkommoment opties'); ?>
 						</label>
 					</th>
 					<td>
-						<input id="dw_settings[useTkm]" name="dw_settings[useTkm]"
+						<input id="dw_settings[use_tkm]" name="dw_settings[use_tkm]"
 							   type="checkbox" value="1"
-							   <?php if(isset($dw_options['useTkm'])) {
+							   <?php if(isset($dw_options['use_tkm'])) {
 							   	echo "checked";
 							   } ?>
 						>

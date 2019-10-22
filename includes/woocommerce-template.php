@@ -22,7 +22,7 @@ const DW_WARNING            = "dw_warning_given";
 
 global $dw_options;
 // Register override for checkout and order email
-if(isset($dw_options['useTkm'])) {
+if(isset($dw_options['use_tkm'])) {
 	add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
 	add_filter('woocommerce_email_order_meta', 'dw_email_order_render_extra_fields', 10, 3);
 }
@@ -146,7 +146,7 @@ function dw_override_checkout_fields($fields) {
 /**
  * Process the checkout
  */
-if(isset($dw_options['useTkm'])) {
+if(isset($dw_options['use_tkm'])) {
 	add_action('woocommerce_checkout_process', 'dw_process_checkout');
 }
 
@@ -233,7 +233,7 @@ function dw_is_match_national_registry_number_and_birth_date(
 /**
  * Update the order meta with field value
  */
-if(isset($dw_options['useTkm'])) {
+if(isset($dw_options['use_tkm'])) {
 	add_action('woocommerce_checkout_update_order_meta', 'dw_checkout_update_order_meta');
 }
 
@@ -267,7 +267,7 @@ function dw_sanitize_text_field($key, $value) {
 /**
  * Display field value on the order edit page
  */
-if(isset($dw_options['useTkm'])) {
+if(isset($dw_options['use_tkm'])) {
 	add_action('woocommerce_admin_order_data_after_shipping_address', 'dw_admin_order_render_extra_fields', 10, 1);
 }
 
@@ -332,7 +332,7 @@ function dw_add_synchronizing_failed_email($email_classes) {
 		$email_classes = [];
 	}
 
-	if(isset($dw_options['useTkm'])) {
+	if(isset($dw_options['use_tkm'])) {
 		$warningEmail = new InformationWarning();
 		$email_classes["dw_warning_email"] = $warningEmail;
 		add_action("dw_warning_email_action", [$warningEmail, "dw_email_warning_trigger"], 1, 1);

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Dation\Woocommerce\Adapter\RestApiClientFactory;
+use Dation\Woocommerce\Adapter\CourseFilter;
 
 const DW_DEFAULT_PRODUCT_PROPERTIES = [
 	'virtual'           => true,
@@ -20,25 +21,14 @@ const DW_DEFAULT_PRODUCT_PROPERTIES = [
 function dw_import_products() {
 	global $dw_options;
 
-	$client  = RestApiClientFactory::getClient();
-	$courses = $client->getCourseInstances(new DateTime(), null) ?? [];
+	$client          = RestApiClientFactory::getClient();
+	$courses         = $client->getCourseInstances(new DateTime(), null) ?? [];
 	$createdProducts = [];
 
-	if( $dw_options['ccvCode'] && $dw_options['ccvCode'] !== "") {
-		$codesToFilter = explode(';', $dw_options['ccvCode']);
+	$courseFilter = new CourseFilter($courses);
+	$filteredCourses = $courseFilter->filter_courses($dw_options['ccv_code']);
 
-		$courses = array_filter($courses, function($course) use ($codesToFilter) {
-			foreach($codesToFilter as $code) {
-				if($code !== '' && $course['ccvCode'] === $code) {
-					return true;
-				}
-			}
-			return false;
-		});
-	}
-
-
-	foreach ($courses as $dationProduct) {
+	foreach($filteredCourses as $dationProduct) {
 		if(dw_get_product_by_sku($dationProduct['id']) === null) {
 			$product           = dw_add_woocommerce_product($dationProduct);
 			$createdProducts[] = $product;
@@ -87,28 +77,28 @@ function dw_add_woocommerce_product($course) {
 	$startDate = new DateTime($course['startDate']);
 
 	$attributes = [
-		'pa_datum'   => [
+		'pa_datum'     => [
 			'name'        => 'pa_datum',
 			'value'       => $startDate->format('d-m-Y'),
 			'position'    => 1,
 			'is_visible'  => true,
-			'is_taxonomy' => '1'
+			'is_taxonomy' => true,
 		],
-		'pa_locatie' => [
+		'pa_locatie'   => [
 			'name'        => 'pa_locatie',
 			'value'       => $course['parts'][0]['slots'][0]['city'],
 			'is_visible'  => true,
-			'is_taxonomy' => '1'
+			'is_taxonomy' => true,
 		],
-		'pa_tijd'    => [
+		'pa_tijd'      => [
 			'name'        => 'pa_tijd',
 			'value'       => $startDate->format('H:i'),
 			'is_visible'  => true,
-			'is_taxonomy' => '1'
+			'is_taxonomy' => true,
 		],
 		'pa_slot_time' => [
-			'name'     => 'pa_slot_time',
-			'is_visible' => true,
+			'name'        => 'pa_slot_time',
+			'is_visible'  => true,
 			'is_taxonomy' => true,
 		],
 	];
@@ -116,7 +106,7 @@ function dw_add_woocommerce_product($course) {
 
 	$prettyDate = date_i18n('l d F Y', $startDate->getTimestamp()) . ' ' . $startDate->format('H:i');
 
-	if(isset($dw_options['useTkm'])) {
+	if(isset($dw_options['use_tkm'])) {
 		$product->set_name($course['name'] . ' ' . $prettyDate);
 	} else {
 		$product->set_name($course['name']);
@@ -124,7 +114,7 @@ function dw_add_woocommerce_product($course) {
 	$product->set_menu_order($startDate->getTimestamp());
 
 	$product->set_description($course['name']);
-	$product->set_short_description($course['ccvCode'] ?? '');
+	$product->set_short_description($course['ccv_code'] ?? '');
 	$product->set_sku($course['id']);
 	$product->set_regular_price($dw_options['tkm_price']);
 	$product->set_virtual(DW_DEFAULT_PRODUCT_PROPERTIES['virtual']);

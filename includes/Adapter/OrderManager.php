@@ -199,8 +199,7 @@ class OrderManager {
 	public function getStudentFromOrder(WC_Order $order): Student {
 		global $dw_options;
 		$student = new Student();
-
-		if(isset($dw_options['useTkm'])) {
+		if(isset($dw_options['use_tkm'])) {
 			$birthDate = DateTime::createFromFormat(
 				self::BELGIAN_DATE_FORMAT,
 				$this->postMetaData->getPostMeta($order->get_id(), self::KEY_DATE_OF_BIRTH, true)
@@ -228,7 +227,6 @@ class OrderManager {
 		$student->setResidentialAddress($this->getAddressFromOrder($order));
 		$student->setEmailAddress($order->get_billing_email());
 		$student->setMobileNumber($order->get_billing_phone());
-
 		$student->setPlanAsIndependent(true);
 
 		return $student;
@@ -358,7 +356,7 @@ class OrderManager {
 	 */
 	private function verifyStudentInformation(WC_Order $order, Student $student): Student {
 		global $dw_options;
-		if(isset($dw_options['useTkm'])) {
+		if(isset($dw_options['use_tkm'])) {
 			$hasReceivedLetter = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_HAS_RECEIVED_LETTER, true);
 
 			if($hasReceivedLetter === 'no' || !$this->orderManagerCanFollowMoment($order)) {
