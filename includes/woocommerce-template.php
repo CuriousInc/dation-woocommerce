@@ -28,7 +28,6 @@ if(isset($dw_options['use_tkm'])) {
 
 add_filter('woocommerce_email_order_meta', 'dw_email_order_render_extra_fields', 10, 3);
 
-
 /**
  * @param WC_Order $order
  * @param bool $sent_to_admin

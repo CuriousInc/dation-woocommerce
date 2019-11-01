@@ -66,11 +66,11 @@ class OrderManager {
 		PostMetaDataInterface $postMetaData,
 		TranslatorInterface $translator
 	) {
-		$this->client              = $client;
-		$this->handle              = $options['handle'];
-		$this->bankId              = $options['bankId'];
-		$this->postMetaData        = $postMetaData;
-		$this->translator          = $translator;
+		$this->client       = $client;
+		$this->handle       = $options['handle'];
+		$this->bankId       = $options['bankId'];
+		$this->postMetaData = $postMetaData;
+		$this->translator   = $translator;
 	}
 
 	/**
@@ -103,7 +103,7 @@ class OrderManager {
 			$this->synchronizePaymentToDation($student, $order);
 
 		} catch(Throwable $e) {
-			$this->caughtErrorActions($order,'Synchronisatie mislukt', $e->getMessage());
+			$this->caughtErrorActions($order, 'Synchronisatie mislukt', $e->getMessage());
 		}
 	}
 
@@ -115,7 +115,7 @@ class OrderManager {
 	 * @param string $errorType
 	 * @param $message
 	 */
-	private function caughtErrorActions(WC_Order $order, string $errorType, $message):void {
+	private function caughtErrorActions(WC_Order $order, string $errorType, $message): void {
 		do_action('woocommerce_email_classes');
 		do_action('dw_synchronize_failed_email_action', $order);
 
@@ -123,24 +123,24 @@ class OrderManager {
 		$order->add_order_note("{$note}: <code>{$message}</code>");
 	}
 
-	private function synchronizeStudentToDation(Student  $student, WC_Order $order): Student {
+	private function synchronizeStudentToDation(Student $student, WC_Order $order): Student {
 		try {
 			if(empty($student->getId())) {
 				$student = $this->sendStudentToDation($student);
 				update_post_meta($order->get_id(), self::KEY_STUDENT_ID, $student->getId());
 				$order->add_order_note($this->syncSuccessNote($student));
 			}
-		} catch (ClientException $e) {
-			$reason = json_decode($e->getResponse()->getBody()->getContents(), true);
+		} catch(ClientException $e) {
+			$reason  = json_decode($e->getResponse()->getBody()->getContents(), true);
 			$message = isset($reason['detail']) ? $reason['detail'] : $reason;
 
-			$this->caughtErrorActions($order,'Het synchroniseren van de student is mislukt', $message);
+			$this->caughtErrorActions($order, 'Het synchroniseren van de student is mislukt', $message);
 		}
 		return $student;
 
 	}
 
-	private function synchronizeEnrollmentToDation(WC_Order $order, Student $student):void {
+	private function synchronizeEnrollmentToDation(WC_Order $order, Student $student): void {
 		try {
 			if($this->postMetaData->getPostMeta($order->get_id(), self::KEY_ENROLLMENT_ID, true) === '') {
 				foreach($order->get_items() as $key => $value) {
@@ -182,7 +182,7 @@ class OrderManager {
 			if($e->hasResponse() && $e->getResponse()->getStatusCode() == 404) {
 				$message = 'Cursus niet gevonden';
 			}
-			$reason = json_decode($e->getResponse()->getBody()->getContents(), true);
+			$reason  = json_decode($e->getResponse()->getBody()->getContents(), true);
 			$message = isset($reason['detail']) ? $reason['detail'] : $reason;
 
 			$this->caughtErrorActions($order, 'Het synchroniseren van de inschrijving is mislukt', $message);
