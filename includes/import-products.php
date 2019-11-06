@@ -130,9 +130,14 @@ function dw_add_woocommerce_product($course) {
 
 	foreach($course['parts'] as $part) {
 		$startDate = new DateTime($part['slots'][0]['startDate']);
+		$endDate = new DateTime($part['slots'][0]['endDate']);
+		$attributeValue = date_i18n('d F Y', $startDate->getTimestamp()) . ' ' . $startDate->format('H:i');
+		if($endDate) {
+			$attributeValue .= '-' . $endDate->format('H:i');
+		}
 		wp_set_object_terms(
 			$product->get_id(),
-			date_i18n('d F Y', $startDate->getTimestamp()) . ' ' . $startDate->format('H:i'),
+			$attributeValue,
 			'pa_slot_time',
 			true
 		);
