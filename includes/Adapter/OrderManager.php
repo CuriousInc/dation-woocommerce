@@ -219,9 +219,10 @@ class OrderManager {
 			);
 		}
 
-		$comments = $student->getComments() ? $student->getComments() . "||| " . $order->get_customer_note() : $order->get_customer_note();
-		$student->setComments($comments);
-
+		if(!empty($order->get_customer_note())) {
+			$comments = $student->getComments() ? $student->getComments() . "||| " . $order->get_customer_note() : $order->get_customer_note();
+			$student->setComments($comments);
+		}
 		$student->setId(
 			(int)$this->postMetaData->getPostMeta($order->get_id(), self::KEY_STUDENT_ID, true)
 				?: null);
