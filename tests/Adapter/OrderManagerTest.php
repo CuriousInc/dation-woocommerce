@@ -106,6 +106,7 @@ class OrderManagerTest extends TestCase {
 			'get_billing_city'       => $city,
 			'get_billing_email'      => $emailAddress,
 			'get_billing_phone'      => $phoneNumber,
+			'get_customer_note'      => ''
 		]);
 
 		// The actual test
