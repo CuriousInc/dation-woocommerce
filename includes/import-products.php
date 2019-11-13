@@ -128,10 +128,22 @@ function dw_add_woocommerce_product($course) {
 	wp_set_object_terms($product->get_id(), $startDate->format('H:i'), 'pa_tijd', false);
 	wp_set_object_terms($product->get_id(), $course['parts'][0]['slots'][0]['city'], 'pa_locatie', false);
 
-	foreach($course['parts'] as $part) {
+	$courseParts = $course['parts'];
+
+	usort($courseParts, function($a, $b) {
+		$startA = (new DateTime($a['slots'][0]['startDate']))->getTimestamp();
+		$startB = (new DateTime($b['slots'][0]['startDate']))->getTimestamp();
+		if($startA === $startB) {
+			return 0;
+		}
+		return ($startA < $startB) ? -1 : 1;
+
+	});
+	$i = 1;
+	foreach($courseParts as $part) {
 		$startDate = new DateTime($part['slots'][0]['startDate']);
 		$endDate = new DateTime($part['slots'][0]['endDate']);
-		$attributeValue = date_i18n('d F Y', $startDate->getTimestamp()) . ' ' . $startDate->format('H:i');
+		$attributeValue = $i . '. ' . date_i18n('D F Y', $startDate->getTimestamp()) . ' ' . $startDate->format('H:i');
 		if($endDate) {
 			$attributeValue .= '-' . $endDate->format('H:i');
 		}
@@ -141,6 +153,7 @@ function dw_add_woocommerce_product($course) {
 			'pa_slot_time',
 			true
 		);
+		$i++;
 	}
 
 	update_post_meta($product->get_id(), '_product_attributes', $attributes);
