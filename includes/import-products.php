@@ -143,7 +143,7 @@ function dw_add_woocommerce_product($course) {
 	foreach($courseParts as $part) {
 		$startDate = new DateTime($part['slots'][0]['startDate']);
 		$endDate = new DateTime($part['slots'][0]['endDate']);
-		$attributeValue = $i . '. ' . date_i18n('D F Y', $startDate->getTimestamp()) . ' ' . $startDate->format('H:i');
+		$attributeValue = $i . '. ' . date_i18n('D d F Y', $startDate->getTimestamp()) . ' ' . $startDate->format('H:i');
 		if($endDate) {
 			$attributeValue .= '-' . $endDate->format('H:i');
 		}
