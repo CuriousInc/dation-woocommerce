@@ -121,7 +121,7 @@ workflows:
           filters:
             branches:
               only:
-                - DD-617
+                - master
           requires:
             - test
             - lint_php71
