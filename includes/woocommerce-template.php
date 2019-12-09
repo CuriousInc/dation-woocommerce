@@ -20,8 +20,12 @@ const OVERTIME_MESSAGE      = "Let op: als u geen uitstel heeft gekregen van de 
 const LONG_OVERTIME_MESSAGE = "Let op: als u geen uitstel heeft gekregen van de overheid bestaat de kans dat u een boete van 51 euro moet betalen of dat u helemaal niet mag deelnemen aan het terugkommoment op deze datum. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze.";
 const DW_WARNING            = "dw_warning_given";
 
+global $dw_options;
 // Register override for checkout and order email
-add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
+if(isset($dw_options['use_tkm'])) {
+	add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
+}
+
 add_filter('woocommerce_email_order_meta', 'dw_email_order_render_extra_fields', 10, 3);
 
 /**
@@ -30,38 +34,51 @@ add_filter('woocommerce_email_order_meta', 'dw_email_order_render_extra_fields',
  * @param bool $plain_text
  */
 function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text) {
-	$issueDrivingLicense    = get_post_meta($order->get_id(), OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE, true);
-	$dateOfBirth            = get_post_meta($order->get_id(), OrderManager::KEY_DATE_OF_BIRTH, true);
-	$nationalRegistryNumber = get_post_meta($order->get_id(), OrderManager::KEY_NATIONAL_REGISTRY_NUMBER, true);
-	$automaticTransmission  = get_post_meta($order->get_id(), OrderManager::KEY_AUTOMATIC_TRANSMISSION, true) === 'no' ? 'Nee' : 'Ja' ;
-	$hasReceivedLetter      = get_post_meta($order->get_id(), OrderManager::KEY_HAS_RECEIVED_LETTER, true);
-
-	foreach($order->get_items() as $key => $value) {
-		//What if order has multiple items(products) sold?
-		/** @var WC_Order_Item_Product $value */
-		$product = new WC_Product($value->get_data()['product_id']);
-		continue;
-	}
-
-	if($hasReceivedLetter === "no") {
-		$receivedLetterListItem = '<li style="color: red"><strong>Brief ontvangen</strong> Nee</li>';
-	} else {
-		$receivedLetterListItem = '<li><strong>Brief ontvangen</strong> Ja</li>';
-	}
-	$issueDrivingLicenseDateWarning = "";
-	try {
-		canFollowMoment($issueDrivingLicense, $product->get_attribute('pa_datum'));
-	} catch (LicenseDateOverTimeException $e) {
-		//Add warning
-		$issueDrivingLicenseDateWarning = '<p style="color: red">Let op: TKM later dan 9 maanden</p>';
-	} catch (LicenseDateUnderTimeException $e) {
-		//This should never happen
-		$issueDrivingLicenseDateWarning = '<p style="color: red">Let op: TKM eerder dan 6 maanden</p>';
-	}
-
-	if($sent_to_admin) {
+	global $dw_options;
+	$note = $order->get_customer_note();
+	if(!empty($note)) {
 		if(!$plain_text) {
-			echo '<h2>Extra informatie</h2>
+			echo '<h2>Notitie</h2>
+				<div><p>' . $note . '</p>
+				</div>';
+		} else {
+			echo "NOTITIE\n$note";
+		}
+	}
+
+	if(isset($dw_options['use_tkm'])) {
+		$issueDrivingLicense    = get_post_meta($order->get_id(), OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE, true);
+		$dateOfBirth            = get_post_meta($order->get_id(), OrderManager::KEY_DATE_OF_BIRTH, true);
+		$nationalRegistryNumber = get_post_meta($order->get_id(), OrderManager::KEY_NATIONAL_REGISTRY_NUMBER, true);
+		$automaticTransmission  = get_post_meta($order->get_id(), OrderManager::KEY_AUTOMATIC_TRANSMISSION, true) === 'no' ? 'Nee' : 'Ja';
+		$hasReceivedLetter      = get_post_meta($order->get_id(), OrderManager::KEY_HAS_RECEIVED_LETTER, true);
+
+		foreach($order->get_items() as $key => $value) {
+			//What if order has multiple items(products) sold?
+			/** @var WC_Order_Item_Product $value */
+			$product = new WC_Product($value->get_data()['product_id']);
+			continue;
+		}
+
+		if($hasReceivedLetter === "no") {
+			$receivedLetterListItem = '<li style="color: red"><strong>Brief ontvangen</strong> Nee</li>';
+		} else {
+			$receivedLetterListItem = '<li><strong>Brief ontvangen</strong> Ja</li>';
+		}
+		$issueDrivingLicenseDateWarning = "";
+		try {
+			canFollowMoment($issueDrivingLicense, $product->get_attribute('pa_datum'));
+		} catch(LicenseDateOverTimeException $e) {
+			//Add warning
+			$issueDrivingLicenseDateWarning = '<p style="color: red">Let op: TKM later dan 9 maanden</p>';
+		} catch(LicenseDateUnderTimeException $e) {
+			//This should never happen
+			$issueDrivingLicenseDateWarning = '<p style="color: red">Let op: TKM eerder dan 6 maanden</p>';
+		}
+
+		if($sent_to_admin) {
+			if(!$plain_text) {
+				echo '<h2>Extra informatie</h2>
 				<ul>
 					<li><strong>Afgiftedatum rijbewijs</strong> ' . $issueDrivingLicense . '</li>
 					<li><strong>Geboortedatum</strong> ' . $dateOfBirth . '</li>
@@ -69,18 +86,19 @@ function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text)
 					<li><strong>Automaat</strong> ' . $automaticTransmission . '</li>
 					' . $receivedLetterListItem . '
 				</ul>';
-			if($issueDrivingLicenseDateWarning !== "") {
-				echo $issueDrivingLicenseDateWarning;
-			}
-		} else {
-			echo "EXTRA INFORMATIE\n
+				if($issueDrivingLicenseDateWarning !== "") {
+					echo $issueDrivingLicenseDateWarning;
+				}
+			} else {
+				echo "EXTRA INFORMATIE\n
 				Afgiftedatum rijbewijs: $issueDrivingLicense
 				Geboortedatum: $dateOfBirth
 				Rijksregisternummer: $nationalRegistryNumber
 				Automaat: $automaticTransmission
 				Brief Ontvangen: $hasReceivedLetter";
-			if($issueDrivingLicenseDateWarning !== "") {
-				echo $issueDrivingLicenseDateWarning;
+				if($issueDrivingLicenseDateWarning !== "") {
+					echo $issueDrivingLicenseDateWarning;
+				}
 			}
 		}
 	}
@@ -142,11 +160,13 @@ function dw_override_checkout_fields($fields) {
 /**
  * Process the checkout
  */
-add_action('woocommerce_checkout_process', 'dw_process_checkout');
+if(isset($dw_options['use_tkm'])) {
+	add_action('woocommerce_checkout_process', 'dw_process_checkout');
+}
 
 function dw_process_checkout() {
-	$cart = reset(WC()->cart->get_cart());
-	$product = new WC_Product($cart["product_id"]);
+	$cart         = reset(WC()->cart->get_cart());
+	$product      = new WC_Product($cart["product_id"]);
 	$trainingDate = $product->get_attribute("pa_datum");
 
 	$driverLicenseIssueDate = $_POST[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE];
@@ -156,11 +176,11 @@ function dw_process_checkout() {
 		} else {
 			try {
 				canFollowMoment($driverLicenseIssueDate, $trainingDate);
-			} catch (LicenseDateOverTimeException $e) {
+			} catch(LicenseDateOverTimeException $e) {
 				if(empty($_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE]) || $_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] === $driverLicenseIssueDate) {
 					//If the dat is the same, and we have nog
 					if(empty($_SESSION[DW_WARNING])) {
-						$_SESSION[DW_WARNING] = true;
+						$_SESSION[DW_WARNING]                                   = true;
 						$_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] = $driverLicenseIssueDate;
 
 						wc_add_notice(__($e->getMessage()), "error");
@@ -170,7 +190,7 @@ function dw_process_checkout() {
 					wc_add_notice(__($e->getMessage()), "error");
 					$_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] = $driverLicenseIssueDate;
 				}
-			} catch (LicenseDateUnderTimeException $e) {
+			} catch(LicenseDateUnderTimeException $e) {
 				wc_add_notice(__($e->getMessage()), "error");
 			}
 		}
@@ -227,7 +247,9 @@ function dw_is_match_national_registry_number_and_birth_date(
 /**
  * Update the order meta with field value
  */
-add_action('woocommerce_checkout_update_order_meta', 'dw_checkout_update_order_meta');
+if(isset($dw_options['use_tkm'])) {
+	add_action('woocommerce_checkout_update_order_meta', 'dw_checkout_update_order_meta');
+}
 
 function dw_checkout_update_order_meta($orderId) {
 	$fields = [
@@ -248,7 +270,7 @@ function dw_checkout_update_order_meta($orderId) {
 function dw_sanitize_text_field($key, $value) {
 	if($key === OrderManager::KEY_NATIONAL_REGISTRY_NUMBER) {
 		$registryNumber = new Rijksregisternummer($value);
-		$value = $registryNumber->machineFormat();
+		$value          = $registryNumber->machineFormat();
 	} else {
 		$value = sanitize_text_field($value);
 	}
@@ -259,7 +281,9 @@ function dw_sanitize_text_field($key, $value) {
 /**
  * Display field value on the order edit page
  */
-add_action('woocommerce_admin_order_data_after_shipping_address', 'dw_admin_order_render_extra_fields', 10, 1);
+if(isset($dw_options['use_tkm'])) {
+	add_action('woocommerce_admin_order_data_after_shipping_address', 'dw_admin_order_render_extra_fields', 10, 1);
+}
 
 /**
  * Render extra fields for admin order page
@@ -280,13 +304,13 @@ function dw_admin_order_render_extra_fields($order) {
 	echo '<p><strong>' . __('Automaat') . ':</strong> <br/>'
 		. (get_post_meta($order->get_id(), OrderManager::KEY_AUTOMATIC_TRANSMISSION, true) === 'yes' ? __('Ja') : __('Nee')) . '</p>';
 	echo '<p><strong>' . __('Brief ontvangen') . ':</strong> <br/>'
-		. (get_post_meta($order->get_id(), OrderManager::KEY_HAS_RECEIVED_LETTER, true) === "yes" ? __("Ja") : __("Nee"))  . '</p>';
+		. (get_post_meta($order->get_id(), OrderManager::KEY_HAS_RECEIVED_LETTER, true) === "yes" ? __("Ja") : __("Nee")) . '</p>';
 }
 
 add_action('woocommerce_order_status_processing', 'dw_woocommerce_order_status_processing', 10, 1);
 
 function dw_woocommerce_order_status_processing(int $orderId) {
-	$order = new WC_Order($orderId);
+	$order        = new WC_Order($orderId);
 	$orderManager = OrderManagerFactory::getManager();
 	$orderManager->sendToDation($order);
 }
@@ -312,23 +336,27 @@ add_filter('woocommerce_email_classes', 'dw_add_synchronizing_failed_email', 10,
  *  Add a custom email to the list of emails WooCommerce should load
  *  Add an action to trigger sending the email
  *
- * @since 0.1
  * @param array $email_classes available email classes
+ *
  * @return array filtered available email classes
+ * @since 0.1
  */
 function dw_add_synchronizing_failed_email($email_classes) {
+	global $dw_options;
 	if($email_classes === '') {
 		$email_classes = [];
 	}
-	$syncFailedEmail = new EmailSyncFailed();
-	$warningEmail = new InformationWarning();
 
+	if(isset($dw_options['use_tkm'])) {
+		$warningEmail                      = new InformationWarning();
+		$email_classes["dw_warning_email"] = $warningEmail;
+		add_action("dw_warning_email_action", [$warningEmail, "dw_email_warning_trigger"], 1, 1);
+	}
+
+	$syncFailedEmail = new EmailSyncFailed();
 	// add the email class to the list of email classes that WooCommerce loads
 	$email_classes['dw_failed_email'] = $syncFailedEmail;
-	$email_classes["dw_warning_email"] = $warningEmail;
-
 	add_action('dw_synchronize_failed_email_action', [$syncFailedEmail, 'dw_email_trigger'], 1, 1);
-	add_action("dw_warning_email_action", [$warningEmail, "dw_email_warning_trigger"], 1, 1);
 
 	return $email_classes;
 
@@ -337,19 +365,20 @@ function dw_add_synchronizing_failed_email($email_classes) {
 /**
  * @param string $licenseIssueDate
  * @param string $trainingDate
+ *
  * @return bool
  * @throws LicenseDateOverTimeException
  * @throws LicenseDateUnderTimeException
  */
 function canFollowMoment(string $licenseIssueDate, string $trainingDate): bool {
-	$licenseDateTime    = DateTime::createFromFormat(OrderManager::BELGIAN_DATE_FORMAT, $licenseIssueDate);
+	$licenseDateTime = DateTime::createFromFormat(OrderManager::BELGIAN_DATE_FORMAT, $licenseIssueDate);
 	$licenseDateTime->setTime(0, 0);
 
 	$trainingDateTime = DateTime::createFromFormat("d-m-Y", $trainingDate);
 	$trainingDateTime->setTime(0, 0);
 
 	if($trainingDateTime < $licenseDateTime) {
-		throw new LicenseDateUnderTimeException( TOO_EARLY_MESSAGE);
+		throw new LicenseDateUnderTimeException(TOO_EARLY_MESSAGE);
 	}
 
 	$diff = $licenseDateTime->diff($trainingDateTime);

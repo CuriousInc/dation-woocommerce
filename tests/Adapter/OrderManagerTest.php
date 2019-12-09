@@ -24,10 +24,24 @@ class OrderManagerTest extends TestCase {
 		$this->faker = Factory::create('nl_BE');
 	}
 
+	public function dataProvider() {
+		return [
+			'Use tkm' => [true],
+			'Do not use tkm' => [false]
+		];
+	}
+
 	/**
 	 * Test parsing Order for Student information
+	 *
+	 * @dataProvider dataProvider
+	 *
+	 * @param bool $useTkm
 	 */
-	public function testGetStudentFromOrder(): void {
+	public function testGetStudentFromOrder(bool $useTkm): void {
+		global $dw_options;
+		$dw_options['use_tkm'] = $useTkm;
+
 		// Test data
 		$orderId        = $this->faker->randomNumber();
 		$firstName      = $this->faker->firstName();
@@ -42,7 +56,6 @@ class OrderManagerTest extends TestCase {
 		$streetName     = $this->faker->streetName();
 		$houseNumber    = $this->faker->buildingNumber();
 		$isAutomatic    = $this->faker->randomElement(['yes', 'no']);
-
 		// Mocks
 		$stubApiClient = new RestApiClient(new HttpClient());
 
@@ -93,6 +106,7 @@ class OrderManagerTest extends TestCase {
 			'get_billing_city'       => $city,
 			'get_billing_email'      => $emailAddress,
 			'get_billing_phone'      => $phoneNumber,
+			'get_customer_note'      => null,
 		]);
 
 		// The actual test
@@ -106,14 +120,17 @@ class OrderManagerTest extends TestCase {
 		$this->assertEquals($postcode, $student->getResidentialAddress()->getPostalCode());
 		$this->assertEquals($streetName, $student->getResidentialAddress()->getStreetName());
 		$this->assertEquals($houseNumber, $student->getResidentialAddress()->getHouseNumber());
-		$this->assertEquals($registryNumber, $student->getNationalRegistryNumber());
-		$this->assertEquals($issueDate, $student->getIssueDateCategoryBDrivingLicense());
-		$this->assertEquals($dateOfBirth, $student->getDateOfBirth());
 
-		$this->assertEquals(true, $student->isPlanAsIndependent());
+		if($useTkm) {
+			$this->assertEquals($registryNumber, $student->getNationalRegistryNumber());
+			$this->assertEquals($issueDate, $student->getIssueDateCategoryBDrivingLicense());
+			$this->assertEquals($dateOfBirth, $student->getDateOfBirth());
 
-		$expectedComment = 'Ik rijd enkel met een automaat: ' . ($isAutomatic === 'yes' ? 'Ja' : 'Nee');
-		$this->assertEquals($expectedComment, $student->getComments());
+			$this->assertEquals(true, $student->isPlanAsIndependent());
+
+			$expectedComment = 'Ik rijd enkel met een automaat: ' . ($isAutomatic === 'yes' ? 'Ja' : 'Nee');
+			$this->assertEquals($expectedComment, $student->getComments());
+		}
 	}
 
 	/**
