@@ -19,7 +19,7 @@ Students can enroll directly on your website and their details are uploaded to D
 
 == Installation ==
 
-Install the plugin and go to the Dation Woocommerce settings page. Fill in your driving school code and API-key to start fetching courses from Dation.
+Install and activate the plugin and go to the Dation Woocommerce settings page in the wp-admin menu. Fill in your driving school code and API-key to start fetching courses from Dation.
 You can set prices, filter on (CCV) codes and enable specific 'Terugkommoment' features.
 
 == Changelog ==
