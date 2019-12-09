@@ -21,6 +21,11 @@ references:
     attach_workspace:
       at: *workspace_root
 
+  update_apt_get: &update_apt_get
+    run:
+      name: Update apt-get
+      command: sudo apt-get update
+
   install_subversion: &install_subversion
      run:
        name: Install subversion
@@ -90,6 +95,7 @@ jobs:
     steps:
       - checkout
       - *attach_workspace
+      - *update_apt_get
       - *install_subversion
       - run:
           name: Deploy new version to WordPress plugin directory
@@ -111,11 +117,11 @@ workflows:
             - test
             - lint_php71
 # The plugin requires PHP 7.1, the Directory linter requires 7.0 syntax
-#      - deploy_plugin:
-#          filters:
-#            branches:
-#              only:
-#                - master
-#          requires:
-#            - test
-#            - lint_php71
+      - deploy_plugin:
+          filters:
+            branches:
+              only:
+                - DD-617
+          requires:
+            - test
+            - lint_php71
