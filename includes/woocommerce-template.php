@@ -18,7 +18,7 @@ use SetBased\Rijksregisternummer\RijksregisternummerHelper;
 
 const TOO_EARLY_MESSAGE     = "Het gekozen terugkommoment is te vroeg. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs.";
 const OVERTIME_MESSAGE      = "Let op: als u geen uitstel heeft gekregen van de overheid dient u een boete van 51 euro te betalen. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze.";
-const LONG_OVERTIME_MESSAGE = "Let op: als u geen uitstel heeft gekregen van de overheid bestaat de kans dat u een boete van 51 euro moet betalen of dat u helemaal niet mag deelnemen aan het terugkommoment op deze datum. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze, geef dan een reden voor uitstel op.";
+const LONG_OVERTIME_MESSAGE = "Let op: als u geen uitstel heeft gekregen van de overheid bestaat de kans dat u een boete van 51 euro moet betalen of dat u helemaal niet mag deelnemen aan het terugkommoment op deze datum. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze, <b>geef dan een reden voor uitstel op.</b>";
 const DW_WARNING            = "dw_warning_given";
 
 const DELAY_REASONS = [
@@ -162,7 +162,7 @@ function dw_override_checkout_fields($fields) {
 	$newOrderFields['order'][OrderManager::KEY_DELAY_REASON] = [
 		'type'     => 'select',
 		'options'  => [
-			''        => __('Niet van toepassing'),
+			''        => __('Kies een reden van uitstel'),
 			'medical' => __(DELAY_REASONS['medical']),
 			'service' => __(DELAY_REASONS['service']),
 			'study'   => __(DELAY_REASONS['study']),
