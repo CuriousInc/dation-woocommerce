@@ -10,7 +10,7 @@ declare(strict_types=1);
  * Description: Je website altijd up-to-date met je Dation planning. Importeer je Dation cursussen als Woocommerce producten.
  * Author: Dation
  * Author URI: http://www.dation.nl
- * Version: 1.2.0
+ * Version: 1.2.1
  */
 
 // Global variables
