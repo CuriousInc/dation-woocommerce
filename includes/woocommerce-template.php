@@ -159,17 +159,17 @@ function dw_override_checkout_fields($fields) {
 		'required' => true,
 	];
 
+	$delayOptions = [];
+
+	$delayOptions[''] =  __('Kies een reden van uitstel');
+	foreach(DELAY_REASONS as $key => $value) {
+		$delayOptions[$key] = __($value);
+	}
 	$newOrderFields['order'][OrderManager::KEY_DELAY_REASON] = [
 		'type'     => 'select',
-		'options'  => [
-			''        => __('Kies een reden van uitstel'),
-			'medical' => __(DELAY_REASONS['medical']),
-			'service' => __(DELAY_REASONS['service']),
-			'study'   => __(DELAY_REASONS['study']),
-			'prison'  => __(DELAY_REASONS['prison'])
-		],
+		'options'  => $delayOptions,
 		'label'    => __('Reden van uitstel'),
-		'required' => false,
+		'required' => false
 	];
 
 	// Merge arrays at the 'order' key
@@ -213,7 +213,7 @@ function dw_process_checkout() {
 				}
 			} catch(LicenseDateLongOverTimeException $e) {
 				if(empty($_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE]) || $_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] === $driverLicenseIssueDate) {
-					//If the dat is the same, and we have nog
+					//If the date is the same, and we have not yet given a warning, give the warning. Continue otherwise
 					if(empty($_SESSION[DW_WARNING])) {
 						$_SESSION[DW_WARNING]                                   = true;
 						$_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] = $driverLicenseIssueDate;
