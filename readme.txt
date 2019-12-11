@@ -23,7 +23,10 @@ Install and activate the plugin and go to the Dation Woocommerce settings page i
 You can set prices, filter on (CCV) codes and enable specific 'Terugkommoment' features.
 
 == Changelog ==
-= 1.2.- =
+= 1.2.2 =
+* Add 'Reason for delay' for TKM moments that are later than 11 months after the issue date of the drivers license
+
+= 1.2.0 =
 * Generalize plugin. TKM options behind checkbox. Added filter for training(ccv) codes.
 
 = 1.1.2 =
