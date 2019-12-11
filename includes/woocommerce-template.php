@@ -10,6 +10,7 @@ use Dation\Woocommerce\Adapter\OrderManager;
 use Dation\Woocommerce\Adapter\OrderManagerFactory;
 use Dation\Woocommerce\Email\EmailSyncFailed;
 use Dation\Woocommerce\Email\InformationWarning;
+use Dation\Woocommerce\Exceptions\LicenseDateLongOverTimeException;
 use Dation\Woocommerce\Exceptions\LicenseDateOverTimeException;
 use Dation\Woocommerce\Exceptions\LicenseDateUnderTimeException;
 use SetBased\Rijksregisternummer\Rijksregisternummer;
@@ -17,8 +18,15 @@ use SetBased\Rijksregisternummer\RijksregisternummerHelper;
 
 const TOO_EARLY_MESSAGE     = "Het gekozen terugkommoment is te vroeg. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs.";
 const OVERTIME_MESSAGE      = "Let op: als u geen uitstel heeft gekregen van de overheid dient u een boete van 51 euro te betalen. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze.";
-const LONG_OVERTIME_MESSAGE = "Let op: als u geen uitstel heeft gekregen van de overheid bestaat de kans dat u een boete van 51 euro moet betalen of dat u helemaal niet mag deelnemen aan het terugkommoment op deze datum. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze.";
+const LONG_OVERTIME_MESSAGE = "Let op: als u geen uitstel heeft gekregen van de overheid bestaat de kans dat u helemaal niet mag deelnemen aan het terugkommoment op deze datum. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze,<b> geef dan een reden voor uitstel op.</b> Deze uitzondering moet u expliciet zijn toegekend vanwege het departement Mobiliteit & Openbare Werken via een schrijven. Indien u hier verdergaat, maar dit blijkt niet door de overheid te zijn toegekend, blijft u het inschrijvingsgeld verschuldigd.";
 const DW_WARNING            = "dw_warning_given";
+
+const DELAY_REASONS = [
+	'medical' => 'Uitstel om medische redenen',
+	'service' => 'Uitstel vanwege beroep of dienst in het buitenland',
+	'study'   => 'Uitstel vanwege studie in het buitenland',
+	'prison'  => 'Uitstel vanwege vrijheidsbeneming'
+];
 
 global $dw_options;
 // Register override for checkout and order email
@@ -151,6 +159,19 @@ function dw_override_checkout_fields($fields) {
 		'required' => true,
 	];
 
+	$delayOptions = [];
+
+	$delayOptions[''] =  __('Kies een reden van uitstel');
+	foreach(DELAY_REASONS as $key => $value) {
+		$delayOptions[$key] = __($value);
+	}
+	$newOrderFields['order'][OrderManager::KEY_DELAY_REASON] = [
+		'type'     => 'select',
+		'options'  => $delayOptions,
+		'label'    => __('Reden van uitstel'),
+		'required' => false
+	];
+
 	// Merge arrays at the 'order' key
 	$fields['order'] = array_merge($newOrderFields['order'], $fields['order']);
 
@@ -184,6 +205,22 @@ function dw_process_checkout() {
 						$_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] = $driverLicenseIssueDate;
 
 						wc_add_notice(__($e->getMessage()), "error");
+					}
+				} else {
+					//If the date is different then before give the warning again.
+					wc_add_notice(__($e->getMessage()), "error");
+					$_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] = $driverLicenseIssueDate;
+				}
+			} catch(LicenseDateLongOverTimeException $e) {
+				if(empty($_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE]) || $_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] === $driverLicenseIssueDate) {
+					//If the date is the same, and we have not yet given a warning, give the warning. Continue otherwise
+					if(empty($_SESSION[DW_WARNING])) {
+						$_SESSION[DW_WARNING]                                   = true;
+						$_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] = $driverLicenseIssueDate;
+
+						wc_add_notice(__($e->getMessage()), "error");
+					} elseif(empty($_POST[OrderManager::KEY_DELAY_REASON])) {
+						wc_add_notice('Gelieve een reden van uitstel op te geven', 'error');
 					}
 				} else {
 					//If the date is different then before give the warning again.
@@ -258,6 +295,7 @@ function dw_checkout_update_order_meta($orderId) {
 		OrderManager::KEY_NATIONAL_REGISTRY_NUMBER,
 		OrderManager::KEY_AUTOMATIC_TRANSMISSION,
 		OrderManager::KEY_HAS_RECEIVED_LETTER,
+		OrderManager::KEY_DELAY_REASON,
 	];
 
 	foreach($fields as $field) {
@@ -369,6 +407,7 @@ function dw_add_synchronizing_failed_email($email_classes) {
  * @return bool
  * @throws LicenseDateOverTimeException
  * @throws LicenseDateUnderTimeException
+ * @throws LicenseDateLongOverTimeException
  */
 function canFollowMoment(string $licenseIssueDate, string $trainingDate): bool {
 	$licenseDateTime = DateTime::createFromFormat(OrderManager::BELGIAN_DATE_FORMAT, $licenseIssueDate);
@@ -384,7 +423,7 @@ function canFollowMoment(string $licenseIssueDate, string $trainingDate): bool {
 	$diff = $licenseDateTime->diff($trainingDateTime);
 
 	if($diff->y > 0 || ($diff->y === 0 && $diff->m > 10)) {
-		throw new LicenseDateOverTimeException(LONG_OVERTIME_MESSAGE);
+		throw new LicenseDateLongOverTimeException(LONG_OVERTIME_MESSAGE);
 	}
 
 	if($diff->m === 9 || $diff->m === 10) {

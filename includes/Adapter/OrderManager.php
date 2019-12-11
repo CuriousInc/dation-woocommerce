@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dation\Woocommerce\Adapter;
 
 use DateTime;
+use Dation\Woocommerce\Exceptions\LicenseDateLongOverTimeException;
 use Dation\Woocommerce\Exceptions\LicenseDateOverTimeException;
 use Dation\Woocommerce\Exceptions\LicenseDateUnderTimeException;
 use Dation\Woocommerce\Model\Address;
@@ -42,6 +43,7 @@ class OrderManager {
 	const KEY_PAYMENT_ID                 = 'dw_has_payment';
 	const KEY_INVOICE_ID                 = 'dw_has_invoice';
 	const KEY_STUDENT_ID                 = 'dw_student_id';
+	const KEY_DELAY_REASON               = 'dw_delay_reason';
 
 	const BELGIAN_DATE_FORMAT = 'd.m.Y';
 
@@ -362,20 +364,26 @@ class OrderManager {
 		global $dw_options;
 		if(isset($dw_options['use_tkm'])) {
 			$hasReceivedLetter = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_HAS_RECEIVED_LETTER, true);
+			$reasonForDelay = $this->postMetaData->getPostMeta($order->get_id(), self::KEY_DELAY_REASON, true);
+
+			$comments = $student->getComments();
 
 			if($hasReceivedLetter === 'no' || !$this->orderManagerCanFollowMoment($order)) {
-				$comments = $student->getComments();
 				if($hasReceivedLetter === "no") {
 					$comments .= " ||| " . "Let op: Student heeft geen brief ontvangen";
 				}
 				if(!$this->orderManagerCanFollowMoment($order)) {
 					$comments .= " ||| " . "Let op: TKM later dan 9 maanden";
 				}
-				$student->setComments($comments);
 
 				do_action('woocommerce_email_classes');
 				do_action('dw_warning_email_action', $order);
 			}
+			if(!empty($reasonForDelay)) {
+				$reason = DELAY_REASONS[$reasonForDelay];
+				$comments .= " ||| Reden van uitstel: $reason";
+			}
+			$student->setComments($comments);
 		}
 
 		return $student;
@@ -393,9 +401,7 @@ class OrderManager {
 		$trainingDate = $product->get_attribute('pa_datum');
 		try {
 			return canFollowMoment($issueDateDrivingLicense, $trainingDate);
-		} catch(LicenseDateOverTimeException $e) {
-			return false;
-		} catch(LicenseDateUnderTimeException $e) {
+		} catch(LicenseDateOverTimeException|LicenseDateLongOverTimeException|LicenseDateUnderTimeException $e) {
 			return false;
 		}
 	}
