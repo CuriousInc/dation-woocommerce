@@ -25,7 +25,7 @@ function dw_import_products() {
 	$courses         = $client->getCourseInstances(new DateTime(), null) ?? [];
 	$createdProducts = [];
 
-	$courseFilter = new CourseFilter($courses);
+	$courseFilter    = new CourseFilter($courses);
 	$filteredCourses = $courseFilter->filter_courses($dw_options['ccv_code']);
 
 	foreach($filteredCourses as $dationProduct) {
@@ -69,7 +69,6 @@ function dw_get_product_by_sku($sku) {
  *
  * @return WC_Product
  *
- * @throws WC_Data_Exception
  * @throws \Exception When $course.startDate cannot be converted to DateTime
  */
 function dw_add_woocommerce_product($course) {
@@ -101,6 +100,11 @@ function dw_add_woocommerce_product($course) {
 			'is_visible'  => true,
 			'is_taxonomy' => true,
 		],
+		'pa_pretty_date' => [
+			'name' => 'pa_pretty_date',
+			'is_visible' => true,
+			'is_taxonomy' => true,
+		],
 	];
 	$product    = new WC_Product();
 
@@ -124,13 +128,12 @@ function dw_add_woocommerce_product($course) {
 	$product->set_low_stock_amount(DW_DEFAULT_PRODUCT_PROPERTIES['low_stock_amount']);
 	$product->save();
 
-	wp_set_object_terms($product->get_id(), $startDate->format('d-m-Y'), 'pa_datum', false);
-	wp_set_object_terms($product->get_id(), $startDate->format('H:i'), 'pa_tijd', false);
 	wp_set_object_terms($product->get_id(), $course['parts'][0]['slots'][0]['city'], 'pa_locatie', false);
+
 
 	$courseParts = $course['parts'];
 
-	usort($courseParts, function($a, $b) {
+	usort($courseParts, function ($a, $b) {
 		$startA = (new DateTime($a['slots'][0]['startDate']))->getTimestamp();
 		$startB = (new DateTime($b['slots'][0]['startDate']))->getTimestamp();
 		if($startA === $startB) {
@@ -139,10 +142,30 @@ function dw_add_woocommerce_product($course) {
 		return ($startA < $startB) ? -1 : 1;
 
 	});
+
+	dw_format_and_save_dates($product, $startDate, $courseParts);
+
+	update_post_meta($product->get_id(), '_product_attributes', $attributes);
+
+	return $product;
+}
+
+/**
+ * @param WC_Product $product
+ * @param DateTime $date
+ * @param array $courseParts
+ *
+ * @throws Exception
+ */
+function dw_format_and_save_dates(WC_Product $product, DateTime $date, array $courseParts) {
+	wp_set_object_terms($product->get_id(), $date->format('d-m-Y'), 'pa_datum', false);
+	wp_set_object_terms($product->get_id(), $date->format('H:i'), 'pa_tijd', false);
+	wp_set_object_terms($product->get_id(), date_i18n('l d F Y', $date->getTimestamp()), 'pa_pretty_date', false);
+
 	$i = 1;
 	foreach($courseParts as $part) {
-		$startDate = new DateTime($part['slots'][0]['startDate']);
-		$endDate = new DateTime($part['slots'][0]['endDate']);
+		$startDate      = new DateTime($part['slots'][0]['startDate']);
+		$endDate        = new DateTime($part['slots'][0]['endDate']);
 		$attributeValue = $i . '. ' . date_i18n('D d F Y', $startDate->getTimestamp()) . ' ' . $startDate->format('H:i');
 		if($endDate) {
 			$attributeValue .= '-' . $endDate->format('H:i');
@@ -155,8 +178,4 @@ function dw_add_woocommerce_product($course) {
 		);
 		$i++;
 	}
-
-	update_post_meta($product->get_id(), '_product_attributes', $attributes);
-
-	return $product;
 }
