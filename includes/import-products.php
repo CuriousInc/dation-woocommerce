@@ -15,7 +15,6 @@ const DW_DEFAULT_PRODUCT_PROPERTIES = [
 /**
  * @return WC_Product[]
  *
- * @throws WC_Data_Exception
  * @throws Exception
  */
 function dw_import_products() {
@@ -73,42 +72,42 @@ function dw_get_product_by_sku($sku) {
  */
 function dw_add_woocommerce_product($course) {
 	global $dw_options;
-	$startDate = new DateTime($course['startDate']);
+	$startDate = DateTime::createFromFormat(DATE_ISO8601, $course['startDate']);
 
 	$attributes = [
-		'pa_datum'     => [
+		'pa_datum'       => [
 			'name'        => 'pa_datum',
-			'value'       => $startDate->format('d-m-Y'),
+			'value'       => $startDate->format(DUTCH_DATE),
 			'position'    => 1,
 			'is_visible'  => true,
 			'is_taxonomy' => true,
 		],
-		'pa_locatie'   => [
+		'pa_locatie'     => [
 			'name'        => 'pa_locatie',
 			'value'       => $course['parts'][0]['slots'][0]['city'],
 			'is_visible'  => true,
 			'is_taxonomy' => true,
 		],
-		'pa_tijd'      => [
+		'pa_tijd'        => [
 			'name'        => 'pa_tijd',
-			'value'       => $startDate->format('H:i'),
+			'value'       => $startDate->format(DUTCH_TIME),
 			'is_visible'  => true,
 			'is_taxonomy' => true,
 		],
-		'pa_slot_time' => [
+		'pa_slot_time'   => [
 			'name'        => 'pa_slot_time',
 			'is_visible'  => true,
 			'is_taxonomy' => true,
 		],
 		'pa_pretty_date' => [
-			'name' => 'pa_pretty_date',
-			'is_visible' => true,
+			'name'        => 'pa_pretty_date',
+			'is_visible'  => true,
 			'is_taxonomy' => true,
 		],
 	];
 	$product    = new WC_Product();
 
-	$prettyDate = date_i18n('l d F Y', $startDate->getTimestamp()) . ' ' . $startDate->format('H:i');
+	$prettyDate = date_i18n(PRETTY_DATE, $startDate->getTimestamp()) . ' ' . $startDate->format(DUTCH_TIME);
 
 	if(isset($dw_options['use_tkm'])) {
 		$product->set_name($course['name'] . ' ' . $prettyDate);
@@ -130,12 +129,10 @@ function dw_add_woocommerce_product($course) {
 
 	wp_set_object_terms($product->get_id(), $course['parts'][0]['slots'][0]['city'], 'pa_locatie', false);
 
-
 	$courseParts = $course['parts'];
-
 	usort($courseParts, function ($a, $b) {
-		$startA = (new DateTime($a['slots'][0]['startDate']))->getTimestamp();
-		$startB = (new DateTime($b['slots'][0]['startDate']))->getTimestamp();
+		$startA = (DateTime::createFromFormat(DATE_ISO8601, $a['slots'][0]['startDate']))->getTimestamp();
+		$startB = (DateTime::createFromFormat(DATE_ISO8601, $b['slots'][0]['startDate']))->getTimestamp();
 		if($startA === $startB) {
 			return 0;
 		}
@@ -162,7 +159,7 @@ function dw_format_and_save_dates(WC_Product $product, DateTime $date, array $co
 	wp_set_object_terms($product->get_id(), $date->format('H:i'), 'pa_tijd', false);
 	wp_set_object_terms($product->get_id(), date_i18n('l d F Y', $date->getTimestamp()), 'pa_pretty_date', false);
 
-	$i = 1;
+	$i         = 1;
 	foreach($courseParts as $part) {
 		$startDate      = new DateTime($part['slots'][0]['startDate']);
 		$endDate        = new DateTime($part['slots'][0]['endDate']);
