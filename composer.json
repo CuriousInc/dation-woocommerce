@@ -14,7 +14,7 @@
         "setbased/rijksregisternummer": "^0.10.1",
         "ralouphie/getallheaders": "3.0.3 as 2.0.5",
         "symfony/serializer": "^4.3",
-        "symfony/property-access": "^4.3",
+        "symfony/property-access": "^5.0",
         "symfony/property-info": "^4.3",
         "phpdocumentor/reflection-docblock": "^4.3",
         "viison/address-splitter": "^0.3.2"
