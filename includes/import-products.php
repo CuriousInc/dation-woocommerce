@@ -159,14 +159,13 @@ function dw_format_and_save_dates(WC_Product $product, DateTime $date, array $co
 	wp_set_object_terms($product->get_id(), $date->format('H:i'), 'pa_tijd', false);
 	wp_set_object_terms($product->get_id(), date_i18n('l d F Y', $date->getTimestamp()), 'pa_pretty_date', false);
 
-	$i         = 1;
+	$i = 1;
 	foreach($courseParts as $part) {
 		$startDate      = new DateTime($part['slots'][0]['startDate']);
 		$endDate        = new DateTime($part['slots'][0]['endDate']);
 		$attributeValue = $i . '. ' . date_i18n('D d F Y', $startDate->getTimestamp()) . ' ' . $startDate->format('H:i');
-		if($endDate) {
-			$attributeValue .= '-' . $endDate->format('H:i');
-		}
+		$attributeValue .= '-' . $endDate->format('H:i');
+
 		wp_set_object_terms(
 			$product->get_id(),
 			$attributeValue,
