@@ -25,7 +25,7 @@ function dw_import_products() {
 	$courses         = $client->getCourseInstances(new DateTime(), null) ?? [];
 	$createdProducts = [];
 
-	$courseFilter    = new CourseFilter($courses);
+	$courseFilter = new CourseFilter($courses);
 	$filteredCourses = $courseFilter->filter_courses($dw_options['ccv_code']);
 
 	foreach($filteredCourses as $dationProduct) {
@@ -74,29 +74,29 @@ function dw_get_product_by_sku($sku) {
  */
 function dw_add_woocommerce_product($course) {
 	global $dw_options;
-	$startDate = DateTime::createFromFormat(DATE_ISO8601, $course['startDate']);
+	$startDate = new DateTime($course['startDate']);
 
 	$attributes = [
-		'pa_datum'       => [
+		'pa_datum'     => [
 			'name'        => 'pa_datum',
-			'value'       => $startDate->format(DUTCH_DATE),
+			'value'       => $startDate->format('d-m-Y'),
 			'position'    => 1,
 			'is_visible'  => true,
 			'is_taxonomy' => true,
 		],
-		'pa_locatie'     => [
+		'pa_locatie'   => [
 			'name'        => 'pa_locatie',
 			'value'       => $course['parts'][0]['slots'][0]['city'],
 			'is_visible'  => true,
 			'is_taxonomy' => true,
 		],
-		'pa_tijd'        => [
+		'pa_tijd'      => [
 			'name'        => 'pa_tijd',
-			'value'       => $startDate->format(DUTCH_TIME),
+			'value'       => $startDate->format('H:i'),
 			'is_visible'  => true,
 			'is_taxonomy' => true,
 		],
-		'pa_slot_time'   => [
+		'pa_slot_time' => [
 			'name'        => 'pa_slot_time',
 			'is_visible'  => true,
 			'is_taxonomy' => true,
