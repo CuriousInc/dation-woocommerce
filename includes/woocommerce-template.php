@@ -82,6 +82,8 @@ function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text)
 		} catch(LicenseDateUnderTimeException $e) {
 			//This should never happen
 			$issueDrivingLicenseDateWarning = '<p style="color: red">Let op: TKM eerder dan 6 maanden</p>';
+		} catch(LicenseDateLongOverTimeException $e) {
+			$issueDrivingLicenseDateWarning = '<p style="color: red">Let op: TKM later dan 11 maanden</p>';
 		}
 
 		if($sent_to_admin) {
