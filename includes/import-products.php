@@ -74,12 +74,12 @@ function dw_get_product_by_sku($sku) {
  */
 function dw_add_woocommerce_product($course) {
 	global $dw_options;
-	$startDate = new DateTime($course['startDate']);
+	$startDate = DateTime::createFromFormat(DATE_ISO8601, $course['startDate']);
 
 	$attributes = [
 		'pa_datum'     => [
 			'name'        => 'pa_datum',
-			'value'       => $startDate->format('d-m-Y'),
+			'value'       => $startDate->format(DUTCH_DATE),
 			'position'    => 1,
 			'is_visible'  => true,
 			'is_taxonomy' => true,
@@ -92,7 +92,7 @@ function dw_add_woocommerce_product($course) {
 		],
 		'pa_tijd'      => [
 			'name'        => 'pa_tijd',
-			'value'       => $startDate->format('H:i'),
+			'value'       => $startDate->format(DUTCH_TIME),
 			'is_visible'  => true,
 			'is_taxonomy' => true,
 		],
@@ -185,12 +185,8 @@ function dw_format_and_save_dates(WC_Product $product, DateTime $date, array $co
 }
 
 function dw_format_and_save_address(WC_Product $product, array $address) {
-	$streetLine = implode(', ', array_filter([
-		$address['streetName'], $address['houseNumber'], $address['addition']
-	]));
-
 	$addressLine = implode(', ', array_filter([
-		$streetLine, $address['postalCode'], $address['city']
+		$address['streetName'], $address['houseNumber'], $address['addition'], $streetLine, $address['postalCode'], $address['city']
 	]));
 
 	wp_set_object_terms($product->get_id(), $addressLine, 'pa_address', false);
