@@ -15,6 +15,7 @@ const DW_DEFAULT_PRODUCT_PROPERTIES = [
 /**
  * @return WC_Product[]
  *
+ * @throws WC_Data_Exception
  * @throws Exception
  */
 function dw_import_products() {
@@ -24,7 +25,7 @@ function dw_import_products() {
 	$courses         = $client->getCourseInstances(new DateTime(), null) ?? [];
 	$createdProducts = [];
 
-	$courseFilter    = new CourseFilter($courses);
+	$courseFilter = new CourseFilter($courses);
 	$filteredCourses = $courseFilter->filter_courses($dw_options['ccv_code']);
 
 	foreach($filteredCourses as $dationProduct) {
@@ -68,6 +69,7 @@ function dw_get_product_by_sku($sku) {
  *
  * @return WC_Product
  *
+ * @throws WC_Data_Exception
  * @throws \Exception When $course.startDate cannot be converted to DateTime
  */
 function dw_add_woocommerce_product($course) {
@@ -75,26 +77,26 @@ function dw_add_woocommerce_product($course) {
 	$startDate = DateTime::createFromFormat(DATE_ISO8601, $course['startDate']);
 
 	$attributes = [
-		'pa_datum'       => [
+		'pa_datum'     => [
 			'name'        => 'pa_datum',
 			'value'       => $startDate->format(DUTCH_DATE),
 			'position'    => 1,
 			'is_visible'  => true,
 			'is_taxonomy' => true,
 		],
-		'pa_locatie'     => [
+		'pa_locatie'   => [
 			'name'        => 'pa_locatie',
 			'value'       => $course['parts'][0]['slots'][0]['city'],
 			'is_visible'  => true,
 			'is_taxonomy' => true,
 		],
-		'pa_tijd'        => [
+		'pa_tijd'      => [
 			'name'        => 'pa_tijd',
 			'value'       => $startDate->format(DUTCH_TIME),
 			'is_visible'  => true,
 			'is_taxonomy' => true,
 		],
-		'pa_slot_time'   => [
+		'pa_slot_time' => [
 			'name'        => 'pa_slot_time',
 			'is_visible'  => true,
 			'is_taxonomy' => true,
@@ -102,6 +104,11 @@ function dw_add_woocommerce_product($course) {
 		'pa_pretty_date' => [
 			'name'        => 'pa_pretty_date',
 			'is_visible'  => true,
+			'is_taxonomy' => true,
+		],
+		'pa_address' => [
+			'name' => 'pa_address',
+			'is_visible' => true,
 			'is_taxonomy' => true,
 		],
 	];
@@ -141,6 +148,7 @@ function dw_add_woocommerce_product($course) {
 	});
 
 	dw_format_and_save_dates($product, $startDate, $courseParts);
+	dw_format_and_save_address($product, $course['parts'][0]['slots'][0]['location']['address']);
 
 	update_post_meta($product->get_id(), '_product_attributes', $attributes);
 
@@ -174,4 +182,12 @@ function dw_format_and_save_dates(WC_Product $product, DateTime $date, array $co
 		);
 		$i++;
 	}
+}
+
+function dw_format_and_save_address(WC_Product $product, array $address) {
+	$addressLine = implode(', ', array_filter([
+		$address['streetName'], $address['houseNumber'], $address['addition'], $streetLine, $address['postalCode'], $address['city']
+	]));
+
+	wp_set_object_terms($product->get_id(), $addressLine, 'pa_address', false);
 }
