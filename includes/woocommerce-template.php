@@ -72,6 +72,11 @@ function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text)
 			continue;
 		}
 
+		$location   = $product->get_attribute('pa_address') ?? '';
+		if($location !== '') {
+			echo "Locatie: $location";
+		}
+
 		if($hasReceivedLetter === "no") {
 			$receivedLetterListItem = '<li style="color: red"><strong>Brief ontvangen</strong> Nee</li>';
 		} else {
@@ -86,6 +91,8 @@ function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text)
 		} catch(LicenseDateUnderTimeException $e) {
 			//This should never happen
 			$issueDrivingLicenseDateWarning = '<p style="color: red">Let op: TKM eerder dan 6 maanden</p>';
+		} catch(LicenseDateLongOverTimeException $e) {
+			$issueDrivingLicenseDateWarning = '<p style="color: red">Let op: TKM later dan 11 maanden</p>';
 		}
 
 		if($sent_to_admin) {
