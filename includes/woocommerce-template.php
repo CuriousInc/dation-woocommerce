@@ -72,6 +72,11 @@ function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text)
 			continue;
 		}
 
+		$location   = $product->get_attribute('pa_address') ?? '';
+		if($location !== '') {
+			echo "Locatie: $location";
+		}
+
 		if($hasReceivedLetter === "no") {
 			$receivedLetterListItem = '<li style="color: red"><strong>Brief ontvangen</strong> Nee</li>';
 		} else {
