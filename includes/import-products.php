@@ -29,9 +29,17 @@ function dw_import_products() {
 	$filteredCourses = $courseFilter->filter_courses($dw_options['ccv_code']);
 
 	foreach($filteredCourses as $dationProduct) {
-		if(dw_get_product_by_sku($dationProduct['id']) === null) {
+		$woocommerceProduct =  dw_get_product_by_sku($dationProduct['id']);
+		if($woocommerceProduct === null) {
 			$product           = dw_add_woocommerce_product($dationProduct);
 			$createdProducts[] = $product;
+		} else {
+			$woocommerceAvailability = $woocommerceProduct->get_stock_quantity();
+			$dationAvailability = $dationProduct['remainingAttendeeCapacity'];
+
+			if((int)$dationAvailability < (int)$woocommerceAvailability) {
+				$woocommerceProduct->set_stock_quantity((int) $dationAvailability);
+			}
 		}
 	}
 
@@ -101,6 +109,16 @@ function dw_add_woocommerce_product($course) {
 			'is_visible'  => true,
 			'is_taxonomy' => true,
 		],
+		'pa_ccv_code' => [
+			'name' => 'pa_ccv_code',
+			'is_visible' => true,
+			'is_taxonomy' => true,
+		],
+		'pa_month' => [
+			'name' => 'pa_month',
+			'is_visible' => true,
+			'is_taxonomy' => true,
+		]
 	];
 	$product    = new WC_Product();
 
@@ -126,7 +144,9 @@ function dw_add_woocommerce_product($course) {
 
 	wp_set_object_terms($product->get_id(), $startDate->format('d-m-Y'), 'pa_datum', false);
 	wp_set_object_terms($product->get_id(), $startDate->format('H:i'), 'pa_tijd', false);
+	wp_set_object_terms($product->get_id(), date_i18n('F', $startDate->getTimestamp()), 'pa_month', false);
 	wp_set_object_terms($product->get_id(), $course['parts'][0]['slots'][0]['city'], 'pa_locatie', false);
+	wp_set_object_terms($product->get_id(), $course['ccvCode'], 'pa_ccv_code', false);
 
 	$courseParts = $course['parts'];
 

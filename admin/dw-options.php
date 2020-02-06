@@ -54,6 +54,21 @@ function dw_render_options_page() {
 						</p>
 					</td>
 				</tr>
+				<tr>
+					<th scope="row">
+						<label class="description" for="dw_settings[use_webshop]">
+							<?php _e('Gebruik webshop functionaliteit') ?>
+						</label>
+					</th>
+					<td>
+						<input id="dw_settings[use_webshop]" name="dw_settings[use_webshop]"
+							   type="checkbox" value="1"
+							<?php if(isset($dw_options['use_webshop'])) {
+								echo "checked";
+							} ?>
+						>
+					</td>
+				</tr>
 			</table>
 
 			<h2 class="title">Standaard waarden voor nieuwe cursussen</h2>
