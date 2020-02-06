@@ -206,7 +206,7 @@ function dw_format_and_save_dates(WC_Product $product, DateTime $date, array $co
 
 function dw_format_and_save_address(WC_Product $product, array $address) {
 	$addressLine = implode(', ', array_filter([
-		$address['streetName'], $address['houseNumber'], $address['addition'], $streetLine, $address['postalCode'], $address['city']
+		$address['streetName'], $address['houseNumber'], $address['addition'], $address['postalCode'], $address['city']
 	]));
 
 	wp_set_object_terms($product->get_id(), $addressLine, 'pa_address', false);
