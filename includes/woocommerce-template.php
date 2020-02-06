@@ -21,6 +21,10 @@ const OVERTIME_MESSAGE      = "Let op: als u geen uitstel heeft gekregen van de 
 const LONG_OVERTIME_MESSAGE = "Let op: als u geen uitstel heeft gekregen van de overheid bestaat de kans dat u helemaal niet mag deelnemen aan het terugkommoment op deze datum. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze,<b> geef dan een reden voor uitstel op.</b> Deze uitzondering moet u expliciet zijn toegekend vanwege het departement Mobiliteit & Openbare Werken via een schrijven. Indien u hier verdergaat, maar dit blijkt niet door de overheid te zijn toegekend, blijft u het inschrijvingsgeld verschuldigd.";
 const DW_WARNING            = "dw_warning_given";
 
+const DUTCH_DATE            = "d-m-Y";
+const DUTCH_TIME            = "H:i";
+const PRETTY_DATE           = "l d F Y";
+
 const DELAY_REASONS = [
 	'medical' => 'Uitstel om medische redenen',
 	'service' => 'Uitstel vanwege beroep of dienst in het buitenland',
@@ -74,6 +78,11 @@ function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text)
 			continue;
 		}
 
+		$location   = $product->get_attribute('pa_address') ?? '';
+		if($location !== '') {
+			echo "Locatie: $location";
+		}
+
 		if($hasReceivedLetter === "no") {
 			$receivedLetterListItem = '<li style="color: red"><strong>Brief ontvangen</strong> Nee</li>';
 		} else {
@@ -88,6 +97,8 @@ function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text)
 		} catch(LicenseDateUnderTimeException $e) {
 			//This should never happen
 			$issueDrivingLicenseDateWarning = '<p style="color: red">Let op: TKM eerder dan 6 maanden</p>';
+		} catch(LicenseDateLongOverTimeException $e) {
+			$issueDrivingLicenseDateWarning = '<p style="color: red">Let op: TKM later dan 11 maanden</p>';
 		}
 
 		if($sent_to_admin) {
@@ -419,7 +430,7 @@ function canFollowMoment(string $licenseIssueDate, string $trainingDate): bool {
 	$licenseDateTime = DateTime::createFromFormat(OrderManager::BELGIAN_DATE_FORMAT, $licenseIssueDate);
 	$licenseDateTime->setTime(0, 0);
 
-	$trainingDateTime = DateTime::createFromFormat("d-m-Y", $trainingDate);
+	$trainingDateTime = DateTime::createFromFormat(DUTCH_DATE, $trainingDate);
 	$trainingDateTime->setTime(0, 0);
 
 	if($trainingDateTime < $licenseDateTime) {
