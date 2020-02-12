@@ -21,9 +21,13 @@ const OVERTIME_MESSAGE      = "Let op: als u geen uitstel heeft gekregen van de 
 const LONG_OVERTIME_MESSAGE = "Let op: als u geen uitstel heeft gekregen van de overheid bestaat de kans dat u helemaal niet mag deelnemen aan het terugkommoment op deze datum. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze,<b> geef dan een reden voor uitstel op.</b> Deze uitzondering moet u expliciet zijn toegekend vanwege het departement Mobiliteit & Openbare Werken via een schrijven. Indien u hier verdergaat, maar dit blijkt niet door de overheid te zijn toegekend, blijft u het inschrijvingsgeld verschuldigd.";
 const DW_WARNING            = "dw_warning_given";
 
-const DUTCH_DATE            = "d-m-Y";
-const DUTCH_TIME            = "H:i";
-const PRETTY_DATE           = "l d F Y";
+const LONG_OVERTIME_WARNING = 'Let op: TKM later dan 11 maanden';
+const OVERTIME_WARNING      = 'Let op: TKM later dan 9 maanden';
+const TOO_EARLY_WARNING     = 'Let op: TKM eerder dan 6 maanden';
+
+const DUTCH_DATE  = "d-m-Y";
+const DUTCH_TIME  = "H:i";
+const PRETTY_DATE = "l d F Y";
 
 const DELAY_REASONS = [
 	'medical' => 'Uitstel om medische redenen',
@@ -38,8 +42,8 @@ if(isset($dw_options['use_tkm'])) {
 	add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
 }
 //Disable shopping cart functionality of applicable
-if(isset($dw_options['use_webshop'])){
-	add_filter( 'woocommerce_is_purchasable', '__return_false'); // DISABLING PURCHASE FUNCTIONALITY AND REMOVING ADD TO CART BUTTON FROM NORMAL PRODUCTS
+if(isset($dw_options['use_webshop'])) {
+	add_filter('woocommerce_is_purchasable', '__return_false'); // DISABLING PURCHASE FUNCTIONALITY AND REMOVING ADD TO CART BUTTON FROM NORMAL PRODUCTS
 	remove_action('woocommerce_single_variation', 'woocommerce_single_variation', 10); // REMOVING PRICE FROM VARIATIONS
 	remove_action('woocommerce_single_variation', 'woocommerce_single_variation_add_to_cart_button', 20); // REMOVING ADD TO CART BUTTON FROM VARIATIONS
 }
@@ -78,7 +82,7 @@ function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text)
 			continue;
 		}
 
-		$location   = $product->get_attribute('pa_address') ?? '';
+		$location = $product->get_attribute('pa_address') ?? '';
 		if($location !== '') {
 			echo "Locatie: $location";
 		}
@@ -88,18 +92,19 @@ function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text)
 		} else {
 			$receivedLetterListItem = '<li><strong>Brief ontvangen</strong> Ja</li>';
 		}
-		$issueDrivingLicenseDateWarning = "";
+		$issueDrivingLicenseDateWarningText = "";
 		try {
 			canFollowMoment($issueDrivingLicense, $product->get_attribute('pa_datum'));
 		} catch(LicenseDateOverTimeException $e) {
 			//Add warning
-			$issueDrivingLicenseDateWarning = '<p style="color: red">Let op: TKM later dan 9 maanden</p>';
+			$issueDrivingLicenseDateWarningText = OVERTIME_WARNING;
 		} catch(LicenseDateUnderTimeException $e) {
 			//This should never happen
-			$issueDrivingLicenseDateWarning = '<p style="color: red">Let op: TKM eerder dan 6 maanden</p>';
+			$issueDrivingLicenseDateWarningText = TOO_EARLY_WARNING;
 		} catch(LicenseDateLongOverTimeException $e) {
-			$issueDrivingLicenseDateWarning = '<p style="color: red">Let op: TKM later dan 11 maanden</p>';
+			$issueDrivingLicenseDateWarningText = LONG_OVERTIME_WARNING;
 		}
+		$issueDrivingLicenseDateWarning = '<p style="color: red">' . $issueDrivingLicenseDateWarningText . '</p>';
 
 		if($sent_to_admin) {
 			if(!$plain_text) {
@@ -178,7 +183,7 @@ function dw_override_checkout_fields($fields) {
 
 	$delayOptions = [];
 
-	$delayOptions[''] =  __('Kies een reden van uitstel');
+	$delayOptions[''] = __('Kies een reden van uitstel');
 	foreach(DELAY_REASONS as $key => $value) {
 		$delayOptions[$key] = __($value);
 	}
