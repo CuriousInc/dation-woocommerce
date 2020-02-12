@@ -29,9 +29,17 @@ function dw_import_products() {
 	$filteredCourses = $courseFilter->filter_courses($dw_options['ccv_code']);
 
 	foreach($filteredCourses as $dationProduct) {
-		if(dw_get_product_by_sku($dationProduct['id']) === null) {
+		$woocommerceProduct =  dw_get_product_by_sku($dationProduct['id']);
+		if($woocommerceProduct === null) {
 			$product           = dw_add_woocommerce_product($dationProduct);
 			$createdProducts[] = $product;
+		} else {
+			$woocommerceAvailability = $woocommerceProduct->get_stock_quantity();
+			$dationAvailability = $dationProduct['remainingAttendeeCapacity'];
+
+			if((int)$dationAvailability < (int)$woocommerceAvailability) {
+				$woocommerceProduct->set_stock_quantity((int) $dationAvailability);
+			}
 		}
 	}
 
@@ -111,6 +119,16 @@ function dw_add_woocommerce_product($course) {
 			'is_visible' => true,
 			'is_taxonomy' => true,
 		],
+		'pa_ccv_code' => [
+			'name' => 'pa_ccv_code',
+			'is_visible' => true,
+			'is_taxonomy' => true,
+		],
+		'pa_month' => [
+			'name' => 'pa_month',
+			'is_visible' => true,
+			'is_taxonomy' => true,
+		]
 	];
 	$product    = new WC_Product();
 
@@ -135,6 +153,7 @@ function dw_add_woocommerce_product($course) {
 	$product->save();
 
 	wp_set_object_terms($product->get_id(), $course['parts'][0]['slots'][0]['city'], 'pa_locatie', false);
+	wp_set_object_terms($product->get_id(), $course['ccvCode'], 'pa_ccv_code', false);
 
 	$courseParts = $course['parts'];
 	usort($courseParts, function ($a, $b) {
@@ -165,7 +184,8 @@ function dw_add_woocommerce_product($course) {
 function dw_format_and_save_dates(WC_Product $product, DateTime $date, array $courseParts) {
 	wp_set_object_terms($product->get_id(), $date->format('d-m-Y'), 'pa_datum', false);
 	wp_set_object_terms($product->get_id(), $date->format('H:i'), 'pa_tijd', false);
-	wp_set_object_terms($product->get_id(), date_i18n('l d F Y', $date->getTimestamp()), 'pa_pretty_date', false);
+	wp_set_object_terms($product->get_id(), date_i18n('l d F', $date->getTimestamp()), 'pa_pretty_date', false);
+	wp_set_object_terms($product->get_id(), date_i18n('F', $date->getTimestamp()), 'pa_month', false);
 
 	$i = 1;
 	foreach($courseParts as $part) {
@@ -186,7 +206,7 @@ function dw_format_and_save_dates(WC_Product $product, DateTime $date, array $co
 
 function dw_format_and_save_address(WC_Product $product, array $address) {
 	$addressLine = implode(', ', array_filter([
-		$address['streetName'], $address['houseNumber'], $address['addition'], $streetLine, $address['postalCode'], $address['city']
+		$address['streetName'], $address['houseNumber'], $address['addition'], $address['postalCode'], $address['city']
 	]));
 
 	wp_set_object_terms($product->get_id(), $addressLine, 'pa_address', false);
