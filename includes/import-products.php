@@ -39,6 +39,7 @@ function dw_import_products() {
 
 			if((int)$dationAvailability < (int)$woocommerceAvailability) {
 				$woocommerceProduct->set_stock_quantity((int) $dationAvailability);
+				$woocommerceProduct->save();
 			}
 		}
 	}
