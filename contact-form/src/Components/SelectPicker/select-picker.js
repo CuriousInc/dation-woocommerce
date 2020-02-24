@@ -24,6 +24,9 @@ SelectPicker.propTypes = {
 		label: PropTypes.string,
 	})),
 	classes: PropTypes.string,
+	inputClasses: PropTypes.string,
+	labelClasses: PropTypes.string,
+	wrapperClasses: PropTypes.string,
 };
 
 export default SelectPicker;
