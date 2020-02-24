@@ -1,5 +1,9 @@
-{
-  "extends": ["react-app"],
+/* disable a11y plugin from airbnb-config */
+const a11yOff = Object.keys(require('eslint-plugin-jsx-a11y').rules)
+	.reduce((acc, rule) => { acc[`jsx-a11y/${rule}`] = 'off'; return acc }, {})
+
+module.exports = {
+  "extends": ["airbnb", "react-app"],
   "parserOptions": {
     "ecmaVersion": 8
   },
@@ -8,6 +12,7 @@
     "jest": true
   },
   "rules": {
+    ...a11yOff,
     "class-methods-use-this": ["off"],
     "comma-dangle": ["error", "always-multiline"],
     "complexity": ["warn", 8],
@@ -34,6 +39,7 @@
     }],
     "react/prop-types": [ "warn", {
         "skipUndeclared": true
-    }]
+    }],
+    "jsx-quotes": ["error", "prefer-double"]
   }
 }
