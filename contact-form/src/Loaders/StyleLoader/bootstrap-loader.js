@@ -47,7 +47,7 @@ export const updateConfigClasses = config => {
 		form: {
 			...config.form,
 			inputs: updatedInputs,
-		}
+		},
 	}
 };
 

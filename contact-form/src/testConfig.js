@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 export const config = {
 	"styleLoader": "BootstrapLoader",
 	"card": {
@@ -15,35 +16,35 @@ export const config = {
 				"label": "Voornaam",
 				"name": "firstName",
 				"required": false,
-				"wrapperClasses": "m-0"
+				"wrapperClasses": "m-0",
 			},
 			{
 				"type": "TextInput",
 				"label": "Achternaam",
 				"name": "lastName",
 				"required": false,
-				"wrapperClasses": "m-0"
+				"wrapperClasses": "m-0",
 			},
 			{
 				"type": "TextInput",
 				"label": "GSM nummer",
 				"name": "mobilePhone",
 				"required": false,
-				"wrapperClasses": "m-0"
+				"wrapperClasses": "m-0",
 			},
 			{
 				"type": "TextInput",
 				"label": "E-mail",
 				"name": "email",
 				"required": false,
-				"wrapperClasses": "m-0"
+				"wrapperClasses": "m-0",
 			},
 			{
 				"type": "TextInput",
 				"label": "Geboorteplaats",
 				"name": "placeOfBirth",
 				"required": false,
-				"wrapperClasses": "m-0"
+				"wrapperClasses": "m-0",
 			},
 			{
 				"type": "DateInput",
@@ -51,21 +52,21 @@ export const config = {
 				"name": "dateOfBirth",
 				"required": false,
 				"wrapperClasses": "m-0",
-				"labelClasses": "text-left"
+				"labelClasses": "text-left",
 			},
 			{
 				"type": "TextInput",
 				"label": "Rijksregisternummer",
 				"name": "nationalRegistryNumber",
 				"required": false,
-				"wrapperClasses": "m-0"
+				"wrapperClasses": "m-0",
 			},
 			{
 				"type": "TextInput",
 				"label": "Identiteitskaarnummer",
 				"name": "idCardNumber",
 				"required": false,
-				"wrapperClasses": "m-0"
+				"wrapperClasses": "m-0",
 			},
 			{
 				"type": "DateInput",
@@ -73,7 +74,7 @@ export const config = {
 				"name": "dateLicenceC",
 				"required": false,
 				"wrapperClasses": "m-0",
-				"labelClasses": "text-left"
+				"labelClasses": "text-left",
 			},
 			{
 				"type": "DateInput",
@@ -81,7 +82,7 @@ export const config = {
 				"name": "dateCode95",
 				"required": false,
 				"wrapperClasses": "m-0",
-				"labelClasses": "text-left"
+				"labelClasses": "text-left",
 			},
 			{
 				"type": "DateInput",
@@ -89,13 +90,13 @@ export const config = {
 				"name": "dateMedical",
 				"required": false,
 				"wrapperClasses": "m-0",
-				"labelClasses": "text-left"
+				"labelClasses": "text-left",
 			},
 			{
 				"type": "CheckBox",
 				"label": "Akkoord met de privacyverklaring en algemene voorwaarden",
 				"name": "daccord",
-				"required": false
+				"required": false,
 			},
 		],
 		"submitButton" : {
@@ -103,6 +104,6 @@ export const config = {
 			"url": "https://cloud-dev.dation.nl:269/wp-json/dationwoocommerce/v1/submit/lead",
 			"inputClasses" : "btn btn-primary float-right",
 			"text" : "Verzenden",
-		}
-	}
+		},
+	},
 };

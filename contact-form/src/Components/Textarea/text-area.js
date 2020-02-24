@@ -17,6 +17,9 @@ TextArea.propTypes = {
 	initialValue: PropTypes.string,
 	classes: PropTypes.string,
 	required: PropTypes.bool,
+	wrapperClasses: PropTypes.string,
+	labelClasses: PropTypes.string,
+	inputClasses: PropTypes.string,
 };
 
 export default TextArea;

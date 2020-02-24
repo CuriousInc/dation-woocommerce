@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
-import Form from "./Components/Form";
-import BootstrapLoader, { updateConfigClasses } from "./Loaders/StyleLoader";
+import Form from './Components/Form';
+import BootstrapLoader, { updateConfigClasses } from './Loaders/StyleLoader';
 import {config} from './testConfig';
 
 function App() {
