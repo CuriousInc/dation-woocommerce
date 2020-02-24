@@ -1,21 +1,36 @@
-import React from 'react';
+import React, {Component} from 'react';
 import ComponentLoader from '../../Loaders/ComponentLoader';
 
-const Form = ({config}) => {
-	const { inputs, classes, submitButton } = config;
-	const {url, inputClasses, text} = submitButton;
+class Form extends Component {
+	constructor(props) {
+		super(props);
+		this.formRef = React.createRef();
+	}
 
-	const onSubmit = () => {
-		//TODO: serialize form and submit to url. Also errorHandling.
-		console.error('this should submit using url prop');
-	};
+	render() {
+		const {config} = this.props;
+		const {inputs, classes, submitButton} = config;
+		const {url, inputClasses, text} = submitButton;
 
-	return (
-		<form className={classes}>
-			{inputs.map(input => <ComponentLoader key={input.name} componentName={input.type} componentProps={{...input}}/>)}
-			<button type="submit" className={inputClasses} onSubmit={() => onSubmit()}>{text}</button>
-		</form>
-	)
+
+		const onSubmit = () => {
+			const submittedForm = this.formRef.current;
+			console.log('submitting');
+			console.log(submittedForm);
+			//TODO: serialize form and submit to url. Also errorHandling.
+			console.error('this should submit using url prop');
+		};
+		return (
+			<form className={classes} ref={this.formRef}>
+				{inputs.map(input => <ComponentLoader key={input.name} componentName={input.type} componentProps={{...input}}/>)}
+				<button type="submit" className={inputClasses} onSubmit={e => {
+					console.log('submitting1');
+					e.preventDefault();
+					onSubmit();
+				}}>{text}</button>
+			</form>
+		)
+	}
 };
 
 export default Form;
