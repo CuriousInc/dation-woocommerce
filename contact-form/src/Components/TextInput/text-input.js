@@ -18,6 +18,9 @@ TextInput.propTypes = {
 	label: PropTypes.string.isRequired,
 	initialValue: PropTypes.string,
 	required: PropTypes.bool,
+	wrapperClasses: PropTypes.string,
+	labelClasses: PropTypes.string,
+	inputClasses: PropTypes.string,
 };
 
 export default TextInput;

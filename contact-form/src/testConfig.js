@@ -99,7 +99,8 @@ export const config = {
 			},
 		],
 		"submitButton" : {
-			"url": "www.wordpresswebsite.com/json/endpoint/to/be/determined",
+			//TODO: This should not be changed obviously
+			"url": "https://cloud-dev.dation.nl:269/wp-json/dationwoocommerce/v1/submit/lead",
 			"inputClasses" : "btn btn-primary float-right",
 			"text" : "Verzenden",
 		}
