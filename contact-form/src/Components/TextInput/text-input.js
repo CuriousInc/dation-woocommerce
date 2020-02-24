@@ -7,7 +7,7 @@ const TextInput = ({label, initialValue, required = false, name, wrapperClasses,
 	return (
 		<div className={wrapperClasses}>
 			<label className={labelClasses}>{label}</label>
-			<input type='text' name={name} className={inputClasses} value={value} onChange={e => setValue(e.target.value)}
+			<input type="text" name={name} className={inputClasses} value={value} onChange={e => setValue(e.target.value)}
 				   required={required}/>
 		</div>
 	);
