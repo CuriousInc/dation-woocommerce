@@ -8,7 +8,7 @@ const SelectPicker = ({label, initialValue, required = false, options, inputClas
 		<div className={wrapperClasses}>
 			<label className={labelClasses}>{label}</label>
 			<select value={value} onChange={e => setValue(e.target.value)} required={required} className={inputClasses}>
-				{options.map(option => <option value={option.value} key={option.value}>{option.displayName}</option>)}
+				{options.map(option => <option value={option.value} key={option.value}>{option.label}</option>)}
 			</select>
 		</div>
 	)
@@ -16,12 +16,13 @@ const SelectPicker = ({label, initialValue, required = false, options, inputClas
 
 SelectPicker.propTypes = {
 	label: PropTypes.string.isRequired,
-	initialValue: PropTypes.number,
+	initialValue: PropTypes.string,
 	required: PropTypes.bool,
-	options: PropTypes.shape({
-		value: PropTypes.number,
-		displayName: PropTypes.string,
-	}),
+	options: PropTypes.arrayOf(
+	PropTypes.shape({
+		value: PropTypes.string,
+		label: PropTypes.string,
+	})),
 	classes: PropTypes.string,
 };
 
