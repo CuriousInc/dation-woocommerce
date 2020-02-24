@@ -14,7 +14,7 @@ const ComponentLoader = ({componentName, componentProps}) => {
 		importComponent(componentName);
 	}, [componentName]);
 
-	if(isLoaded && null !== Component) {
+	if(isLoaded && Component !== null) {
 		return (
 			<>
 				<Suspense fallback={<div>Loading...</div>}>

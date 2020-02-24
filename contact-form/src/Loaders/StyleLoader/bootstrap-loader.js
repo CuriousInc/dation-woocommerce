@@ -1,20 +1,13 @@
-import React from 'react';
+export function injectBootstrapCss() {
+	const bsStyleTag = document.createElement('link');
+	bsStyleTag.setAttribute('rel', 'stylesheet');
+	bsStyleTag.setAttribute('integrety', 'sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T');
+	bsStyleTag.setAttribute('href', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css');
+	bsStyleTag.setAttribute('crossOrigin', 'anonymous');
 
-const BootstrapLoader = ({children}) => {
+		document.getElementsByTagName('head')[0].appendChild(bsStyleTag);
+}
 
-	return <>
-		<header>
-			<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-				  integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-				  crossOrigin="anonymous"/>
-		</header>
-		<div className="container">
-			<div className="col-6">
-				{children}
-			</div>
-		</div>
-	</>
-};
 
 export const updateConfigClasses = config => {
 	const {form: {inputs}} = config;
@@ -81,5 +74,3 @@ const updateLabelClasses = input => {
 			return 'col-form-label ' + (input?.labelClasses ? input.labelClasses : '');
 	}
 }
-
-export default BootstrapLoader;
