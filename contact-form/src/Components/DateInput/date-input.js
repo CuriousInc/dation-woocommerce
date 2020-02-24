@@ -45,5 +45,8 @@ DateInput.propTypes = {
 	label: PropTypes.string.isRequired,
 	name: PropTypes.string.isRequired,
 	initialValue: PropTypes.string,
+	wrapperClasses: PropTypes.string,
+	labelClasses: PropTypes.string,
+	inputClasses: PropTypes.string,
 };
 export default DateInput;

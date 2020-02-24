@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^7.2.1",
     "glyphicons": "^0.2.0",
     "moment": "^2.24.0",
+    "nan": "^2.14.0",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-datetime": "^2.16.3",
@@ -19,10 +20,13 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint ./src"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint:js"
+    }
   },
   "browserslist": {
     "production": [
@@ -35,5 +39,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.7",
+    "npm-run-all": "^4.1.5"
   }
 }

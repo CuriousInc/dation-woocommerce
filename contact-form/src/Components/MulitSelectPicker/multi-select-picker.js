@@ -31,7 +31,14 @@ MultiSelectPicker.propTypes = {
 		value: PropTypes.string,
 		label: PropTypes.string,
 		selected: PropTypes.bool,
-	})
+	}),
+	wrapperClasses: PropTypes.string,
+	labelClasses: PropTypes.string,
+	inputClasses: PropTypes.string,
+	options: PropTypes.arrayOf(PropTypes.shape({
+		value: PropTypes.string,
+		label: PropTypes.string,
+	})),
 }
 
 export default MultiSelectPicker;
