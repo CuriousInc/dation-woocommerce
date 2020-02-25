@@ -11,7 +11,7 @@ export function injectBootstrapCss() {
   bootswatchDarklyTag.setAttribute('crossOrigin', 'anonymous');
 
   document.getElementsByTagName('head')[0].appendChild(bsStyleTag);
-  document.getElementsByTagName('head')[0].appendChild(bootswatchDarklyTag);
+  // document.getElementsByTagName('head')[0].appendChild(bootswatchDarklyTag);
 }
 
 

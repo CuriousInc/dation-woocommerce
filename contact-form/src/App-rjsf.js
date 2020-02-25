@@ -17,10 +17,11 @@ function App() {
   return (
     <div className="App">
       <div className="container">
-        <div className="col-6">
+        <div className="col">
           <Form
             ref={formRef}
-            schema={schema}
+            schema={schema.schema}
+            uiSchema={schema.uiSchema}
             onSubmit={handleSubmit}
             onChange={() => console.log('Change')}
             onError={() => console.log('Errors')}

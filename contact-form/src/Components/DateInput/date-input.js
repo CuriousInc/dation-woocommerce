@@ -9,13 +9,21 @@ import './date-input.css';
 
 // This component is only usable in combination with Bootstrap Style loader.
 const DateInput = ({
-  label = 'datepicker', initialValue, name, wrapperClasses, labelClasses, inputClasses,
+  label = 'datepicker',
+  initialValue,
+  name,
+  wrapperClasses,
+  labelClasses,
+  inputClasses,
+  onChange = null,
 }) => {
   const [value, setValue] = useState(initialValue);
 
   const handleChange = (inputValue) => {
     if (moment.isMoment(inputValue)) {
-      setValue(inputValue.format('DD-MM-YYYY'));
+      const val = inputValue.format('DD-MM-YYYY');
+      setValue(val);
+      typeof onChange === 'function' && onChange(val);
     }
   };
 
@@ -45,6 +53,15 @@ const DateInput = ({
   );
 };
 
+DateInput.schema = {
+  type: 'object',
+  properties: {
+    date: {
+      type: 'string',
+    },
+  },
+};
+
 DateInput.propTypes = {
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
@@ -52,6 +69,7 @@ DateInput.propTypes = {
   wrapperClasses: PropTypes.string,
   labelClasses: PropTypes.string,
   inputClasses: PropTypes.string,
+  onChange: PropTypes.func,
 };
 
 DateInput.defaultProps = {
@@ -59,5 +77,6 @@ DateInput.defaultProps = {
   wrapperClasses: '',
   labelClasses: '',
   inputClasses: '',
+  onChange: null,
 };
 export default DateInput;
