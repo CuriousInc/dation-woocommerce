@@ -21,8 +21,8 @@ export default {
         title: 'Achternaam',
       },
       address: {
-        type: 'integer',
-        title: 'adres',
+        type: 'string',
+        title: 'Adres',
       },
       mobileNumber: {
         type: 'string',
@@ -40,7 +40,6 @@ export default {
       },
       birthDate: {
         type: 'string',
-        format: 'date',
         title: 'Geboortedatum',
       },
       nationalRegistryNumber: {
@@ -50,49 +49,30 @@ export default {
       },
       dateCLicence: {
         type: 'string',
-        format: 'date',
         title: 'Datum rijbewijs C behaald',
       },
       dateCode95: {
         type: 'string',
-        format: 'date',
         title: 'Datum code 95',
       },
       dateMedicalExam: {
         type: 'string',
-        format: 'date',
         title: 'Datum medische schifting',
       },
-    },
-    signupAsCompany: {
-      type: 'boolean',
-      title: 'Inschrijven als bedrijf?',
-      $ref: '#/definitions/isCompany',
     },
   },
   uiSchema: {
     birthDate: {
-      'ui:field': (props) => <DateInput {...props} />,
-      'ui:options': {
-        label: 'Geboorte datum',
-      },
+      'ui:widget': (props) => <DateInput {...props} />,
     },
     dateCLicence: {
-      'ui:field': (props) => <DateInput {...props} />,
-      'ui:options': {
-        label: '',
-      },
+      'ui:widget': (props) => <DateInput {...props} />,
     },
     dateCode95: {
-      'ui:field': (props) => <DateInput {...props} />,
-      'ui:options': {
-      },
+      'ui:widget': (props) => <DateInput {...props} />,
     },
     dateMedicalExam: {
-      'ui:field': (props) => <DateInput {...props} />,
-      'ui:options': {
-        label: '',
-      },
+      'ui:widget': (props) => <DateInput {...props} />,
     },
   },
 };
