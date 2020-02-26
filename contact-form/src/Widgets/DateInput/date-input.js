@@ -44,7 +44,7 @@ const DateInput = ({
         disabled={disabled}
         id={id}
       />
-      <div className="input-group-append">
+      <div className="input-group-addon">
         <span className="input-group-text">
           {icons.calendar}
         </span>

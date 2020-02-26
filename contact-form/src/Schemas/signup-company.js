@@ -1,6 +1,6 @@
+import axios from 'axios';
 import student from '../Definitions/student';
-import companyDefinition from '../Definitions/company';
-import axios from "axios";
+import company from '../Definitions/company';
 
 
 export default {
@@ -23,7 +23,7 @@ export default {
         ...student.definition,
       },
       company: {
-        ...companyDefinition,
+        ...company.definition,
       },
     },
 
