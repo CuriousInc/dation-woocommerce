@@ -1,3 +1,9 @@
+i.glyphicon { display: none; }
+.btn-add::after { content: 'Toevoegen'; }
+.array-item-move-up::after { content: 'Move Up'; }
+.array-item-move-down::after { content: 'Move Down'; }
+.array-item-remove::after { content: 'Verwijderen'; }
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
