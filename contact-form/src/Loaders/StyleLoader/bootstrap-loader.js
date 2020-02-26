@@ -13,8 +13,6 @@ export function injectBootstrapCss() {
   document.getElementsByTagName('head')[0].appendChild(bsStyleTag);
   document.getElementsByTagName('head')[0].appendChild(bootswatchDarklyTag);
 }
-
-
 export const updateConfigClasses = (config) => {
   const { form: { inputs } } = config;
 
