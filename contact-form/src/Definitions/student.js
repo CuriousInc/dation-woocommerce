@@ -3,6 +3,17 @@ import DateInput from '../Widgets/DateInput';
 
 const definition = {
   type: 'object',
+  required: [
+    'firstName',
+    'lastName',
+    'address',
+    'email',
+    'nationalRegistryNumber',
+    'dateCLicence',
+    'dateMedicalExam',
+    'dateCode95',
+    'privacy',
+  ],
   properties: {
     firstName: {
       type: 'string',
@@ -12,6 +23,12 @@ const definition = {
     lastName: {
       type: 'string',
       title: 'Achternaam',
+    },
+    gender: {
+      type: 'string',
+      title: 'Geslacht',
+      enum: ['M', 'F'],
+      enumNames: ['Man', 'Vrouw'],
     },
     address: {
       type: 'string',
@@ -37,7 +54,6 @@ const definition = {
     },
     nationalRegistryNumber: {
       type: 'string',
-      format: 'number',
       title: 'Rijksregisternummber',
     },
     dateCLicence: {
@@ -60,6 +76,12 @@ const definition = {
 };
 
 const uiSchema = {
+  gender: {
+    'ui:widget': 'radio',
+    'ui:options': {
+      inline: true,
+    },
+  },
   birthDate: {
     'ui:widget': (props) => <DateInput {...props} />,
   },

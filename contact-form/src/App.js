@@ -4,13 +4,24 @@ import injectBootstrapCss from './Loaders/StyleLoader';
 
 import SignupAsPrivate from './Schemas/signup-private';
 import SignupAsCompany from './Schemas/signup-company';
+
 import './assets/index.scss';
+
 
 const isCompany = document.location.search.indexOf('company') !== -1;
 
 const FormSchema = {
   ...(isCompany ? { ...SignupAsCompany } : { ...SignupAsPrivate }),
 };
+
+// TODO: Localisation
+const transformErrors = (errors) => errors.map((error) => {
+  const newError = {
+    ...error,
+  };
+  return newError;
+});
+
 
 function App() {
   const formRef = useRef(null);
@@ -27,6 +38,10 @@ function App() {
             onSubmit={FormSchema.onSubmit}
             onChange={FormSchema.onChange}
             onError={FormSchema.onError}
+            transformErrors={transformErrors}
+            showErrorList={false}
+            localize={localize}
+            noHtml5Validate
           />
         </div>
       </div>

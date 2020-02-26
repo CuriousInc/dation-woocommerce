@@ -13,8 +13,8 @@ export default {
       url: 'https://cloud-dev.dation.nl:269/wp-json/dationwoocommerce/v1/submit/companyLead',
     });
   },
-  onChange: (...args) => { console.log('Change: ', ...args); },
-  onError: (...args) => { console.log('Error: ', ...args); },
+  onChange: (...args) => { },
+  onError: (...args) => { },
   schema: {
     definitions: {
       student: {
@@ -37,7 +37,7 @@ export default {
       students: {
         title: 'Leerlingen',
         type: 'array',
-        minItems: '1',
+        minItems: 1,
         items: {
           $ref: '#/definitions/student',
         },
