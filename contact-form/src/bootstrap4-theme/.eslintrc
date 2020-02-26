@@ -1,0 +1,17 @@
+{
+  "rules": { 
+    "complexity": ["off"],
+    "global-require": ["off"],
+    "guard-for-in": ["off"],
+    "no-console": ["off"],
+    "no-nested-ternary": ["off"],
+    "no-prototype-builtins": ["off"],
+    "no-restricted-globals": ["off"],
+    "no-restricted-syntax": ["off"],
+    "no-underscore-dangle": ["off"],
+    "no-use-before-define": ["off"],
+    "react/destructuring-assignment": ["off"],
+    "react/static-property-placement": ["off"],
+    "react/sort-comp": ["off"]
+  }
+}
