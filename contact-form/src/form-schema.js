@@ -76,6 +76,10 @@ const fromSchema = {
       },
     },
   },
+  submit: {
+    text: 'Verzenden',
+    url: 'https://cloud-dev.dation.nl:269/wp-json/dationwoocommerce/v1/submit/lead',
+  },
 };
 
 
