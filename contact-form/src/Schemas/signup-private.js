@@ -7,7 +7,7 @@ export default {
     const headers = { 'Content-Type': 'application/json' };
     const instance = axios.create({ headers });
 
-    const response = await instance.request({
+    await instance.request({
       method: 'post',
       data: JSON.stringify(formData),
       url: 'https://cloud-dev.dation.nl:269/wp-json/dationwoocommerce/v1/submit/lead',

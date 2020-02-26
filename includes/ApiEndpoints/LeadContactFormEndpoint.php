@@ -66,8 +66,7 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 		$formData          = $this->getLeadFromPostDate($requestParameters);
 
 		try {
-			throw new Error('test');
-			$response = $this->apiClient->postLead($formData)->getBody()->getContents();
+			$this->apiClient->postLead($formData)->getBody()->getContents();
 
 			return new \WP_REST_Response();
 		} catch(ClientException $e) {
@@ -94,7 +93,6 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 		}
 
 		return new \WP_REST_Response();
-
 	}
 
 	private function getLeadFromPostDate($leadArray = []) {
@@ -127,6 +125,5 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 		}
 
 		return $notes;
-
 	}
 }
