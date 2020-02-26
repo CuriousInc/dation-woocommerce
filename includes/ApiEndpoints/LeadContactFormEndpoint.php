@@ -6,7 +6,9 @@ namespace Dation\Woocommerce\ApiEndpoints;
 
 use Dation\Woocommerce\Adapter\RestApiClientFactory;
 use Dation\Woocommerce\RestApiClient\RestApiClient;
+use Error;
 use GuzzleHttp\Exception\ClientException;
+use WP_Error;
 use WP_REST_Server;
 
 class LeadContactFormEndpoint extends \WP_REST_Controller {
@@ -64,10 +66,12 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 		$formData          = $this->getLeadFromPostDate($requestParameters);
 
 		try {
+			throw new Error('test');
 			$response = $this->apiClient->postLead($formData)->getBody()->getContents();
-//			TODO return success/error
-		} catch(ClientException $e) {
 
+			return new \WP_REST_Response();
+		} catch(ClientException $e) {
+			return new WP_Error( 'post_failed', __('An error occurred'), array( 'status' => 404 ) );// status can be changed to any number
 		}
 
 	}
@@ -75,9 +79,8 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 	public function submitCompanyLeadForm( $request) {
 		$requestParameters = $request->get_json_params();
 		$leads             = [];
-
 		$companyData = $this->getCompanyData($requestParameters['company']);
-		foreach($requestParameters['leads'] as $lead) {
+		foreach($requestParameters['students'] as $lead) {
 			$lead = $this->getLeadFromPostDate($lead);
 			$lead['notes'] = isset($lead['notes']) ? $lead['notes'] . $companyData : $companyData;
 
@@ -90,6 +93,7 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 			$responses[] = $response->getBody()->getContents();
 		}
 
+		return new \WP_REST_Response();
 
 	}
 

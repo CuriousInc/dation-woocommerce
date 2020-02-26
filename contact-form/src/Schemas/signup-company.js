@@ -1,9 +1,20 @@
 import student from '../Definitions/student';
 import companyDefinition from '../Definitions/company';
+import axios from "axios";
 
 
 export default {
-  onSubmit: ({ formData }) => { console.log('Data: ', formData); },
+  onSubmit: async ({ formData }) => {
+    console.log('Data: ', formData);
+    const headers = { 'Content-Type': 'application/json' };
+    const instance = axios.create({ headers });
+
+    const response = await instance.request({
+      method: 'post',
+      data: JSON.stringify(formData),
+      url: 'https://cloud-dev.dation.nl:269/wp-json/dationwoocommerce/v1/submit/companyLead',
+    });
+  },
   onChange: (...args) => { console.log('Change: ', ...args); },
   onError: (...args) => { console.log('Error: ', ...args); },
   schema: {
