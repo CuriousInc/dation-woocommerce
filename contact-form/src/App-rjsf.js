@@ -1,18 +1,21 @@
 import React, { useRef } from 'react';
 import Form from 'react-jsonschema-form';
 import { injectBootstrapCss } from './Loaders/StyleLoader';
-import schema from './form-schema';
+import SignupAsPrivate from './Schemas/signup-private';
+import SignupAsCompany from './Schemas/signup-company';
 import './App.css';
 
+
+const isCompany = document.location.search.indexOf('company') !== -1;
+
+const FormSchema = {
+  ...(isCompany ? { ...SignupAsCompany } : { ...SignupAsPrivate }),
+};
 
 function App() {
   const formRef = useRef(null);
 
   injectBootstrapCss();
-
-  const handleSubmit = ({ formData }) => {
-    console.log('Data: ', formData);
-  };
 
   return (
     <div className="App">
@@ -20,11 +23,11 @@ function App() {
         <div className="col">
           <Form
             ref={formRef}
-            schema={schema.schema}
-            uiSchema={schema.uiSchema}
-            onSubmit={handleSubmit}
-            onChange={() => console.log('Change')}
-            onError={() => console.log('Errors')}
+            schema={FormSchema.schema}
+            uiSchema={FormSchema.uiSchema}
+            onSubmit={FormSchema.onSubmit}
+            onChange={FormSchema.onChange}
+            onError={FormSchema.onError}
           />
         </div>
       </div>

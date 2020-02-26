@@ -3,7 +3,7 @@ const a11yOff = Object.keys(require('eslint-plugin-jsx-a11y').rules)
 	.reduce((acc, rule) => { acc[`jsx-a11y/${rule}`] = 'off'; return acc }, {})
 
 module.exports = {
-  "extends": ["react-app"],
+  "extends": ["react-app", "airbnb"],
   "parserOptions": {
     "ecmaVersion": 8
   },
@@ -18,6 +18,8 @@ module.exports = {
     "complexity": ["warn", 8],
     "max-depth": ["warn", 3],
     "no-underscore-dangle": ["error", { "allow": ["__INITIAL_STATE__"] }],
+    "no-unused-expressions": ["error", { "allowShortCircuit": true, "allowTernary": true }],
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "quotes": ["warn", "single"],
     "import/imports-first": ["error", "absolute-first"],
     "import/newline-after-import": ["error"],

@@ -1,7 +1,10 @@
 import React from 'react';
-import DateInput from './Widgets/DateInput';
+import DateInput from '../Widgets/DateInput';
 
 export default {
+  onSubmit: ({ formData }) => { console.log('Data: ', formData); },
+  onChange: (...args) => { console.log('Change: ', ...args); },
+  onError: (...args) => { console.log('Error: ', ...args); },
   schema: {
     title: 'Inschrijving voor Training 26-12',
     description: 'Training.',
@@ -9,6 +12,7 @@ export default {
     required: [
       'firstName',
       'lastName',
+      'privacy',
     ],
     properties: {
       firstName: {
@@ -59,11 +63,18 @@ export default {
         type: 'string',
         title: 'Datum medische schifting',
       },
+      privacy: {
+        type: 'boolean',
+        title: 'Akkoord met de privacyverklaring en algemene voorwaarden',
+      },
     },
   },
   uiSchema: {
     birthDate: {
       'ui:widget': (props) => <DateInput {...props} />,
+      'ui:options': {
+        wrapperClassNames: '',
+      },
     },
     dateCLicence: {
       'ui:widget': (props) => <DateInput {...props} />,

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import DateTime from 'react-datetime';
 import moment from 'moment';
 import icons from 'glyphicons';
-
+import cn from 'classnames';
 import 'moment/locale/nl';
 import './date-input.css';
 
@@ -12,12 +12,11 @@ const DateInput = ({
   id,
   value,
   name,
-  required = false,
-  disabled = false,
-  onChange = null,
-  options = {},
+  required,
+  disabled,
+  onChange,
+  options,
 }) => {
-  console.log(options);
   const [fieldValue, setFieldValue] = useState(value);
 
   const handleChange = (inputValue) => {
@@ -30,7 +29,7 @@ const DateInput = ({
   };
 
   return (
-    <div className={`input-group ${options.wrapperClassNames}`}>
+    <div className={cn('input-group', options.wrapperClassNames)}>
       {options.label && <label>{options.label}</label>}
       <DateTime
         dateFormat={options.dateformat}
@@ -71,8 +70,11 @@ DateInput.propTypes = {
   disabled: PropTypes.bool,
   onChange: PropTypes.func,
   options: PropTypes.shape({
+    dateformat: PropTypes.string,
+    timeformat: PropTypes.string,
     wrapperClassNames: PropTypes.string,
     cssClassNames: PropTypes.string,
+    label: PropTypes.string,
   }),
 };
 
@@ -85,8 +87,8 @@ DateInput.defaultProps = {
   onChange: null,
   options: {
     dateformat: 'DD-MM-YY',
-    timeformat: false,
-    wrapperClasses: '',
+    timeformat: null,
+    wrapperClassNames: '',
     cssClassNames: '',
     label: '',
   },
