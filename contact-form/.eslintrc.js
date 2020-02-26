@@ -15,7 +15,7 @@ module.exports = {
     ...a11yOff,
     "class-methods-use-this": ["off"],
     "comma-dangle": ["error", "always-multiline"],
-    "complexity": ["warn", 8],
+    "complexity": ["warn", 12],
     "max-depth": ["warn", 3],
     "no-underscore-dangle": ["error", { "allow": ["__INITIAL_STATE__"] }],
     "no-unused-expressions": ["error", { "allowShortCircuit": true, "allowTernary": true }],

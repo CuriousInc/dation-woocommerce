@@ -1,4 +1,7 @@
-export default {
+import React from 'react';
+import DateInput from '../Widgets/DateInput';
+
+const definition = {
   type: 'object',
   properties: {
     firstName: {
@@ -54,4 +57,24 @@ export default {
       title: 'Akkoord met de privacyverklaring en algemene voorwaarden',
     },
   },
+};
+
+const uiSchema = {
+  birthDate: {
+    'ui:widget': (props) => <DateInput {...props} />,
+  },
+  dateCLicence: {
+    'ui:widget': (props) => <DateInput {...props} />,
+  },
+  dateCode95: {
+    'ui:widget': (props) => <DateInput {...props} />,
+  },
+  dateMedicalExam: {
+    'ui:widget': (props) => <DateInput {...props} />,
+  },
+};
+
+export default {
+  definition,
+  uiSchema,
 };

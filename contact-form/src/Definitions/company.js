@@ -1,4 +1,4 @@
-export default {
+const definition = {
   type: 'object',
   properties: {
     companyName: {
@@ -23,4 +23,8 @@ export default {
       title: 'E-mail adres',
     },
   },
+};
+
+export default {
+  definition,
 };
