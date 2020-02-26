@@ -1,25 +1,35 @@
-import React from 'react';
-import './App.css';
-import Form from './Components/Form';
-import { updateConfigClasses, injectBootstrapCss } from './Loaders/StyleLoader';
-import { config } from './testConfig';
+import React, { useRef } from 'react';
+import { withTheme } from 'react-jsonschema-form';
+import injectBootstrapCss from './Loaders/StyleLoader';
+import Bootstrap4Theme from './bootstrap4-theme';
+
+import SignupAsPrivate from './Schemas/signup-private';
+import SignupAsCompany from './Schemas/signup-company';
+import './assets/index.scss';
+
+const isCompany = document.location.search.indexOf('company') !== -1;
+
+const FormSchema = {
+  ...(isCompany ? { ...SignupAsCompany } : { ...SignupAsPrivate }),
+};
 
 function App() {
-  const updatedConfig = updateConfigClasses(config);
-  const { card, form } = updatedConfig;
-
+  const formRef = useRef(null);
   injectBootstrapCss();
+  const ThemedForm = withTheme(Bootstrap4Theme);
 
   return (
     <div className="App">
       <div className="container">
-        <div className={updatedConfig.card.classes}>
-          <div className={updatedConfig.cardHeader.classes}>
-            <div className={updatedConfig.cardTitle.classes}>{card.headerText}</div>
-          </div>
-          <div className={updatedConfig.cardBody.classes}>
-            <Form config={form} />
-          </div>
+        <div className="col">
+          <ThemedForm
+            ref={formRef}
+            schema={FormSchema.schema}
+            uiSchema={FormSchema.uiSchema}
+            onSubmit={FormSchema.onSubmit}
+            onChange={FormSchema.onChange}
+            onError={FormSchema.onError}
+          />
         </div>
       </div>
     </div>

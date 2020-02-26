@@ -6,17 +6,22 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^7.2.1",
+    "ajv": "^6.12.0",
     "classnames": "^2.2.6",
+    "core-js": "^2.6.11",
     "glyphicons": "^0.2.0",
+    "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "nan": "^2.14.0",
+    "node-sass": "^4.13.1",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-datetime": "^2.16.3",
     "react-dom": "^16.12.0",
     "react-jsonschema-form": "^1.8.1",
     "react-scripts": "3.4.0",
-    "react-select": "^3.0.8"
+    "react-select": "^3.0.8",
+    "reactstrap": "^8.4.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -52,5 +57,13 @@
     "lint-staged": "^10.0.7",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.19.1"
+  },
+  "resolutions": {
+    "@babel/parser": "7.7.5"
+  },
+  "@comments": {
+    "resolutions": {
+      "@babel/parser": "Workaround for https://github.com/babel/babel-eslint/issues/815"
+    }
   }
 }

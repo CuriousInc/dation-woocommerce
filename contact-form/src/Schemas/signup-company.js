@@ -1,6 +1,4 @@
-import React from 'react';
-import DateInput from '../Widgets/DateInput';
-import studentDefinition from '../Definitions/student';
+import student from '../Definitions/student';
 import companyDefinition from '../Definitions/company';
 
 
@@ -11,7 +9,7 @@ export default {
   schema: {
     definitions: {
       student: {
-        ...studentDefinition,
+        ...student.definition,
       },
       company: {
         ...companyDefinition,
@@ -20,18 +18,17 @@ export default {
 
     title: 'Inschrijving als bedrijf',
     description: '',
-    type: 'object',
-    required: [
-
-    ],
+    required: [],
     properties: {
       company: {
+        type: 'object',
         title: 'Bedrijf',
         $ref: '#/definitions/company',
       },
       students: {
         title: 'Leerlingen',
         type: 'array',
+        minItems: '1',
         items: {
           $ref: '#/definitions/student',
         },
@@ -39,20 +36,13 @@ export default {
     },
   },
   uiSchema: {
-    birthDate: {
-      'ui:widget': (props) => <DateInput {...props} />,
-      'ui:options': {
-        wrapperClassNames: '',
+    students: {
+      items: {
+        ...student.uiSchema,
       },
-    },
-    dateCLicence: {
-      'ui:widget': (props) => <DateInput {...props} />,
-    },
-    dateCode95: {
-      'ui:widget': (props) => <DateInput {...props} />,
-    },
-    dateMedicalExam: {
-      'ui:widget': (props) => <DateInput {...props} />,
+      'ui:options': {
+        orderable: false,
+      },
     },
   },
 };
