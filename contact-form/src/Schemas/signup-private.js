@@ -1,10 +1,24 @@
 import React from 'react';
+import axios from 'axios';
 import DateInput from '../Widgets/DateInput';
 
 export default {
-  onSubmit: ({ formData }) => { console.log('Data: ', formData); },
-  onChange: (...args) => { console.log('Change: ', ...args); },
-  onError: (...args) => { console.log('Error: ', ...args); },
+  onSubmit: async ({ formData }) => {
+    const headers = { 'Content-Type': 'application/json' };
+    const instance = axios.create({ headers });
+
+    const response = await instance.request({
+      method: 'post',
+      data: JSON.stringify(formData),
+      url: 'https://cloud-dev.dation.nl:269/wp-json/dationwoocommerce/v1/submit/lead',
+    });
+  },
+  onChange: (...args) => {
+    console.log('Change: ', ...args);
+  },
+  onError: (...args) => {
+    console.log('Error: ', ...args);
+  },
   schema: {
     title: 'Inschrijving voor Training 26-12',
     description: 'Training.',
@@ -33,7 +47,7 @@ export default {
         title: 'Mobiel nummer',
         minLength: 10,
       },
-      email: {
+      emailAddress: {
         type: 'string',
         format: 'email',
         title: 'E-mail adres',

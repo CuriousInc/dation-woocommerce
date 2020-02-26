@@ -17,22 +17,6 @@ function App() {
 
   injectBootstrapCss();
 
-  const handleSubmit = async ({ formData }) => {
-    const { submit } = schema;
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-
-    const instance = axios.create({headers});
-
-    const response = await instance.request({
-      method: 'post',
-      data: JSON.stringify(formData),
-      url: submit.url,
-    });
-
-  };
-
   return (
     <div className="App">
       <div className="container">
