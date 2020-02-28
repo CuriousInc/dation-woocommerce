@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 
 
-const { name } = document.currentScript.dataset || {};
+const name = document.currentScript.dataset.name || 'app';
 const dataNode = document.querySelector(`[data-props=${name}]`);
 const externalProps = dataNode ? JSON.parse(dataNode.textContent) : {};
 
