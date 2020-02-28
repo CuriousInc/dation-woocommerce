@@ -4,18 +4,27 @@ const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const appMountId = 'app';
+const isDevelopment = process.env.NODE_ENV !== 'production';
 
-const bodyHtmlSnippet = `
-<script type="application/json" data-props="${appMountId}">
-{
-  "location": "Amsterdam"
-}
-</script>
-`;
+const developmentPlugins = [
+  new HtmlWebpackPlugin({
+    template: require('html-webpack-template'),
+    inject: false,
+    appMountId: 'app',
+    filename: 'index.html',
+    bodyHtmlSnippet: `
+    <script type="application/json" data-props="app">
+    {
+      "location": "Amsterdam"
+    }
+    </script>
+    `,
+  }),
+];
+
 
 const config = {
-  mode: 'production',
+  mode: isDevelopment ? 'development' : 'production',
   entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -88,7 +97,10 @@ const config = {
     ],
   },
   optimization: {
-    minimizer: [new TerserPlugin()],
+    ...(!isDevelopment && {
+      minimize: true,
+      minimizer: [new TerserPlugin()],
+    }),
   },
   resolve: {
     extensions: [
@@ -96,13 +108,7 @@ const config = {
     ],
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: require('html-webpack-template'),
-      inject: false,
-      appMountId,
-      filename: 'index.html',
-      bodyHtmlSnippet,
-    }),
+    ...(isDevelopment ? [...developmentPlugins] : []),
   ],
 };
 
