@@ -1,6 +1,7 @@
 /* eslint-disable global-require, no-unused-vars, import/no-extraneous-dependencies */
 const webpack = require('webpack');
 const path = require('path');
+const TerserPlugin = require('terser-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const appMountId = 'app';
@@ -14,7 +15,7 @@ const bodyHtmlSnippet = `
 `;
 
 const config = {
-  mode: 'development',
+  mode: 'production',
   entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -59,7 +60,14 @@ const config = {
         use: [
           { loader: 'style-loader' },
           { loader: 'css-loader' },
-          { loader: 'sass-loader' },
+          {
+            loader: 'sass-loader',
+            options: {
+              sassOptions: {
+                outputStyle: 'compressed',
+              },
+            },
+          },
         ],
       },
       {
@@ -78,6 +86,9 @@ const config = {
         ],
       },
     ],
+  },
+  optimization: {
+    minimizer: [new TerserPlugin()],
   },
   resolve: {
     extensions: [
