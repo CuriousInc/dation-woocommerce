@@ -5,3 +5,7 @@ Extra fields can be added from https://github.com/RXNT/react-jsonschema-form-ext
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+
+# Create a single file build
+run `npm run bundle`. This creates a single file bundle in `./dist/js
+
