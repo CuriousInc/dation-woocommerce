@@ -14,8 +14,6 @@ export default {
     });
   },
   schema: {
-    title: 'Inschrijving voor Training 26-12',
-    description: 'Training.',
     type: 'object',
     required: [
       'firstName',
@@ -75,6 +73,9 @@ export default {
         type: 'boolean',
         title: 'Akkoord met de privacyverklaring en algemene voorwaarden',
       },
+      trainingId: {
+        type: 'string',
+      },
     },
   },
   uiSchema: {
@@ -92,6 +93,9 @@ export default {
     },
     dateMedicalExam: {
       'ui:widget': (props) => <DateInput {...props} />,
+    },
+    trainingId: {
+      'ui:widget': 'hidden',
     },
   },
 };
