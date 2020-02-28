@@ -23,8 +23,6 @@ export default {
       },
     },
 
-    title: 'Inschrijving als bedrijf',
-    description: '',
     required: [],
     properties: {
       company: {
