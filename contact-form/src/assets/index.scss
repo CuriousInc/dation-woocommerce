@@ -1,1 +1,24 @@
-@import 'glyphicons'
+@import 'glyphicons';
+//apply style to add/remove student buttons
+.array-item-remove {
+	max-width: 30px;
+	max-height: 30px;
+	padding: 5px!important;
+}
+
+.btn-add {
+  max-width: 30px;
+  max-height: 30px;
+  margin-right: 0;
+  padding: 4px 4px 5px 5px !important;
+}
+
+.btn-info {
+  background-color: #535353 !important;
+  border-color: #535353 !important;
+}
+
+.array-item-add {
+  margin-left: 85% !important;
+  vertical-align: center;
+}

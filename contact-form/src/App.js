@@ -17,6 +17,7 @@ function App({
   };
   const [schema, setSchema] = useState(initialSchema);
   const [isCompany, setIsCompany] = useState(false);
+  const [formFor, setFormFor] = useState('individual');
 
   // TODO: Localisation
   const transformErrors = (errors) => errors.map((error) => {
@@ -44,7 +45,24 @@ function App({
           <div className="card">
             <div className="card-body">
               <div className="col-xs-3">
-                <button type="button" onClick={toggleSchema} className="btn btn-default">{isCompany ? 'Switch naar particulier' : 'Switch naar bedrijven'}</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormFor('individual');
+                    toggleSchema();
+                  }}
+                  className={`${formFor === 'individual' ? 'btn btn-primary' : 'btn btn-default'} btn-block`}
+                >Particulier
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormFor('company');
+                    toggleSchema();
+                  }}
+                  className={`${formFor === 'company' ? 'btn btn-primary' : 'btn btn-default'} btn-block`}
+                >Bedrijven
+                </button>
               </div>
               <div className="col-xs-9">
                 <fieldset>
@@ -79,7 +97,7 @@ function App({
               showErrorList={false}
               noHtml5Validate
             >
-              <button type="submit" className="btn btn-primary">Verzenden</button>
+              <button type="submit" className="btn btn-primary pull-right">Verzenden</button>
             </Form>
           </div>
         </div>
