@@ -40,7 +40,6 @@ function App() {
             onError={FormSchema.onError}
             transformErrors={transformErrors}
             showErrorList={false}
-            localize={localize}
             noHtml5Validate
           />
         </div>

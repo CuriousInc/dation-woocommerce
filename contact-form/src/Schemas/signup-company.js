@@ -13,8 +13,6 @@ export default {
       url: 'https://cloud-dev.dation.nl:269/wp-json/dationwoocommerce/v1/submit/companyLead',
     });
   },
-  onChange: (...args) => { },
-  onError: (...args) => { },
   schema: {
     definitions: {
       student: {

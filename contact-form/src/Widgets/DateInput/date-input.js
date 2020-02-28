@@ -9,7 +9,7 @@ import './date-input.css';
 
 // This component is only usable in combination with Bootstrap Style loader.
 const DateInput = ({
-  id,
+  id = '',
   value,
   name,
   required,
@@ -18,6 +18,13 @@ const DateInput = ({
   options,
 }) => {
   const [fieldValue, setFieldValue] = useState(value);
+  const {
+    dateFormat = 'DD-MM-YYYY',
+    timeFormat = false,
+    wrapperClassNames = '',
+    cssClassNames = '',
+    label = '',
+  } = options;
 
   const handleChange = (inputValue) => {
     if (moment.isMoment(inputValue)) {
@@ -28,18 +35,19 @@ const DateInput = ({
     }
   };
 
+
   return (
-    <div className={cn('input-group', options.wrapperClassNames)}>
-      {options.label && <label>{options.label}</label>}
+    <div className={cn('input-group', wrapperClassNames)}>
+      {options.label && <label>{label}</label>}
       <DateTime
-        dateFormat={options.dateformat}
-        timeFormat={options.timeformat}
+        dateFormat={dateFormat}
+        timeFormat={timeFormat}
         closeOnSelect
         locale="nl"
         value={fieldValue}
         inputProps={{ name }}
         onChange={handleChange}
-        className={options.cssClassNames}
+        className={cssClassNames}
         required={required}
         disabled={disabled}
         id={id}
@@ -53,14 +61,6 @@ const DateInput = ({
   );
 };
 
-DateInput.schema = {
-  type: 'object',
-  properties: {
-    date: {
-      type: 'string',
-    },
-  },
-};
 
 DateInput.propTypes = {
   id: PropTypes.string,
@@ -70,27 +70,12 @@ DateInput.propTypes = {
   disabled: PropTypes.bool,
   onChange: PropTypes.func,
   options: PropTypes.shape({
-    dateformat: PropTypes.string,
-    timeformat: PropTypes.string,
+    dateFormat: PropTypes.string,
+    timeFormat: PropTypes.bool,
     wrapperClassNames: PropTypes.string,
     cssClassNames: PropTypes.string,
     label: PropTypes.string,
   }),
 };
 
-DateInput.defaultProps = {
-  id: '',
-  value: '',
-  name: '',
-  required: false,
-  disabled: false,
-  onChange: null,
-  options: {
-    dateformat: 'DD-MM-YY',
-    timeformat: null,
-    wrapperClassNames: '',
-    cssClassNames: '',
-    label: '',
-  },
-};
 export default DateInput;

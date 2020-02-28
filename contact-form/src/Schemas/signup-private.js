@@ -13,12 +13,6 @@ export default {
       url: 'https://cloud-dev.dation.nl:269/wp-json/dationwoocommerce/v1/submit/lead',
     });
   },
-  onChange: (...args) => {
-    console.log('Change: ', ...args);
-  },
-  onError: (...args) => {
-    console.log('Error: ', ...args);
-  },
   schema: {
     title: 'Inschrijving voor Training 26-12',
     description: 'Training.',

@@ -84,6 +84,9 @@ const uiSchema = {
   },
   birthDate: {
     'ui:widget': (props) => <DateInput {...props} />,
+    'ui:options': {
+      timeFormat: false,
+    },
   },
   dateCLicence: {
     'ui:widget': (props) => <DateInput {...props} />,

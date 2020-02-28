@@ -42,6 +42,7 @@ module.exports = {
     "react/prop-types": [ "warn", {
         "skipUndeclared": true
     }],
+    "react/require-default-props": ["warn", { "ignoreFunctionalComponents": true }],
     "jsx-quotes": ["error", "prefer-double"]
   }
 }
