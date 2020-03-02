@@ -186,4 +186,16 @@ class RestApiClient {
 			]
 		);
 	}
+
+	/**
+	 * @param array $leadData
+	 *
+	 * @return \Psr\Http\Message\ResponseInterface
+	 */
+	public function postLead(array $leadData) {
+		return $this->httpClient->post('leads', [
+			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER,
+			'body' => $this->serializer->serialize($leadData, 'json')
+		]);
+	}
 }
