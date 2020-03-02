@@ -29,7 +29,6 @@ module.exports = {
     "import/no-extraneous-dependencies": ["error", {
       "devDependencies": [
         "webpack.build-config.js",
-        "setupTests.js",
         "**/__tests__/*",
         "**/__mocks__/*"
       ]
