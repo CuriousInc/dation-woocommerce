@@ -1,5 +1,9 @@
 const definition = {
   type: 'object',
+  required: [
+    'companyName',
+    'email',
+  ],
   properties: {
     companyName: {
       type: 'string',
@@ -11,16 +15,20 @@ const definition = {
     },
     VATRegistration: {
       type: 'string',
-      title: 'BTW nummer',
+      title: 'BTW-nummer',
     },
     mobileNumber: {
       type: 'string',
-      title: 'Mobiel nummer',
+      title: 'Mobiele nummer',
+    },
+    phoneNumber: {
+      type: 'string',
+      title: 'Telefoon nummer',
     },
     email: {
       type: 'string',
       format: 'email',
-      title: 'E-mail adres',
+      title: 'E-mailadres',
     },
   },
 };

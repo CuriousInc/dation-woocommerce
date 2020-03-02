@@ -100,6 +100,9 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 		$formData         = [];
 		foreach($leadArray as $key => $value) {
 			if(in_array($key, self::PARAMETER_WHITELIST)) {
+				if($key === 'houseNumber' || $key === "zipCode") {
+					$value = str_replace(' ', '', $value);
+				}
 				$formData[$key] = $value;
 			} else {
 				$nonDefaultParams[$key] = $value;

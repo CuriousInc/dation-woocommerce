@@ -4,7 +4,7 @@ import DateTime from 'react-datetime';
 import moment from 'moment';
 import icons from 'glyphicons';
 import cn from 'classnames';
-import 'moment/locale/nl';
+import 'moment/locale/nl-be';
 import './date-input.css';
 
 // This component is only usable in combination with Bootstrap Style loader.
@@ -43,7 +43,7 @@ const DateInput = ({
         dateFormat={dateFormat}
         timeFormat={timeFormat}
         closeOnSelect
-        locale="nl"
+        locale="nl-be"
         value={fieldValue}
         inputProps={{ name }}
         onChange={handleChange}

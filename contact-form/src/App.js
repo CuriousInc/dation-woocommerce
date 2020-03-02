@@ -10,6 +10,7 @@ import './assets/index.scss';
 function App({
   title, date, location, trainingId,
 }) {
+  console.log(title, date, location, trainingId);
   injectBootstrapCss();
 
   const initialSchema = {
@@ -21,9 +22,15 @@ function App({
 
   // TODO: Localisation
   const transformErrors = (errors) => errors.map((error) => {
-    const newError = {
+    let newError = {
       ...error,
     };
+    if (error.name === 'required') {
+      newError = {
+        ...newError,
+        message: 'Dit is een verplicht veld',
+      };
+    }
     return newError;
   });
 
@@ -41,46 +48,43 @@ function App({
   return (
     <div className="App">
       <div className="container">
+        <div id="alertPlaceHolder" />
         <div className="row">
-          <div className="card">
-            <div className="card-body">
-              <div className="col-xs-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormFor('individual');
-                    toggleSchema();
-                  }}
-                  className={`${formFor === 'individual' ? 'btn btn-primary' : 'btn btn-default'} btn-block`}
-                >Particulier
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormFor('company');
-                    toggleSchema();
-                  }}
-                  className={`${formFor === 'company' ? 'btn btn-primary' : 'btn btn-default'} btn-block`}
-                >Bedrijven
-                </button>
+          <div className="col-xs-6">
+            <button
+              type="button"
+              onClick={() => {
+                setFormFor('individual');
+                toggleSchema();
+              }}
+              className={`${formFor === 'individual' ? 'btn btn-primary' : 'btn btn-default'} btn-block`}
+            >Particulier
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setFormFor('company');
+                toggleSchema();
+              }}
+              className={`${formFor === 'company' ? 'btn btn-primary' : 'btn btn-default'} btn-block`}
+            >Bedrijven
+            </button>
+          </div>
+          <div className="col-xs-6">
+            <li className="list-group-item active ">
+              <div className="form-group">
+                <label>Inschrijven voor training:</label>
+                <p className="form-control-static">{title}</p>
               </div>
-              <div className="col-xs-9">
-                <fieldset>
-                  <div className="form-group">
-                    <label>Inschrijven voor training:</label>
-                    <p className="form-control-static">{title}</p>
-                  </div>
-                  <div className="form-group">
-                    <label>Datum:</label>
-                    <p className="form-control-static">{date}</p>
-                  </div>
-                  <div className="form-group">
-                    <label>Locatie:</label>
-                    <p className="form-control-static">{location}</p>
-                  </div>
-                </fieldset>
+              <div className="form-group">
+                <label>Datum:</label>
+                <p className="form-control-static">{date}</p>
               </div>
-            </div>
+              <div className="form-group">
+                <label>Locatie:</label>
+                <p className="form-control-static">{location}</p>
+              </div>
+            </li>
           </div>
         </div>
         <div className="row">
