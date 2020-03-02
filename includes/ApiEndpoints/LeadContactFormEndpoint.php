@@ -67,10 +67,9 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 
 		try {
 			$this->apiClient->postLead($formData)->getBody()->getContents();
-
 			return new \WP_REST_Response();
 		} catch(ClientException $e) {
-			return new WP_Error( 'post_failed', __('An error occurred'), array( 'status' => 404 ) );// status can be changed to any number
+			return new WP_Error( 'post_failed', __('An error occurred'), array( 'status' => 404 ) );
 		}
 
 	}
@@ -87,12 +86,20 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 		}
 
 		$responses = [];
+		$errors = [];
 		foreach($leads as $lead) {
-			$response = $this->apiClient->postLead($lead);
-			$responses[] = $response->getBody()->getContents();
+			try {
+				$response = $this->apiClient->postLead($lead);
+				$responses[] = $response->getBody()->getContents();
+			} catch(ClientException $e) {
+				$errors[] = $e;
+			}
 		}
-
-		return new \WP_REST_Response();
+		if(count($errors) === 0) {
+			return new \WP_REST_Response();
+		} else {
+			return new WP_Error( 'post_failed', __('An error occurred'), array( 'status' => 404 ) );
+		}
 	}
 
 	private function getLeadFromPostDate($leadArray = []) {
