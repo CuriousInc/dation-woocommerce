@@ -10,7 +10,6 @@ import './assets/index.scss';
 function App({
   title, date, location, trainingId,
 }) {
-  console.log(title, date, location, trainingId);
   injectBootstrapCss();
 
   const initialSchema = {
