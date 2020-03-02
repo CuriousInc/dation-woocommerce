@@ -8,6 +8,7 @@ export const submitFunction = (formData, endpoint) => {
   const baseUrl = window.location.origin;
 
   const template = document.createElement('div');
+  // Scroll to top of iframe and parent to make sure the notification is in sight
   window.parent.scrollTo(0, 0);
   window.scroll(0, 0);
 
@@ -21,10 +22,6 @@ export const submitFunction = (formData, endpoint) => {
 
     const placeHolder = document.getElementById('alertPlaceHolder');
     placeHolder.append(template);
-    // Show success message and redirect to home after a short timeout
-    setTimeout(() => {
-      window.parent.location.replace(baseUrl);
-    }, 3000);
   }).catch(() => {
     template.innerHTML = 'Er is iets misgegaan bij het inschrijven. Probeer het opnieuw';
     template.className = 'alert alert-danger';
