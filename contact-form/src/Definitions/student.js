@@ -2,6 +2,37 @@ import React from 'react';
 import DateInput from '../Widgets/DateInput';
 
 export const getStudentProperties = () => ({
+  ...getBasicStudentSchema(),
+  nationalRegistryNumber: {
+    type: 'string',
+    title: 'Rijksregisternummber',
+  },
+  dateCLicence: {
+    type: 'string',
+    title: 'Datum rijbewijs C behaald',
+  },
+  dateDLicence: {
+    type: 'string',
+    title: 'Datum rijbewijs D behaald',
+  },
+  dateCode95: {
+    type: 'string',
+    title: 'Datum code 95',
+  },
+  dateMedicalExam: {
+    type: 'string',
+    title: 'Datum medische schifting',
+  },
+  privacy: {
+    type: 'boolean',
+    title: 'Akkoord met de privacyverklaring en algemene voorwaarden',
+  },
+  trainingId: {
+    type: 'string',
+  },
+});
+
+export const getBasicStudentSchema = () => ({
   firstName: {
     type: 'string',
     title: 'Voornaam',
@@ -56,34 +87,7 @@ export const getStudentProperties = () => ({
     type: 'string',
     title: 'Geboortedatum',
   },
-  nationalRegistryNumber: {
-    type: 'string',
-    title: 'Rijksregisternummber',
-  },
-  dateCLicence: {
-    type: 'string',
-    title: 'Datum rijbewijs C behaald',
-  },
-  dateDLicence: {
-    type: 'string',
-    title: 'Datum rijbewijs D behaald',
-  },
-  dateCode95: {
-    type: 'string',
-    title: 'Datum code 95',
-  },
-  dateMedicalExam: {
-    type: 'string',
-    title: 'Datum medische schifting',
-  },
-  privacy: {
-    type: 'boolean',
-    title: 'Akkoord met de privacyverklaring en algemene voorwaarden',
-  },
-  trainingId: {
-    type: 'string',
-  },
-});
+})
 
 export const getStudentUISchema = () => ({
   gender: {

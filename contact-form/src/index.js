@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+import LeadFormApp from "./LeadFormApp";
 
 const element = document.getElementById('app');
 
@@ -13,5 +14,9 @@ const props = {
   location: urlParams.get('location') || 'Locatie onbekend',
   trainingId: urlParams.get('trainingId') || 'Training onbekend',
 };
+if(urlParams.get('belgianForm') === '1') {
+  ReactDOM.render(<App {...props} />, element);
+} else {
+  ReactDOM.render(<LeadFormApp {...props} />, element);
+}
 
-ReactDOM.render(<App {...props} />, element);
