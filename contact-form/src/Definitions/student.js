@@ -125,7 +125,7 @@ const definition = {
     'firstName',
     'lastName',
     'emailAddress',
-    'privacy',
+    // 'privacy',
   ],
   properties: getStudentProperties(),
 };

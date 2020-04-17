@@ -10,7 +10,7 @@ export default {
 		required: [
 			'firstName',
 			'lastName',
-			'privacy',
+			// 'privacy',
 		],
 		properties: getBasicStudentSchema(),
 	},
