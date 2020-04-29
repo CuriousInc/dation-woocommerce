@@ -14,9 +14,9 @@ const props = {
   location: urlParams.get('location') || 'Locatie onbekend',
   trainingId: urlParams.get('trainingId') || 'Training onbekend',
 };
-if(urlParams.get('belgianForm') === '1') {
+// if(urlParams.get('belgianForm') === '1') {
   ReactDOM.render(<App {...props} />, element);
-} else {
-  ReactDOM.render(<LeadFormApp {...props} />, element);
-}
+// } else {
+//   ReactDOM.render(<LeadFormApp {...props} />, element);
+// }
 
