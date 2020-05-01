@@ -63,7 +63,7 @@ class RestApiClient {
 		);
 	}
 
-	public static function constructForKey(string $apiKey, string $baseUrl = self::BASE_API_URL) {
+	public static function constructForKey(string $apiKey = null, string $baseUrl = self::BASE_API_URL) {
 		return new static(new Client([
 			'base_uri' => $baseUrl,
 			'headers'  => [
