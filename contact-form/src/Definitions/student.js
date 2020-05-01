@@ -127,7 +127,7 @@ const definition = {
     'emailAddress',
     // 'privacy',
   ],
-  properties: getStudentProperties(),
+  properties: getBasicStudentSchema(),
 };
 
 const uiSchema = getStudentUISchema();

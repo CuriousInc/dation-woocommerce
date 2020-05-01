@@ -1,4 +1,4 @@
-import { getStudentProperties, getStudentUISchema } from '../Definitions/student';
+import {getBasicStudentSchema, getStudentUISchema} from '../Definitions/student';
 import { submitFunction } from './signup-company';
 
 export default {
@@ -12,7 +12,7 @@ export default {
       'lastName',
       'privacy',
     ],
-    properties: getStudentProperties(),
+    properties: getBasicStudentSchema(),
   },
   uiSchema: getStudentUISchema(),
 };
