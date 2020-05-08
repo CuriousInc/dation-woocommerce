@@ -69,6 +69,16 @@ function dw_render_options_page() {
 						>
 					</td>
 				</tr>
+				<tr>
+					<th scope="row">
+						<label class="description" for="dw_settings[contact-form]">
+							<?php _e('Pagina contactformulier') ?>
+						</label>
+					</th>
+					<td>
+						<input id="dw_settings[contact-form]" name="dw_settings[contact-form]" type="text" value="<?php echo isset($dw_options['contact-form']) ? $dw_options['contact-form'] : 'contactformulier'?>"
+					</td>
+				</tr>
 			</table>
 
 			<h2 class="title">Standaard waarden voor nieuwe cursussen</h2>

@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 // Global variables
 
+use Dation\Woocommerce\ApiEndpoints\LeadContactFormEndpoint;
+
 $dw_options = get_option('dw_settings');
 
 const DW_PLUGIN_FILE = __FILE__;
@@ -36,6 +38,8 @@ load_plugin_textdomain('dw', false, dirname(plugin_basename(__FILE__)) . '/');
 
 // called just before the woocommerce template functions are included
 add_action('init', 'dw_override_woo_templates', 20);
+$enpoint = new LeadContactFormEndpoint();
+add_action('rest_api_init', [$enpoint, 'register_routes']);
 
 // indicates we are running the admin
 if(is_admin()) {

@@ -1,0 +1,83 @@
+{
+  "name": "contact-form",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.4.0",
+    "@testing-library/user-event": "^7.2.1",
+    "ajv": "^6.12.0",
+    "axios": "^0.19.2",
+    "classnames": "^2.2.6",
+    "core-js": "^2.6.11",
+    "glyphicons": "^0.2.0",
+    "html-webpack-plugin": "^3.2.0",
+    "html-webpack-template": "^6.2.0",
+    "lodash": "^4.17.15",
+    "moment": "^2.24.0",
+    "nan": "^2.14.0",
+    "node-sass": "^4.13.1",
+    "prop-types": "^15.7.2",
+    "react": "^16.12.0",
+    "react-datetime": "^2.16.3",
+    "react-dom": "^16.12.0",
+    "react-jsonschema-form": "^1.8.1",
+    "react-scripts": "3.4.0",
+    "react-select": "^3.0.8",
+    "reactstrap": "^8.4.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "prebundle": "rimraf dist/js",
+    "bundle:prod": "cross-env NODE_ENV=production webpack --config ./webpack.build-config.js",
+    "bundle": "webpack --config ./webpack.build-config.js",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "eslint ./src"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/preset-react": "^7.8.3",
+    "babel-loader": "^8.0.6",
+    "copy-webpack-plugin": "^5.1.1",
+    "cross-env": "^7.0.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.2",
+    "glob": "^7.1.6",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.7",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^1.19.1",
+    "rimraf": "^3.0.2",
+    "terser-webpack-plugin": "^2.3.5",
+    "webpack-cli": "^3.3.11"
+  },
+  "resolutions": {
+    "@babel/parser": "7.7.5"
+  },
+  "@comments": {
+    "resolutions": {
+      "@babel/parser": "Workaround for https://github.com/babel/babel-eslint/issues/815"
+    }
+  }
+}

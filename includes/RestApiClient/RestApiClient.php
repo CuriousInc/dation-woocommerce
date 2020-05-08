@@ -63,7 +63,7 @@ class RestApiClient {
 		);
 	}
 
-	public static function constructForKey(string $apiKey, string $baseUrl = self::BASE_API_URL) {
+	public static function constructForKey(string $apiKey = null, string $baseUrl = self::BASE_API_URL) {
 		return new static(new Client([
 			'base_uri' => $baseUrl,
 			'headers'  => [
@@ -185,5 +185,17 @@ class RestApiClient {
 				ObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
 			]
 		);
+	}
+
+	/**
+	 * @param array $leadData
+	 *
+	 * @return \Psr\Http\Message\ResponseInterface
+	 */
+	public function postLead(array $leadData) {
+		return $this->httpClient->post('leads', [
+			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER,
+			'body' => $this->serializer->serialize($leadData, 'json')
+		]);
 	}
 }
