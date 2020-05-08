@@ -30,6 +30,7 @@ const DUTCH_TIME  = "H:i";
 const PRETTY_DATE = "l d F Y";
 
 const DELAY_REASONS = [
+	'corona'  => 'Uitstel vanwege corona',
 	'medical' => 'Uitstel om medische redenen',
 	'service' => 'Uitstel vanwege beroep of dienst in het buitenland',
 	'study'   => 'Uitstel vanwege studie in het buitenland',
@@ -42,7 +43,7 @@ if(isset($dw_options['use_tkm'])) {
 	add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
 }
 //Disable shopping cart functionality of applicable
-if(isset($dw_options['use_webshop'])) {
+if(!isset($dw_options['use_webshop'])) {
 	add_filter('woocommerce_is_purchasable', '__return_false'); // DISABLING PURCHASE FUNCTIONALITY AND REMOVING ADD TO CART BUTTON FROM NORMAL PRODUCTS
 	remove_action('woocommerce_single_variation', 'woocommerce_single_variation', 10); // REMOVING PRICE FROM VARIATIONS
 	remove_action('woocommerce_single_variation', 'woocommerce_single_variation_add_to_cart_button', 20); // REMOVING ADD TO CART BUTTON FROM VARIATIONS
