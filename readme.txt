@@ -23,6 +23,9 @@ Install and activate the plugin and go to the Dation Woocommerce settings page i
 You can set prices, filter on (CCV) codes and enable specific 'Terugkommoment' features.
 
 == Changelog ==
+= 1.2.8 =
+* Add lead contact form page. Page can be set in 'settings'. Will be added to extra field 'product_url'.
+
 = 1.2.7 =
 * Add new 'Reason for delay' option for TKM 2.
 
