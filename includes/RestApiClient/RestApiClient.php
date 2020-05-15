@@ -111,7 +111,9 @@ class RestApiClient {
 	public function postStudent(Student $student): Student {
 		$response = $this->httpClient->post('students', [
 			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER,
-			'body'    => $this->serializer->serialize($student, 'json')
+			'body'    => $this->serializer->serialize($student, 'json', [
+				DateTimeNormalizer::FORMAT_KEY => DateTime::ATOM,
+			])
 		]);
 
 		return $this->serializer->deserialize(
@@ -147,7 +149,9 @@ class RestApiClient {
 	public function postEnrollment(int $courseInstanceId, Enrollment $enrollment): Enrollment {
 		$response = $this->httpClient->post("course-instances/$courseInstanceId/enrollments", [
 			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER,
-			'body'    => $this->serializer->serialize($enrollment, 'json')
+			'body'    => $this->serializer->serialize($enrollment, 'json', [
+				DateTimeNormalizer::FORMAT_KEY => DateTime::ATOM,
+			])
 		]);
 
 		return $this->serializer->deserialize(
@@ -167,7 +171,9 @@ class RestApiClient {
 	public function postPayment(Payment $payment): void {
 		$this->httpClient->post('payments', [
 			'headers' => self::DEFAULT_CONTENT_TYPE_HEADER,
-			'body'    => $this->serializer->serialize($payment, 'json')
+			'body'    => $this->serializer->serialize($payment, 'json', [
+				DateTimeNormalizer::FORMAT_KEY => DateTime::ATOM,
+			])
 		]);
 	}
 
