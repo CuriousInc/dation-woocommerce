@@ -84,10 +84,10 @@ class RestApiClient {
 		// Prepare query
 		$query = [];
 		if(null !== $startDateBefore) {
-			$query['startDateBefore'] = $startDateBefore->format('Y-m-d');
+			$query['startDateBefore'] = $startDateBefore->format(DateTime::ATOM);
 		}
 		if(null !== $startDateAfter) {
-			$query['startDateAfter'] = $startDateAfter->format('Y-m-d');
+			$query['startDateAfter'] = $startDateAfter->format(DateTime::ATOM);
 		}
 
 		return $this->get('course-instances', $query) ?? [];
