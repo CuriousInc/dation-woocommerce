@@ -23,6 +23,9 @@ Install and activate the plugin and go to the Dation Woocommerce settings page i
 You can set prices, filter on (CCV) codes and enable specific 'Terugkommoment' features.
 
 == Changelog ==
+= 1.2.12 =
+* add contact form directory to list of build directories
+
 = 1.2.11 =
 * add contact form page
 

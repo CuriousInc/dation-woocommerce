@@ -25,7 +25,7 @@ if [[ -z "$WP_ORG_USERNAME" ]]; then
     exit 1
 fi
 
-PLUGIN_BUILD_DIRECTORIES=(admin includes vendor)
+PLUGIN_BUILD_DIRECTORIES=(admin includes vendor contact-form)
 PLUGIN_BUILD_FILES=(LICENSE dation-woocommerce.php readme.txt)
 PLUGIN_BUILD_PATH="/tmp/build"
 PLUGIN_SVN_PATH="/tmp/svn"
