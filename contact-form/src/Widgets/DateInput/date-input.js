@@ -37,7 +37,7 @@ const DateInput = ({
 
 
   return (
-    <div className={cn('input-group', wrapperClassNames)}>
+    <div className={cn('input-group input-group-sm', wrapperClassNames)}>
       {options.label && <label>{label}</label>}
       <DateTime
         dateFormat={dateFormat}

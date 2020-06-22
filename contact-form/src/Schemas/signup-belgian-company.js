@@ -1,34 +1,6 @@
-import axios from 'axios';
 import student from '../Definitions/student';
 import company from '../Definitions/company';
-
-export const submitFunction = (formData, endpoint) => {
-  const headers = { 'Content-Type': 'application/json' };
-  const instance = axios.create({ headers });
-  const baseUrl = window.location.origin;
-
-  const template = document.createElement('div');
-  // Scroll to top of iframe and parent to make sure the notification is in sight
-  window.parent.scrollTo(0, 0);
-  window.scroll(0, 0);
-
-  instance.request({
-    method: 'post',
-    data: JSON.stringify(formData),
-    url: `${baseUrl}/wp-json/dationwoocommerce/v1/submit/${endpoint}`,
-  }).then(() => {
-    template.innerHTML = 'Inschrijving voldaan';
-    template.className = 'alert alert-success';
-
-    const placeHolder = document.getElementById('alertPlaceHolder');
-    placeHolder.append(template);
-  }).catch(() => {
-    template.innerHTML = 'Er is iets misgegaan bij het inschrijven. Probeer het opnieuw';
-    template.className = 'alert alert-danger';
-    const placeHolder = document.getElementById('alertPlaceHolder');
-    placeHolder.append(template);
-  });
-};
+import { submitFunction } from './signup-company';
 
 export default {
   onSubmit: async ({ formData }) => {
@@ -37,7 +9,7 @@ export default {
   schema: {
     definitions: {
       student: {
-        ...student.definition,
+        ...student.belgianDefinition,
       },
       company: {
         ...company.definition,
@@ -52,7 +24,7 @@ export default {
         $ref: '#/definitions/company',
       },
       students: {
-        title: 'Leerlingen',
+        title: 'Kandidaat',
         type: 'array',
         minItems: 1,
         items: {

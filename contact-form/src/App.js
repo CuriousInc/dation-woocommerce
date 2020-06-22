@@ -5,8 +5,6 @@ import injectBootstrapCss from './Loaders/StyleLoader';
 import SignupAsPrivate from './Schemas/signup-private';
 import SignupAsCompany from './Schemas/signup-company';
 
-import './assets/index.scss';
-
 function App({
   title, date, location, trainingId,
 }) {

@@ -1,0 +1,26 @@
+//belgian specific
+$primary: #016CB1;
+$secondary: #3A4144;
+
+.btn-info {
+  background-color: $primary !important;
+  border-color: $primary !important;
+}
+
+.list-group-item {
+  background-color: $primary !important;
+  border-color: $primary !important;
+}
+
+.btn-primary {
+  background-color: $primary !important;
+  border-color: $primary !important;
+}
+
+.form-input-sm input {
+  height: 35px !important;
+  padding: 6px 9px !important;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  border-radius: 3px !important;
+}
