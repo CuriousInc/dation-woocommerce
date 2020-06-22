@@ -77,7 +77,7 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 	public function submitCompanyLeadForm( $request) {
 		$requestParameters = $request->get_json_params();
 		$leads             = [];
-		$companyData = $this->getCompanyData($requestParameters['company']);
+		$companyData = $this->getCompanyData($requestParameters);
 		foreach($requestParameters['students'] as $lead) {
 			$lead = $this->getLeadFromPostDate($lead);
 			$lead['notes'] = isset($lead['notes']) ? $lead['notes'] . $companyData : $companyData;
@@ -128,8 +128,9 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 	}
 
 	private function getCompanyData($companyData = []) {
-		$notes = ' BedrijfsInformatie: ';
-		foreach($companyData as $key => $value) {
+		$trainingId = $companyData['trainingId'];
+		$notes = "||| trainingId: {$trainingId} BedrijfsInformatie: ";
+		foreach($companyData['company'] as $key => $value) {
 			$extraInformation = " {$key}: {$value} |||";
 			$notes            .= $extraInformation;
 		}

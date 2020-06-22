@@ -89,6 +89,9 @@ export default {
       email: {
         classNames: 'form-input-sm',
       },
+      trainingId: {
+        'ui:widget': 'hidden',
+      },
     },
   },
 };
