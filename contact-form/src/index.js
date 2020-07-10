@@ -25,5 +25,6 @@ switch (type) {
     ReactDOM.render(<LeadFormApp {...props} />, element);
     break;
   default:
+    require('./assets/defaultStyles.scss');
     ReactDOM.render(<App {...props} />, element);
 }

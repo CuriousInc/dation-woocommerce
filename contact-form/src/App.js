@@ -14,7 +14,6 @@ function App({
     ...{ ...SignupAsPrivate },
   };
   const [schema, setSchema] = useState(initialSchema);
-  const [isCompany, setIsCompany] = useState(false);
   const [formFor, setFormFor] = useState('individual');
 
   // TODO: Localisation
@@ -33,14 +32,12 @@ function App({
 
   const formRef = useRef(null);
 
-  const toggleSchema = () => {
-    const newIsCompany = !isCompany;
-    const newSchema = {
-      ...(newIsCompany ? { ...SignupAsCompany } : { ...SignupAsPrivate }),
-    };
-
-    setIsCompany(newIsCompany);
-    setSchema(newSchema);
+  const toggleSchema = (type) => {
+    if (type === 'company') {
+      setSchema(SignupAsCompany);
+    } else {
+      setSchema(SignupAsPrivate);
+    }
   };
   return (
     <div className="App">
@@ -61,7 +58,7 @@ function App({
               type="button"
               onClick={() => {
                 setFormFor('company');
-                toggleSchema();
+                toggleSchema('company');
               }}
               className={`${formFor === 'company' ? 'btn btn-primary' : 'btn btn-default'} btn-block`}
             >Bedrijven

@@ -1,0 +1,23 @@
+//default (Hoekstra colours)
+$primary: #0c2a76;
+$secondary: #f78f1e;
+
+.btn-info {
+  background-color: $primary !important;
+  border-color: $primary !important;
+}
+
+.list-group-item {
+  background-color: $primary !important;
+  border-color: $primary !important;
+}
+
+.btn-primary {
+  background-color: $primary !important;
+  border-color: $primary !important;
+}
+
+.btn-default {
+  background-color: $secondary !important;
+  border-color: $secondary !important;
+}
