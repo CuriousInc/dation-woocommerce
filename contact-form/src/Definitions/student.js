@@ -86,7 +86,7 @@ export const getStudentProperties = () => ({
   },
   privacy: {
     type: 'boolean',
-    title: 'Akkoord met de privacyverklaring en algemene voorwaarden',
+    title: 'Akkoord met de privacyverklaring en algemene voorwaarden.',
   },
   trainingId: {
     type: 'string',
