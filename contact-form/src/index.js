@@ -13,10 +13,10 @@ const type = window.frameElement.getAttribute('data-type');
 const urlParams = new URLSearchParams(window.parent.location.search);
 
 const props = {
-  title: urlParams.get('trainingName') || 'Training onbekend',
-  date: urlParams.get('date') || 'Datum onbekend',
-  location: urlParams.get('location') || 'Locatie onbekend',
-  trainingId: urlParams.get('trainingId') || 'Training onbekend',
+  title: urlParams.get('dw_trainingName') || 'Training onbekend',
+  date: urlParams.get('dw_date') || 'Datum onbekend',
+  location: urlParams.get('dw_location') || 'Locatie onbekend',
+  trainingId: urlParams.get('dw_trainingId') || 'Training onbekend',
 };
 
 switch (type) {

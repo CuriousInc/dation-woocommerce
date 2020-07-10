@@ -243,6 +243,6 @@ function dw_format_and_save_address(WC_Product $product, array $address) {
 function dw_generate_external_url($trainingId, $location, $trainingName, $date) {
 	global  $dw_options;
 	$contactFormLocation = $dw_options['contact-form'] ?? 'contactformulier';
-	return get_site_url() . "/$contactFormLocation?trainingId=$trainingId&location=$location&trainingName=$trainingName&date=$date";
+	return get_site_url() . "/$contactFormLocation?dw_trainingId=$trainingId&dw_location=$location&dw_trainingName=$trainingName&dw_date=$date";
 
 }
