@@ -48,6 +48,23 @@ function dw_import_products() {
 }
 
 /**
+ * Function called from WP cron. Finds products that take place before and including today and moves them to the bin.
+ */
+function dw_delete_products() {
+	$currentTimestamp = (new DateTime())
+		->setTime(23, 59, 59)
+		->getTimestamp();
+
+	$products = wc_get_products([]);
+
+	array_walk($products, function ($product) use ($currentTimestamp) {
+		if((int)$product->get_menu_order() < $currentTimestamp) {
+			$product->delete();
+		}
+	});
+}
+
+/**
  * Get product by unique `stock keep unit`.
  * When creating a product, Dation course ID is set to the sku of a woocommerce product.
  * When synchronizing with Dation, we can use this to find Dation courses that are not in Woocommerce
