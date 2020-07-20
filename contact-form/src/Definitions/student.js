@@ -195,7 +195,10 @@ const belgianDefinition = {
     'birthDate',
     'privacy',
   ],
-  properties: getStudentProperties(),
+  properties: {
+    ...getStudentProperties(),
+    emailAddress: {},
+  },
 };
 
 export default {
