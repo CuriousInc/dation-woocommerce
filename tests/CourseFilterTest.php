@@ -50,6 +50,7 @@ class CourseFilterTest extends TestCase {
 				$courses[] = [
 					'id'      => $idCounter,
 					'ccvCode' => $data,
+					'closed'  => false,
 				];
 				$idCounter++;
 			}
