@@ -10,14 +10,14 @@ export const submitFunction = (formData, endpoint) => {
   const template = document.createElement('div');
   // Scroll to top of iframe and parent to make sure the notification is in sight
   window.parent.scrollTo(0, 0);
-  window.scroll(0, 0);
+  window.scrollTo(0, 0);
 
   instance.request({
     method: 'post',
     data: JSON.stringify(formData),
     url: `${baseUrl}/wp-json/dationwoocommerce/v1/submit/${endpoint}`,
   }).then(() => {
-    template.innerHTML = 'Inschrijving voldaan';
+    template.innerHTML = 'Bedankt voor uw reservering';
     template.className = 'alert alert-success';
 
     const placeHolder = document.getElementById('alertPlaceHolder');
@@ -88,9 +88,6 @@ export default {
       },
       email: {
         classNames: 'form-input-sm',
-      },
-      trainingId: {
-        'ui:widget': 'hidden',
       },
     },
   },

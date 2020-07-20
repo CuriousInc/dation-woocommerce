@@ -26,7 +26,7 @@ function dw_import_products() {
 	$createdProducts = [];
 
 	$courseFilter = new CourseFilter($courses);
-	$filteredCourses = $courseFilter->filter_courses($dw_options['ccv_code']);
+	$filteredCourses = $courseFilter->filter_courses_on_ccv_code_and_private($dw_options['ccv_code']);
 
 	foreach($filteredCourses as $dationProduct) {
 		$woocommerceProduct =  dw_get_product_by_sku($dationProduct['id']);

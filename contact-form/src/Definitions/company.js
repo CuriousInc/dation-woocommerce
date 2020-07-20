@@ -30,9 +30,6 @@ const definition = {
       format: 'email',
       title: 'E-mailadres',
     },
-    trainingId: {
-      type: 'string',
-    },
   },
 };
 

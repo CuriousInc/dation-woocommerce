@@ -38,7 +38,7 @@ class CourseFilterTest extends TestCase {
 		$testCourses = $this->generateTestData($testData);
 		$courseFilter = new CourseFilter($testCourses);
 
-		$filteredCourses = $courseFilter->filter_courses($codeToFilter);
+		$filteredCourses = $courseFilter->filter_courses_on_ccv_code_and_private($codeToFilter);
 
 		$this->assertCount($expectedResults, $filteredCourses);
 	}

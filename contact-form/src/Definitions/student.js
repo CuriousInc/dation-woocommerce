@@ -191,7 +191,6 @@ const belgianDefinition = {
     'street',
     'city',
     'mobileNumber',
-    'emailAddress',
     'birthPlace',
     'birthDate',
     'privacy',
