@@ -91,6 +91,12 @@ export const getStudentProperties = () => ({
   trainingId: {
     type: 'string',
   },
+  titel: {
+    type: 'string',
+  },
+  datum: {
+    type: 'string',
+  },
 });
 
 export const getStudentUISchema = () => ({
@@ -158,6 +164,12 @@ export const getStudentUISchema = () => ({
     classNames: 'form-input-sm col-xs-12',
   },
   trainingId: {
+    'ui:widget': 'hidden',
+  },
+  titel: {
+    'ui:widget': 'hidden',
+  },
+  datum: {
     'ui:widget': 'hidden',
   },
   receiveSms: {

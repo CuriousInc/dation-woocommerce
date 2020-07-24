@@ -87,7 +87,7 @@ function App({
               ref={formRef}
               schema={schema.schema}
               uiSchema={schema.uiSchema}
-              formData={{ trainingId }}
+              formData={{ trainingId, titel: title, datum: date }}
               onSubmit={schema.onSubmit}
               onChange={schema.onChange}
               onError={schema.onError}
