@@ -130,7 +130,7 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 	private function getCompanyData($companyData = []) {
 		$trainingId = $companyData['trainingId'];
 		$title = $companyData['titel'];
-		$date  = $companyData['date'];
+		$date  = $companyData['datum'];
 		$notes = "||| trainingId: {$trainingId} ||| Training naam: {$title} ||| Training datum: {$date} BedrijfsInformatie: ";
 		foreach($companyData['company'] as $key => $value) {
 			$extraInformation = " {$key}: {$value} |||";

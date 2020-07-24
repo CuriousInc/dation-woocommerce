@@ -44,8 +44,8 @@ function LeadFormApp({
     <div className="App">
       <div className="container">
         <div id="alertPlaceHolder" />
-        <div className="row">
-          <div className="col-xs-6">
+        <div className="row mb-3">
+          <div className="col-xs-12 col-sm-6" style={{ marginBottom: '2rem' }}>
             <button
               type="button"
               onClick={() => {
@@ -65,7 +65,7 @@ function LeadFormApp({
             >Bedrijven
             </button>
           </div>
-          <div className="col-xs-6">
+          <div className="col-xs-12 col-sm-6">
             <li className="list-group-item active ">
               <div className="form-group">
                 <label>Inschrijven voor training:</label>

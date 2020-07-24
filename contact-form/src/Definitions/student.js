@@ -84,6 +84,10 @@ export const getStudentProperties = () => ({
     type: 'boolean',
     title: 'Ik wens een sms-reminder te ontvangen ter herinnering van de eerstvolgende nascholing.',
   },
+  financedThroughSubsidy: {
+    type: 'boolean',
+    title: 'Financiering via subsidie',
+  },
   privacy: {
     type: 'boolean',
     title: 'Akkoord met de privacyverklaring en algemene voorwaarden.',
@@ -101,34 +105,34 @@ export const getStudentProperties = () => ({
 
 export const getStudentUISchema = () => ({
   firstName: {
-    classNames: 'form-input-sm col-xs-6',
+    classNames: 'form-input-sm col-xs-12 col-sm-6',
   },
   lastName: {
-    classNames: 'form-input-sm col-xs-6',
+    classNames: 'form-input-sm col-xs-12 col-sm-6',
   },
   zipCode: {
-    classNames: 'form-input-sm col-xs-6',
+    classNames: 'form-input-sm col-xs-12 col-sm-6',
   },
   houseNumber: {
-    classNames: 'form-input-sm col-xs-6',
+    classNames: 'form-input-sm col-xs-12 col-sm-6',
   },
   street: {
-    classNames: 'form-input-sm col-xs-6',
+    classNames: 'form-input-sm col-xs-12 col-sm-6',
   },
   city: {
-    classNames: 'form-input-sm col-xs-6',
+    classNames: 'form-input-sm col-xs-12 col-sm-6',
   },
   mobileNumber: {
-    classNames: 'form-input-sm col-xs-6',
+    classNames: 'form-input-sm col-xs-12 col-sm-6',
   },
   phoneNumber: {
-    classNames: 'form-input-sm col-xs-6',
+    classNames: 'form-input-sm col-xs-12 col-sm-6',
   },
   emailAddress: {
     classNames: 'form-input-sm col-xs-12',
   },
   birthPlace: {
-    classNames: 'form-input-sm col-xs-6',
+    classNames: 'form-input-sm col-xs-12 col-sm-6',
   },
   gender: {
     classNames: 'col-xs-12',
@@ -138,26 +142,26 @@ export const getStudentUISchema = () => ({
     },
   },
   birthDate: {
-    classNames: 'form-input-sm col-xs-6',
+    classNames: 'form-input-sm col-xs-12 col-sm-6',
     'ui:widget': (props) => <DateInput {...props} />,
     'ui:options': {
       timeFormat: false,
     },
   },
   dateCLicence: {
-    classNames: 'form-input-sm col-xs-6',
+    classNames: 'form-input-sm col-xs-12 col-sm-6',
     'ui:widget': (props) => <DateInput {...props} />,
   },
   dateDLicence: {
-    classNames: 'form-input-sm col-xs-6',
+    classNames: 'form-input-sm col-xs-12 col-sm-6',
     'ui:widget': (props) => <DateInput {...props} />,
   },
   dateCode95: {
-    classNames: 'form-input-sm col-xs-6',
+    classNames: 'form-input-sm col-xs-12 col-sm-6',
     'ui:widget': (props) => <DateInput {...props} />,
   },
   dateMedicalExam: {
-    classNames: 'form-input-sm col-xs-6',
+    classNames: 'form-input-sm col-xs-12 col-sm-6',
     'ui:widget': (props) => <DateInput {...props} />,
   },
   nationalRegistryNumber: {
@@ -173,6 +177,9 @@ export const getStudentUISchema = () => ({
     'ui:widget': 'hidden',
   },
   receiveSms: {
+    classNames: 'col-xs-12',
+  },
+  financedThroughSubsidy: {
     classNames: 'col-xs-12',
   },
   privacy: {

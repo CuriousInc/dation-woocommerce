@@ -176,10 +176,7 @@ function dw_add_woocommerce_product($course) {
 	$product->set_low_stock_amount(DW_DEFAULT_PRODUCT_PROPERTIES['low_stock_amount']);
 	$addressLine = dw_format_and_save_address($product, $course['parts'][0]['slots'][0]['location']['address']);
 
-	$url = dw_generate_external_url($product->get_sku(),  $addressLine, $course['name'], $startDate->format(DUTCH_DATE));
-	$product->update_meta_data('product_url', $url);
 
-	$product->save();
 
 	wp_set_object_terms($product->get_id(), $course['parts'][0]['slots'][0]['city'], 'pa_locatie', false);
 	wp_set_object_terms($product->get_id(), $course['ccvCode'], 'pa_ccv_code', false);
@@ -193,6 +190,14 @@ function dw_add_woocommerce_product($course) {
 		return ($startA < $startB) ? -1 : 1;
 
 	});
+
+	$firstSlotStart = $courseParts[0]['slots'][0]['startDate'];
+	$firstSlotEnd = $courseParts[0]['slots'][0]['endDate'];
+
+	$url = dw_generate_external_url($product->get_sku(),  $addressLine, $course['name'], urlencode($firstSlotStart), urlencode($firstSlotEnd));
+	$product->update_meta_data('product_url', $url);
+
+	$product->save();
 
 	dw_format_and_save_dates($product, $startDate, $courseParts);
 	wp_set_object_terms($product->get_id(), $addressLine, 'pa_address', false);
@@ -215,11 +220,10 @@ function dw_format_and_save_dates(WC_Product $product, DateTime $date, array $co
 	wp_set_object_terms($product->get_id(), date_i18n('l d F', $date->getTimestamp()), 'pa_pretty_date', false);
 	wp_set_object_terms($product->get_id(), date_i18n('F', $date->getTimestamp()), 'pa_month', false);
 
-	$i = 1;
 	foreach($courseParts as $part) {
 		$startDate      = new DateTime($part['slots'][0]['startDate']);
 		$endDate        = new DateTime($part['slots'][0]['endDate']);
-		$attributeValue = $i . '. ' . date_i18n('D d F Y', $startDate->getTimestamp()) . ' ' . $startDate->format('H:i');
+		$attributeValue = date_i18n('D d F Y', $startDate->getTimestamp()) . ' ' . $startDate->format('H:i');
 		$attributeValue .= '-' . $endDate->format('H:i');
 
 		wp_set_object_terms(
@@ -228,7 +232,6 @@ function dw_format_and_save_dates(WC_Product $product, DateTime $date, array $co
 			'pa_slot_time',
 			true
 		);
-		$i++;
 	}
 }
 
@@ -240,9 +243,9 @@ function dw_format_and_save_address(WC_Product $product, array $address) {
 	return $addressLine;
 }
 
-function dw_generate_external_url($trainingId, $location, $trainingName, $date) {
+function dw_generate_external_url($trainingId, $location, $trainingName, $startDate, $endDate) {
 	global  $dw_options;
 	$contactFormLocation = $dw_options['contact-form'] ?? 'contactformulier';
-	return get_site_url() . "/$contactFormLocation?dw_trainingId=$trainingId&dw_location=$location&dw_trainingName=$trainingName&dw_date=$date";
+	return get_site_url() . "/$contactFormLocation?dw_trainingId=$trainingId&dw_location=$location&dw_trainingName=$trainingName&dw_start_date=$startDate&dw_end_date=$endDate";
 
 }

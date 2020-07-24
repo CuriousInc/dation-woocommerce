@@ -20,10 +20,12 @@ const definition = {
     mobileNumber: {
       type: 'string',
       title: 'Mobiele nummer',
+      minLength: 10,
     },
     phoneNumber: {
       type: 'string',
       title: 'Telefoon nummer',
+      minLength: 10,
     },
     email: {
       type: 'string',
