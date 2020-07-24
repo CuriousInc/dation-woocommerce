@@ -177,9 +177,6 @@ function dw_add_woocommerce_product($course) {
 	$addressLine = dw_format_and_save_address($product, $course['parts'][0]['slots'][0]['location']['address']);
 
 
-
-	wp_set_object_terms($product->get_id(), $course['parts'][0]['slots'][0]['city'], 'pa_locatie', false);
-	wp_set_object_terms($product->get_id(), $course['ccvCode'], 'pa_ccv_code', false);
 	$courseParts = $course['parts'];
 	usort($courseParts, function ($a, $b) {
 		$startA = (DateTime::createFromFormat(DATE_ISO8601, $a['slots'][0]['startDate']))->getTimestamp();
@@ -198,6 +195,10 @@ function dw_add_woocommerce_product($course) {
 	$product->update_meta_data('product_url', $url);
 
 	$product->save();
+
+	// set terms after saving products
+	wp_set_object_terms($product->get_id(), $course['parts'][0]['slots'][0]['city'], 'pa_locatie', false);
+	wp_set_object_terms($product->get_id(), $course['ccvCode'], 'pa_ccv_code', false);
 
 	dw_format_and_save_dates($product, $startDate, $courseParts);
 	wp_set_object_terms($product->get_id(), $addressLine, 'pa_address', false);
