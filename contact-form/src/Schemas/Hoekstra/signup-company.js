@@ -63,6 +63,8 @@ export default {
           extraRequired: [
             'mobileNumber',
             'phoneNumber',
+            'contactPerson',
+            'emailInvoice',
           ],
         }),
       },
