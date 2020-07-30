@@ -2,10 +2,10 @@ import React, { useRef, useState } from 'react';
 import Form from 'react-jsonschema-form';
 import injectBootstrapCss from './Loaders/StyleLoader';
 
-import SignupAsPrivate from './Schemas/signup-private';
-import SignupAsCompany from './Schemas/signup-company';
+import SignupAsPrivate from './Schemas/Default/signup-private';
+import SignupAsCompany from './Schemas/Default/signup-company';
 
-function App({
+function DefaultApp({
   title, date, location, trainingId,
 }) {
   injectBootstrapCss();
@@ -104,4 +104,4 @@ function App({
   );
 }
 
-export default App;
+export default DefaultApp;

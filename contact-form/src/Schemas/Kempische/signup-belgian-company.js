@@ -1,6 +1,6 @@
-import student from '../Definitions/student';
-import company from '../Definitions/company';
-import { submitFunction } from './signup-company';
+import student from '../../Definitions/student';
+import company from '../../Definitions/company';
+import { submitFunction } from '../Default/signup-company';
 
 export default {
   onSubmit: async ({ formData }) => {
@@ -12,7 +12,7 @@ export default {
         ...student.belgianDefinition,
       },
       company: {
-        ...company.definition,
+        ...company.definition({}),
       },
     },
 

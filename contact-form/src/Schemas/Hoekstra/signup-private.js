@@ -1,4 +1,4 @@
-import { getStudentProperties, getStudentUISchema } from '../Definitions/student';
+import { getBasicStudentSchema, getStudentUISchema } from '../../Definitions/student';
 import { submitFunction } from './signup-company';
 
 export default {
@@ -7,7 +7,6 @@ export default {
   },
   schema: {
     type: 'object',
-    title: 'Particulier',
     required: [
       'firstName',
       'lastName',
@@ -16,12 +15,11 @@ export default {
       'street',
       'city',
       'mobileNumber',
-      'emailAddress',
       'birthPlace',
       'birthDate',
-      'privacy',
+      'emailAddress',
     ],
-    properties: getStudentProperties(),
+    properties: getBasicStudentSchema(),
   },
   uiSchema: getStudentUISchema(),
 };

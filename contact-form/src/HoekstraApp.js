@@ -1,22 +1,22 @@
 import React, { useRef, useState } from 'react';
 import Form from 'react-jsonschema-form';
-
-import SignupAsPrivate from './Schemas/signup-belgian-private';
-import SignupAsCompany from './Schemas/signup-belgian-company';
-
 import injectBootstrapCss from './Loaders/StyleLoader';
 
-function LeadFormApp({
-  title, date, location, trainingId,
-}) {
-  injectBootstrapCss();
+import SignupAsPrivate from './Schemas/Hoekstra/signup-private';
+import SignupAsCompany from './Schemas/Hoekstra/signup-company';
 
+const HoekstraApp = ({
+  title, date, location, trainingId,
+}) => {
+  injectBootstrapCss();
   const initialSchema = {
     ...{ ...SignupAsPrivate },
   };
+
   const [schema, setSchema] = useState(initialSchema);
   const [formFor, setFormFor] = useState('individual');
 
+  // TODO: Localisation
   const transformErrors = (errors) => errors.map((error) => {
     let newError = {
       ...error,
@@ -44,13 +44,13 @@ function LeadFormApp({
     <div className="App">
       <div className="container">
         <div id="alertPlaceHolder" />
-        <div className="row mb-3">
-          <div className="col-xs-12 col-sm-6" style={{ marginBottom: '2rem' }}>
+        <div className="row">
+          <div className="col-xs-6">
             <button
               type="button"
               onClick={() => {
                 setFormFor('individual');
-                toggleSchema('individual');
+                toggleSchema();
               }}
               className={`${formFor === 'individual' ? 'btn btn-primary' : 'btn btn-default'} btn-block`}
             >Particulier
@@ -65,7 +65,7 @@ function LeadFormApp({
             >Bedrijven
             </button>
           </div>
-          <div className="col-xs-12 col-sm-6">
+          <div className="col-xs-6">
             <li className="list-group-item active ">
               <div className="form-group">
                 <label>Inschrijven voor training:</label>
@@ -103,6 +103,6 @@ function LeadFormApp({
       </div>
     </div>
   );
-}
+};
 
-export default LeadFormApp;
+export default HoekstraApp;

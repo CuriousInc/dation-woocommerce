@@ -1,6 +1,6 @@
 import axios from 'axios';
-import student from '../Definitions/student';
-import company from '../Definitions/company';
+import student from '../../Definitions/student';
+import company from '../../Definitions/company';
 
 export const submitFunction = (formData, endpoint) => {
   const headers = { 'Content-Type': 'application/json' };
@@ -40,7 +40,7 @@ export default {
         ...student.definition,
       },
       company: {
-        ...company.definition,
+        ...company.definition({}),
       },
     },
 

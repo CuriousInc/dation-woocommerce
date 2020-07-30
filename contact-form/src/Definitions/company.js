@@ -1,13 +1,18 @@
-const definition = {
+const definition = ({ extraProperties = {}, extraRequired = [] }) => ({
   type: 'object',
   required: [
     'companyName',
     'email',
+    ...extraRequired,
   ],
   properties: {
     companyName: {
       type: 'string',
       title: 'Bedrijfsnaam',
+    },
+    contactPerson: {
+      type: 'string',
+      title: 'Contactpersoon',
     },
     address: {
       type: 'string',
@@ -24,7 +29,7 @@ const definition = {
     },
     phoneNumber: {
       type: 'string',
-      title: 'Telefoon nummer',
+      title: 'Telefoonnummer',
       minLength: 10,
     },
     email: {
@@ -32,8 +37,14 @@ const definition = {
       format: 'email',
       title: 'E-mailadres',
     },
+    emailInvoice: {
+      type: 'string',
+      format: 'email',
+      title: 'E-mailadres factuur',
+    },
+    ...extraProperties,
   },
-};
+});
 
 export default {
   definition,

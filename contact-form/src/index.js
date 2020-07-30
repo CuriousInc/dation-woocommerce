@@ -2,10 +2,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import moment from 'moment';
-import App from './App';
-import LeadFormApp from './LeadFormApp';
+import DefaultApp from './DefaultApp';
+import KempischeApp from './KempischeApp';
 
 import './assets/index.scss';
+import HoekstraApp from './HoekstraApp';
 
 const element = document.getElementById('app');
 const type = window.frameElement.getAttribute('data-type');
@@ -28,9 +29,13 @@ const props = {
 switch (type) {
   case 'kempische':
     require('./assets/belgianStyles.scss');
-    ReactDOM.render(<LeadFormApp {...props} />, element);
+    ReactDOM.render(<KempischeApp {...props} />, element);
+    break;
+  case 'hoekstra':
+    require('./assets/defaultStyles.scss');
+    ReactDOM.render(<HoekstraApp {...props} />, element);
     break;
   default:
     require('./assets/defaultStyles.scss');
-    ReactDOM.render(<App {...props} />, element);
+    ReactDOM.render(<DefaultApp {...props} />, element);
 }

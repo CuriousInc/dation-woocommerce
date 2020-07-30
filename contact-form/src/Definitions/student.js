@@ -40,7 +40,7 @@ export const getBasicStudentSchema = () => ({
   },
   phoneNumber: {
     type: 'string',
-    title: 'Telefoon nummer',
+    title: 'Telefoonnummer',
     minLength: 10,
   },
   emailAddress: {
