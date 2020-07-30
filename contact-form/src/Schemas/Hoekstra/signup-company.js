@@ -115,6 +115,12 @@ export default {
       email: {
         classNames: 'form-input-sm',
       },
+      contactPerson: {
+        classNames: 'form-input-sm',
+      },
+      emailInvoice: {
+        classNames: 'form-input-sm',
+      },
     },
   },
 };
