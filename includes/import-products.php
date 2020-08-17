@@ -51,17 +51,23 @@ function dw_import_products() {
  * Function called from WP cron. Finds products that take place before and including today and moves them to the bin.
  */
 function dw_delete_products() {
-	$currentTimestamp = (new DateTime())
-		->setTime(23, 59, 59)
-		->getTimestamp();
+	global $dw_options;
+	if(!$dw_options['use_webshop']) {
+		$currentTimestamp = (new DateTime())
+			->setTime(23, 59, 59)
+			->getTimestamp();
 
-	$products = wc_get_products([]);
+		$products = wc_get_products([]);
 
-	array_walk($products, function ($product) use ($currentTimestamp) {
-		if((int)$product->get_menu_order() < $currentTimestamp) {
-			$product->delete();
-		}
-	});
+		array_walk($products, function ($product) use ($currentTimestamp) {
+			if((int)$product->get_menu_order() < $currentTimestamp) {
+				var_dump($product->get_title());
+				$product->delete();
+				$product->save();
+			}
+		});
+	}
+
 }
 
 /**
