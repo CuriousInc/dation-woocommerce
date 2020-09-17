@@ -16,7 +16,7 @@
         "symfony/serializer": "^4.3",
         "symfony/property-access": "^4.3",
         "symfony/property-info": "^4.3",
-        "phpdocumentor/reflection-docblock": "^4.3",
+        "phpdocumentor/reflection-docblock": "^5.2",
         "viison/address-splitter": "^0.3.2"
     },
     "autoload": {
