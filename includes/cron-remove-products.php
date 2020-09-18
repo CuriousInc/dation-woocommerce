@@ -6,8 +6,6 @@ declare(strict_types=1);
  * Register wp-cron events for fetching Dation products and transforming them to Woocommerce products
  */
 
-require 'import-products.php';
-
 const DW_DELETE_PRODUCTS_HOOK = 'dw_delete_dation_products';
 
 add_action(DW_DELETE_PRODUCTS_HOOK, 'dw_delete_products');
