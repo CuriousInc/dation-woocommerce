@@ -10,7 +10,7 @@ declare(strict_types=1);
  * Description: Je website altijd up-to-date met je Dation planning. Importeer je Dation cursussen als Woocommerce producten.
  * Author: Dation
  * Author URI: http://www.dation.nl
- * Version: 1.2.22
+ * Version: 1.2.23
  */
 
 // Global variables
@@ -30,6 +30,7 @@ if(!defined('DW_BASE_HOST')) {
 require 'vendor/autoload.php';
 
 require 'includes/cron-import-products.php';
+require 'includes/cron-remove-products.php';
 
 /**
  * Localisation
