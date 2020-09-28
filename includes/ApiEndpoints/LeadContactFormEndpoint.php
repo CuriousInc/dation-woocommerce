@@ -42,7 +42,7 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 		'category',
 		'notes',
 		'nationalRegistryNumber',
-		'idCardNumber',
+		'identityCardNumber',
 	];
 
 	public function register_routes() {

@@ -39,7 +39,7 @@ const DELAY_REASONS = [
 
 global $dw_options;
 // Register override for checkout and order email
-if(isset($dw_options['use_tkm'])) {
+if(isset($dw_options['use_tkm']) || isset($dw_options['customer'])) {
 	add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
 }
 //Disable shopping cart functionality of applicable
@@ -137,67 +137,96 @@ function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text)
 
 // Override checkout fields, add custom TKM fields to checkout fields
 function dw_override_checkout_fields($fields) {
+	global $dw_options;
+
 	unset($fields['shipping']['shipping_address_2']);
 	unset($fields['shipping']['shipping_company']);
 
 	unset($fields['billing']['billing_address_2']);
 	unset($fields['billing']['billing_company']);
 
-	$newOrderFields['order'][OrderManager::KEY_DATE_OF_BIRTH] = [
-		'type'     => 'text',
-		'label'    => __('Geboortedatum'),
-		'required' => true,
-	];
+	if(isset($dw_options['use_tkm'])) {
+		$newOrderFields['order'][OrderManager::KEY_DATE_OF_BIRTH] = [
+			'type'     => 'text',
+			'label'    => __('Geboortedatum'),
+			'required' => true,
+		];
 
-	$newOrderFields['order'][OrderManager::KEY_NATIONAL_REGISTRY_NUMBER] = [
-		'type'     => 'text',
-		'label'    => __('Rijksregisternummer'),
-		'required' => true,
-	];
+		$newOrderFields['order'][OrderManager::KEY_NATIONAL_REGISTRY_NUMBER] = [
+			'type'     => 'text',
+			'label'    => __('Rijksregisternummer'),
+			'required' => true,
+		];
 
-	$newOrderFields['order'][OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] = [
-		'type'     => 'text',
-		'label'    => __('Afgiftedatum rijbewijs'),
-		'required' => true,
-	];
+		$newOrderFields['order'][OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] = [
+			'type'     => 'text',
+			'label'    => __('Afgiftedatum rijbewijs'),
+			'required' => true,
+		];
 
-	$newOrderFields['order'][OrderManager::KEY_AUTOMATIC_TRANSMISSION] = [
-		'type'     => 'select',
-		'options'  => [
-			'no'  => __('No'),
-			'yes' => __('Yes'),
-		],
-		'label'    => __('Ik rijd enkel met een automaat'),
-		'required' => true,
-	];
+		$newOrderFields['order'][OrderManager::KEY_AUTOMATIC_TRANSMISSION] = [
+			'type'     => 'select',
+			'options'  => [
+				'no'  => __('No'),
+				'yes' => __('Yes'),
+			],
+			'label'    => __('Ik rijd enkel met een automaat'),
+			'required' => true,
+		];
 
-	$newOrderFields['order'][OrderManager::KEY_HAS_RECEIVED_LETTER] = [
-		'type'     => 'select',
-		'label'    => 'Ik heb een oproepbrief ontvangen van de overheid om een terugkommoment te volgen',
-		'options'  => [
-			''    => __(''),
-			'no'  => __('No'),
-			'yes' => __('Yes'),
-		],
-		'required' => true,
-	];
+		$newOrderFields['order'][OrderManager::KEY_HAS_RECEIVED_LETTER] = [
+			'type'     => 'select',
+			'label'    => 'Ik heb een oproepbrief ontvangen van de overheid om een terugkommoment te volgen',
+			'options'  => [
+				''    => __(''),
+				'no'  => __('No'),
+				'yes' => __('Yes'),
+			],
+			'required' => true,
+		];
 
-	$delayOptions = [];
+		$delayOptions = [];
 
-	$delayOptions[''] = __('Kies een reden van uitstel');
-	foreach(DELAY_REASONS as $key => $value) {
-		$delayOptions[$key] = __($value);
+		$delayOptions[''] = __('Kies een reden van uitstel');
+		foreach(DELAY_REASONS as $key => $value) {
+			$delayOptions[$key] = __($value);
+		}
+		$newOrderFields['order'][OrderManager::KEY_DELAY_REASON] = [
+			'type'     => 'select',
+			'options'  => $delayOptions,
+			'label'    => __('Reden van uitstel'),
+			'required' => false
+		];
 	}
-	$newOrderFields['order'][OrderManager::KEY_DELAY_REASON] = [
-		'type'     => 'select',
-		'options'  => $delayOptions,
-		'label'    => __('Reden van uitstel'),
-		'required' => false
-	];
+
+	if(isset($dw_options['customer']) && $dw_options['customer'] === 'kempische') {
+		$newOrderFields['order'][OrderManager::KEY_DATE_OF_BIRTH] = [
+			'type'     => 'text',
+			'label'    => __('Geboortedatum'),
+			'required' => true,
+		];
+
+		$newOrderFields['order'][OrderManager::KEY_PLACE_OF_BIRTH] = [
+			'type'     => 'text',
+			'label'    => __('Geboorteplaats'),
+			'required' => true,
+		];
+
+		$newOrderFields['order'][OrderManager::KEY_NATIONAL_REGISTRY_NUMBER] = [
+			'type'     => 'text',
+			'label'    => __('Rijksregisternummer'),
+			'required' => true,
+		];
+
+		$newOrderFields['order'][OrderManager::KEY_ID_CARD_NUMBER] = [
+			'type'     => 'text',
+			'label'    => __('Identiteitskaartnummer'),
+			'required' => true,
+		];
+	}
 
 	// Merge arrays at the 'order' key
 	$fields['order'] = array_merge($newOrderFields['order'], $fields['order']);
-
 	return $fields;
 }
 
@@ -307,19 +336,29 @@ function dw_is_match_national_registry_number_and_birth_date(
 /**
  * Update the order meta with field value
  */
-if(isset($dw_options['use_tkm'])) {
-	add_action('woocommerce_checkout_update_order_meta', 'dw_checkout_update_order_meta');
-}
+add_action('woocommerce_checkout_update_order_meta', 'dw_checkout_update_order_meta');
 
 function dw_checkout_update_order_meta($orderId) {
-	$fields = [
-		OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE,
-		OrderManager::KEY_DATE_OF_BIRTH,
-		OrderManager::KEY_NATIONAL_REGISTRY_NUMBER,
-		OrderManager::KEY_AUTOMATIC_TRANSMISSION,
-		OrderManager::KEY_HAS_RECEIVED_LETTER,
-		OrderManager::KEY_DELAY_REASON,
-	];
+	global $dw_options;
+	if(isset($dw_options['use_tkm'])) {
+		$fields = [
+			OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE,
+			OrderManager::KEY_DATE_OF_BIRTH,
+			OrderManager::KEY_NATIONAL_REGISTRY_NUMBER,
+			OrderManager::KEY_AUTOMATIC_TRANSMISSION,
+			OrderManager::KEY_HAS_RECEIVED_LETTER,
+			OrderManager::KEY_DELAY_REASON,
+		];
+	}
+
+	if(isset($dw_options['customer']) && $dw_options['customer'] === 'kempische') {
+		$fields = [
+			OrderManager::KEY_DATE_OF_BIRTH,
+			OrderManager::KEY_PLACE_OF_BIRTH,
+			OrderManager::KEY_ID_CARD_NUMBER,
+			OrderManager::KEY_NATIONAL_REGISTRY_NUMBER
+		];
+	}
 
 	foreach($fields as $field) {
 		if(!empty($_POST[$field])) {
@@ -344,6 +383,26 @@ function dw_sanitize_text_field($key, $value) {
  */
 if(isset($dw_options['use_tkm'])) {
 	add_action('woocommerce_admin_order_data_after_shipping_address', 'dw_admin_order_render_extra_fields', 10, 1);
+}
+
+if(isset($dw_options['customer']) && $dw_options['customer'] === 'kempische') {
+	add_action('woocommerce_admin_order_data_after_shipping_address', 'dw_admin_order_render_kempische_fields', 10, 1);
+}
+
+function dw_admin_order_render_kempische_fields($order) {
+	$registryNumber = RijksregisternummerHelper::format(
+		get_post_meta($order->get_id(), OrderManager::KEY_NATIONAL_REGISTRY_NUMBER, true)
+	);
+
+
+	echo '<p><strong>' . __('Geboortedatum') . ':</strong> <br/>'
+		. get_post_meta($order->get_id(), OrderManager::KEY_DATE_OF_BIRTH, true) . '</p>';
+	echo '<p><strong>' . __('Geboorteplaats') . ':</strong> <br/>'
+		. get_post_meta($order->get_id(), OrderManager::KEY_PLACE_OF_BIRTH, true) . '</p>';
+	echo '<p><strong>' . __('Rijksregisternummer') . ':</strong> <br/>'
+		. $registryNumber . '</p>';
+	echo '<p><strong>' . __('Identiteitskaartnummer') . ':</strong> <br/>'
+		. get_post_meta($order->get_id(), OrderManager::KEY_ID_CARD_NUMBER, true) . '</p>';
 }
 
 /**

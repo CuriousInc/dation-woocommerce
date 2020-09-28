@@ -117,6 +117,21 @@ function dw_render_options_page() {
 						</p>
 					</td>
 				</tr>
+                <tr>
+                    <th scope="row">
+                        <label class="description" for="dw_settings[customer]">
+                            <?php _e('Klantcode'); ?>
+                        </label>
+                    </th>
+                    <td>
+                        <input id="dw_settings[customer]" name="dw_settings[customer]"
+                            type="text" value="<?php echo isset($dw_options['customer']) ? $dw_options['customer'] : '' ?>"
+                        >
+                        <p class="description">
+                            Klant code voor specifieke functionaliteiten
+                        </p>
+                    </td>
+                </tr>
 			</table>
 
 			<h2 class="title">Terugkommomenten</h2>
