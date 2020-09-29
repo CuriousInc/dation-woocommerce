@@ -133,8 +133,8 @@ export default function(type) {
 					$ref: '#/definitions/company',
 				},
 				students: {
-					title: 'Kandidaat',
 					type: 'array',
+					title: false,
 					minItems: 1,
 					items: {
 						$ref: '#/definitions/student'

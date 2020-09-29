@@ -46,7 +46,7 @@ function getStudentProperties(type) {
 		emailAddress: {
 			type: 'string',
 			format: 'email',
-			title: 'E-mailadres',
+			title: 'E-mailadres (Gelieve per persoon een uniek e-mailadres in te voeren)',
 		},
 		birthPlace: {
 			type: 'string',
@@ -67,7 +67,7 @@ function getStudentProperties(type) {
 		location: {
 			type: 'string',
 			title: 'Locatie',
-			enum: ['Herenthout', 'Westerlo', 'Booischot', 'Herentals', 'Nijlen', 'Heist op den Berg', 'Putte', 'Scherpenheuvel', 'Ramsel', 'Berlaar', 'Tremelo', 'Zandhoven', 'Tienen'],
+			enum: getLocations(type),
 		},
 		...getExtraFields(type),
 		availability: {
@@ -84,6 +84,16 @@ function getStudentProperties(type) {
 		packageName: {
 			type: 'string'
 		}
+	}
+}
+
+function getLocations(type) {
+	switch(type) {
+		case CAT_B:
+			return ['Herenthout', 'Westerlo', 'Booischot', 'Herentals', 'Nijlen', 'Heist op den Berg', 'Putte', 'Scherpenheuvel', 'Ramsel', 'Berlaar', 'Tremelo', 'Zandhoven', 'Tienen'];
+		case CAT_G:
+		case CAT_BE:
+			return ['Herenthout'];
 	}
 }
 
@@ -200,7 +210,7 @@ function getExtraFields(type) {
 			return {
 				dateTheoryExamPassed: {
 					type: 'string',
-					title: 'Datum geslaagd theorie (achterzijde VLR of attest geslaagd)',
+					title: 'Datum geslaagd theorie (attest geslaagd)',
 				},
 			}
 		}
@@ -229,7 +239,7 @@ function getRequiredFields(type) {
 export function getStudentDefinition(type) {
 	return {
 		type: 'object',
-		title: 'Particulier',
+		title: 'Kandidaat',
 		required: getRequiredFields(type),
 		properties: getStudentProperties(type),
 	}

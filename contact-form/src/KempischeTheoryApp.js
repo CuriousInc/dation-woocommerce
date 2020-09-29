@@ -30,8 +30,8 @@ const KempischeTheoryApp = ({ education, packageName, type }) => {
 
 	const formRef = useRef(null);
 
-	const toggleSchema = (type) => {
-		if (type === 'company') {
+	const toggleSchema = formtype => {
+		if (formtype === 'company') {
 			setSchema(SignupAsCompany(type));
 		} else {
 			setSchema(SignupAsPrivate(type));
