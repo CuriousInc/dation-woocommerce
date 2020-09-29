@@ -232,7 +232,7 @@ function getRequiredFields(type) {
 		case CAT_G:
 			return defaultRequired;
 		case CAT_BE:
-			return [...defaultRequired, ['dateBLicencePassed']];
+			return [...defaultRequired, 'dateBLicencePassed'];
 	}
 }
 
