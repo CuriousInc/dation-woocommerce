@@ -2,9 +2,9 @@ import React, { useRef, useState } from 'react';
 import Form from 'react-jsonschema-form';
 import injectBootstrapCss from './Loaders/StyleLoader';
 
-function DefaultApp({
-	title, date, location, trainingId, signupAsPrivate, singupAsCompany,
-}) {
+function MulderApp({
+					   title, date, location, trainingId, signupAsPrivate, singupAsCompany,
+				   }) {
 	injectBootstrapCss();
 
 	const initialSchema = {
@@ -101,4 +101,4 @@ function DefaultApp({
 	);
 }
 
-export default DefaultApp;
+export default MulderApp;

@@ -233,7 +233,7 @@ function dw_override_checkout_fields($fields) {
 /**
  * Process the checkout
  */
-if(isset($dw_options['use_tkm'])) {
+if(isset($dw_options['use_tkm']) || (isset($dw_options['customer']) && $dw_options['customer'] === 'kempische')) {
 	add_action('woocommerce_checkout_process', 'dw_process_checkout');
 }
 
@@ -307,6 +307,14 @@ function dw_process_checkout() {
 			wc_add_notice(__('Rijksregsternummer komt niet overeen met geboortedatum'), 'error');
 		}
 	}
+
+	if(!empty($_POST[OrderManager::KEY_ID_CARD_NUMBER])) {
+		$value = dw_sanitize_text_field(OrderManager::KEY_ID_CARD_NUMBER, $_POST[OrderManager::KEY_ID_CARD_NUMBER]);
+		var_dump($value);
+		if(strlen($value) > 12) {
+			wc_add_notice(__('Het identiteitskaartnummer mag niet meer dan 12 cijfers bevatten'), 'error');
+		}
+	}
 }
 
 function dw_is_valid_date(string $input): bool {
@@ -371,6 +379,8 @@ function dw_sanitize_text_field($key, $value) {
 	if($key === OrderManager::KEY_NATIONAL_REGISTRY_NUMBER) {
 		$registryNumber = new Rijksregisternummer($value);
 		$value          = $registryNumber->machineFormat();
+	} elseif($key === OrderManager::KEY_ID_CARD_NUMBER) {
+		$value = preg_replace("/[^0-9]/", "", $value);
 	} else {
 		$value = sanitize_text_field($value);
 	}
