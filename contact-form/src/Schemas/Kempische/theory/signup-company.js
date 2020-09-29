@@ -110,7 +110,7 @@ function getCompanyDefinition() {
 	return {
 		type: 'object',
 		title: 'Bedrijven',
-		required: ['companyName', 'street', 'houseNumber', 'zipCode', 'city', 'VATRegistration', 'emailAddress', 'privacy', 'email'],
+		required: ['companyName', 'street', 'houseNumber', 'zipCode', 'city', 'VATRegistration', 'privacy', 'email'],
 		properties: getCompanyProperties()
 	}
 }
@@ -134,7 +134,7 @@ export default function(type) {
 				},
 				students: {
 					type: 'array',
-					title: false,
+					title: '',
 					minItems: 1,
 					items: {
 						$ref: '#/definitions/student'
