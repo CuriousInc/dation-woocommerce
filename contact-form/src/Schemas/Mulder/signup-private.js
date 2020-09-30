@@ -35,7 +35,7 @@ function getStudentProperties(extended) {
 		},
 		lastName: {
 			type: 'string',
-			title: 'Naam',
+			title: 'Achternaam',
 		},
 		emailAddress: {
 			type: 'string',

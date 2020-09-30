@@ -54,13 +54,13 @@ function getStudentProperties(type) {
 		},
 		birthDate: {
 			type: 'string',
-			title: 'Geboortedatum',
+			title: 'Geboortedatum (dd-mm-jjjj)',
 		},
 		nationalRegistryNumber: {
 			type: 'string',
 			title: 'Rijksregisternummer (Achterzijde EID)'
 		},
-		identityCardNumber: {
+		idCardNumber: {
 			type: 'string',
 			title: 'Identiteitskaartnummer (Voorzijde EID)',
 		},
@@ -167,7 +167,7 @@ export function getStudentUiSchema() {
 		nationalRegistryNumber: {
 			classNames: 'form-input-sm col-xs-6',
 		},
-		identityCardNumber: {
+		idCardNumber: {
 			classNames: 'form-input-sm col-xs-6',
 		},
 		packageName: {
@@ -225,8 +225,11 @@ function getExtraFields(type) {
 	}
 }
 
-function getRequiredFields(type) {
-	const defaultRequired = ['firstName', 'lastName', 'street', 'houseNumber', 'zipCode', 'city', 'mobileNumber', 'emailAddress', 'birthPlace', 'birthDate', 'identityCardNumber', 'nationalRegistryNumber', 'privacy', 'location']
+function getRequiredFields(type, forCompany) {
+	let defaultRequired = ['firstName', 'lastName', 'street', 'houseNumber', 'zipCode', 'city', 'mobileNumber', 'birthPlace', 'birthDate', 'idCardNumber', 'nationalRegistryNumber', 'privacy', 'location']
+	if(!forCompany) {
+		defaultRequired = [...defaultRequired, 'emailAddress'];
+	}
 	switch(type) {
 		case CAT_B:
 		case CAT_G:
@@ -236,11 +239,11 @@ function getRequiredFields(type) {
 	}
 }
 
-export function getStudentDefinition(type) {
+export function getStudentDefinition(type, forCompany = false) {
 	return {
 		type: 'object',
 		title: 'Kandidaat',
-		required: getRequiredFields(type),
+		required: getRequiredFields(type, forCompany),
 		properties: getStudentProperties(type),
 	}
 }

@@ -17,7 +17,7 @@ export const submitFunction = (formData, endpoint) => {
     data: JSON.stringify(formData),
     url: `${baseUrl}/wp-json/dationwoocommerce/v1/submit/${endpoint}`,
   }).then(() => {
-    template.innerHTML = 'Bedankt voor uw reservering';
+    template.innerHTML = 'Bedankt voor uw reservering. Er wordt zo spoedig mogelijk contact met u opgenomen over uw inschrijving.';
     template.className = 'alert alert-success';
 
     const placeHolder = document.getElementById('alertPlaceHolder');

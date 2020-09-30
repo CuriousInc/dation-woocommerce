@@ -122,7 +122,7 @@ export default function(type) {
 		},
 		schema: {
 			definitions: {
-				student: getStudentDefinition(type),
+				student: getStudentDefinition(type, true),
 				company: getCompanyDefinition(),
 			},
 			required: [],
