@@ -1,12 +1,9 @@
 import React from 'react';
-import { submitFunction } from '../../Default/signup-company';
-import DateInput from '../../../Widgets/DateInput';
+import { submitFunction } from '../Default/signup-company';
+import DateInput from '../../Widgets/DateInput';
 
-const CAT_B = 'kempische_b';
-const CAT_G = 'kempische_g';
-const CAT_BE = 'kempische_be';
 
-function getStudentProperties(type) {
+function getStudentProperties() {
   return {
     firstName: {
       type: 'string',
@@ -46,7 +43,7 @@ function getStudentProperties(type) {
     emailAddress: {
       type: 'string',
       format: 'email',
-      title: 'E-mailadres (Gelieve per persoon een uniek e-mailadres in te voeren)',
+      title: 'E-mailadres',
     },
     birthPlace: {
       type: 'string',
@@ -67,9 +64,24 @@ function getStudentProperties(type) {
     location: {
       type: 'string',
       title: 'Locatie',
-      enum: getLocations(type),
+      enum: ['Lier', 'Lille', 'Geel', 'Kasterlee'],
     },
-    ...getExtraFields(type),
+    automaticTransmission: {
+      type: 'boolean',
+      title: 'Automaat',
+    },
+    dateTheoryExamPassed: {
+      type: 'string',
+      title: 'Datum geslaagd theorie (achterzijde VLR of attest geslaagd)',
+    },
+    startDateProvisionalLicence: {
+      type: 'string',
+      title: 'Begindatum voorlopig rijbewijs (4a)',
+    },
+    endDateProvisionalLicence: {
+      type: 'string',
+      title: 'Einddatum voorlopig rijbewijs (4b)',
+    },
     availability: {
       type: 'string',
       title: 'Wanneer kan u zich vrijmaken om de lessen te volgen?',
@@ -85,16 +97,6 @@ function getStudentProperties(type) {
       type: 'string',
     },
   };
-}
-
-function getLocations(type) {
-  switch (type) {
-    case CAT_B:
-      return ['Herenthout', 'Westerlo', 'Booischot', 'Herentals', 'Nijlen', 'Heist op den Berg', 'Putte', 'Scherpenheuvel', 'Ramsel', 'Berlaar', 'Tremelo', 'Zandhoven', 'Tienen'];
-    case CAT_G:
-    case CAT_BE:
-      return ['Herenthout'];
-  }
 }
 
 export function getStudentUiSchema() {
@@ -179,6 +181,9 @@ export function getStudentUiSchema() {
     privacy: {
       classNames: 'col-xs-12',
     },
+    automaticTransmission: {
+      classNames: 'col-xs-12',
+    },
     location: {
       classNames: 'form-input-sm col-xs-12',
     },
@@ -189,71 +194,34 @@ export function getStudentUiSchema() {
   };
 }
 
-function getExtraFields(type) {
-  switch (type) {
-    case CAT_B:
-      return {
-        dateTheoryExamPassed: {
-          type: 'string',
-          title: 'Datum geslaagd theorie (achterzijde VLR of attest geslaagd)',
-        },
-        startDateProvisionalLicence: {
-          type: 'string',
-          title: 'Begindatum voorlopig rijbewijs (4a)',
-        },
-        endDateProvisionalLicence: {
-          type: 'string',
-          title: 'Einddatum voorlopig rijbewijs (4b)',
-        },
-      };
-    case CAT_G: {
-      return {
-        dateTheoryExamPassed: {
-          type: 'string',
-          title: 'Datum geslaagd theorie (attest geslaagd)',
-        },
-      };
-    }
-    case CAT_BE: {
-      return {
-        dateBLicencePassed: {
-          type: 'string',
-          title: 'Datum rijbewijs B behaald',
-        },
-      };
-    }
-  }
-}
-
-function getRequiredFields(type, forCompany) {
-  let defaultRequired = ['firstName', 'lastName', 'street', 'houseNumber', 'zipCode', 'city', 'mobileNumber', 'birthPlace', 'birthDate', 'idCardNumber', 'nationalRegistryNumber', 'privacy', 'location'];
-  if (!forCompany) {
-    defaultRequired = [...defaultRequired, 'emailAddress'];
-  }
-  switch (type) {
-    case CAT_B:
-    case CAT_G:
-      return defaultRequired;
-    case CAT_BE:
-      return [...defaultRequired, 'dateBLicencePassed'];
-  }
-}
-
-export function getStudentDefinition(type, forCompany = false) {
+export function getStudentDefinition() {
   return {
     type: 'object',
     title: 'Kandidaat',
-    required: getRequiredFields(type, forCompany),
-    properties: getStudentProperties(type),
+    required: [
+      'firstName',
+      'lastName',
+      'street',
+      'houseNumber',
+      'zipCode',
+      'city',
+      'mobileNumber',
+      'emailAddress',
+      'birthPlace',
+      'birthDate',
+      'idCardNumber',
+      'nationalRegistryNumber',
+      'privacy',
+      'location',
+    ],
+    properties: getStudentProperties(),
   };
 }
 
-export default function (type) {
-  return {
-    onSubmit: async ({ formData }) => {
-      submitFunction(formData, 'lead');
-    },
-    schema: getStudentDefinition(type),
-    uiSchema: getStudentUiSchema(),
-  };
-}
+export default {
+  onSubmit: async ({ formData }) => {
+    submitFunction(formData, 'lead');
+  },
+  schema: getStudentDefinition(),
+  uiSchema: getStudentUiSchema(),
+};
