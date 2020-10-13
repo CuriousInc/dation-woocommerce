@@ -9,6 +9,12 @@ import './assets/index.scss';
 import HoekstraApp from './HoekstraApp';
 import KempischeTheoryApp from "./KempischeTheoryApp";
 
+//Default
+import SignupAsPrivate from './Schemas/Default/signup-private';
+import SignupAsCompany from './Schemas/Default/signup-company';
+import MulderPrivate from './Schemas/Mulder/signup-private';
+import MulderCompany from './Schemas/Mulder/signup-company';
+
 const element = document.getElementById('app');
 const type = window.frameElement.getAttribute('data-type');
 
@@ -45,7 +51,11 @@ switch(type) {
 		require('./assets/defaultStyles.scss');
 		ReactDOM.render(<HoekstraApp {...props} />, element);
 		break;
+	case 'mulder':
+		require('./assets/mulderStyles.scss');
+		ReactDOM.render(<DefaultApp {...props} signupAsPrivate={MulderPrivate} singupAsCompany={MulderCompany} />, element);
+		break;
 	default:
 		require('./assets/defaultStyles.scss');
-		ReactDOM.render(<DefaultApp {...props} />, element);
+		ReactDOM.render(<DefaultApp {...props} signupAsPrivate={SignupAsPrivate} singupAsCompany={SignupAsCompany} />, element);
 }

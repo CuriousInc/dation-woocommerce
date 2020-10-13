@@ -110,6 +110,9 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 				if($key === 'houseNumber' || $key === "zipCode") {
 					$value = str_replace(' ', '', $value);
 				}
+				if($key === 'idCardNumber') {
+					$value = preg_replace("/[^0-9]/", "", $value);
+				}
 				$formData[$key] = $value;
 			} else {
 				$nonDefaultParams[$key] = $value;
@@ -128,10 +131,20 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 	}
 
 	private function getCompanyData($companyData = []) {
-		$trainingId = $companyData['trainingId'];
-		$title = $companyData['titel'];
-		$date  = $companyData['datum'];
-		$notes = "||| trainingId: {$trainingId} ||| Training naam: {$title} ||| Training datum: {$date} BedrijfsInformatie: ";
+		$extraInformation = [
+			'trainingId' => $companyData['trainingId'],
+			'Training naam' => $companyData['titel'],
+			'Training datum' => $companyData['datum'],
+			'Pakket' => $companyData['packageName'],
+			'Educatie' => $companyData['education']
+		];
+		$notes = '';
+		foreach($extraInformation as $key => $value) {
+			if($value) {
+				$notes.= "||| $key: $value";
+			}
+		}
+
 		foreach($companyData['company'] as $key => $value) {
 			$extraInformation = " {$key}: {$value} |||";
 			$notes            .= $extraInformation;

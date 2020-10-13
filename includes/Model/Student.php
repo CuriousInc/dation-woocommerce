@@ -41,6 +41,12 @@ class Student {
 	/** @var string|null */
 	protected $comments;
 
+	/** @var string|null */
+	protected $placeOfBirth;
+
+	/** @var string|null */
+	protected $identityCardNumber;
+
 	public function getId(): ?int {
 		return $this->id;
 	}
@@ -150,4 +156,26 @@ class Student {
 
 		return $this;
 	}
+
+	public function getPlaceOfBirth(): ?string {
+		return $this->placeOfBirth;
+	}
+
+	public function setPlaceOfBirth(?string $placeOfBirth): Student {
+		$this->placeOfBirth = $placeOfBirth;
+
+		return $this;
+	}
+
+	public function getIdentityCardNumber(): ?string {
+		return $this->identityCardNumber;
+	}
+
+	public function setIdentityCardNumber(?string $identityCardNumber): Student {
+		$this->identityCardNumber = $identityCardNumber;
+
+		return $this;
+	}
+
+
 }

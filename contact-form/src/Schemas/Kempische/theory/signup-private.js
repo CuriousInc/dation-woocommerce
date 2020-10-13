@@ -46,7 +46,7 @@ function getStudentProperties(type) {
 		emailAddress: {
 			type: 'string',
 			format: 'email',
-			title: 'E-mailadres',
+			title: 'E-mailadres (Gelieve per persoon een uniek e-mailadres in te voeren)',
 		},
 		birthPlace: {
 			type: 'string',
@@ -54,20 +54,20 @@ function getStudentProperties(type) {
 		},
 		birthDate: {
 			type: 'string',
-			title: 'Geboortedatum',
+			title: 'Geboortedatum (dd-mm-jjjj)',
 		},
 		nationalRegistryNumber: {
 			type: 'string',
 			title: 'Rijksregisternummer (Achterzijde EID)'
 		},
-		identityCardNumber: {
+		idCardNumber: {
 			type: 'string',
 			title: 'Identiteitskaartnummer (Voorzijde EID)',
 		},
 		location: {
 			type: 'string',
 			title: 'Locatie',
-			enum: ['Herenthout', 'Westerlo', 'Booischot', 'Herentals', 'Nijlen', 'Heist op den Berg', 'Putte', 'Scherpenheuvel', 'Ramsel', 'Berlaar', 'Tremelo', 'Zandhoven', 'Tienen'],
+			enum: getLocations(type),
 		},
 		...getExtraFields(type),
 		availability: {
@@ -84,6 +84,16 @@ function getStudentProperties(type) {
 		packageName: {
 			type: 'string'
 		}
+	}
+}
+
+function getLocations(type) {
+	switch(type) {
+		case CAT_B:
+			return ['Herenthout', 'Westerlo', 'Booischot', 'Herentals', 'Nijlen', 'Heist op den Berg', 'Putte', 'Scherpenheuvel', 'Ramsel', 'Berlaar', 'Tremelo', 'Zandhoven', 'Tienen'];
+		case CAT_G:
+		case CAT_BE:
+			return ['Herenthout'];
 	}
 }
 
@@ -157,7 +167,7 @@ export function getStudentUiSchema() {
 		nationalRegistryNumber: {
 			classNames: 'form-input-sm col-xs-6',
 		},
-		identityCardNumber: {
+		idCardNumber: {
 			classNames: 'form-input-sm col-xs-6',
 		},
 		packageName: {
@@ -200,7 +210,7 @@ function getExtraFields(type) {
 			return {
 				dateTheoryExamPassed: {
 					type: 'string',
-					title: 'Datum geslaagd theorie (achterzijde VLR of attest geslaagd)',
+					title: 'Datum geslaagd theorie (attest geslaagd)',
 				},
 			}
 		}
@@ -215,22 +225,25 @@ function getExtraFields(type) {
 	}
 }
 
-function getRequiredFields(type) {
-	const defaultRequired = ['firstName', 'lastName', 'street', 'houseNumber', 'zipCode', 'city', 'mobileNumber', 'emailAddress', 'birthPlace', 'birthDate', 'identityCardNumber', 'nationalRegistryNumber', 'privacy', 'location']
+function getRequiredFields(type, forCompany) {
+	let defaultRequired = ['firstName', 'lastName', 'street', 'houseNumber', 'zipCode', 'city', 'mobileNumber', 'birthPlace', 'birthDate', 'idCardNumber', 'nationalRegistryNumber', 'privacy', 'location']
+	if(!forCompany) {
+		defaultRequired = [...defaultRequired, 'emailAddress'];
+	}
 	switch(type) {
 		case CAT_B:
 		case CAT_G:
 			return defaultRequired;
 		case CAT_BE:
-			return [...defaultRequired, ['dateBLicencePassed']];
+			return [...defaultRequired, 'dateBLicencePassed'];
 	}
 }
 
-export function getStudentDefinition(type) {
+export function getStudentDefinition(type, forCompany = false) {
 	return {
 		type: 'object',
-		title: 'Particulier',
-		required: getRequiredFields(type),
+		title: 'Kandidaat',
+		required: getRequiredFields(type, forCompany),
 		properties: getStudentProperties(type),
 	}
 }

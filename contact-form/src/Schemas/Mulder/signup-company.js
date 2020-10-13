@@ -1,4 +1,4 @@
-import { submitFunction } from "../../Default/signup-company";
+import { submitFunction } from "../Default/signup-company";
 import { getStudentDefinition, getStudentUiSchema } from "./signup-private";
 
 function getCompanyProperties() {
@@ -11,13 +11,9 @@ function getCompanyProperties() {
 			type: 'string',
 			title: 'Contactpersoon',
 		},
-		street: {
+		address: {
 			type: 'string',
-			title: 'Straat'
-		},
-		houseNumber: {
-			type: 'string',
-			title: 'Huisnummer'
+			title: 'Adres'
 		},
 		zipCode: {
 			type: 'string',
@@ -27,33 +23,10 @@ function getCompanyProperties() {
 			type: 'string',
 			title: 'Plaats'
 		},
-		mobileNumber: {
-			type: 'string',
-			title: 'Mobiele nummer',
-			minLength: 10,
-		},
-		phoneNumber: {
-			type: 'string',
-			title: 'Telefoonnummer',
-			minLength: 10,
-		},
-		VATRegistration: {
-			type: 'string',
-			title: 'BTW-nummer',
-		},
 		email: {
 			type: 'string',
 			format: 'email',
 			title: 'E-mailadres',
-		},
-		emailInvoice: {
-			type: 'string',
-			format: 'email',
-			title: 'E-mailadres facturatie',
-		},
-		financedThroughSubsidy: {
-			type: 'boolean',
-			title: 'Financiering via subsidie',
 		},
 		privacy: {
 			type: 'boolean',
@@ -70,10 +43,7 @@ function getCompanyUiSchema() {
 		contactPerson: {
 			classNames: 'form-input-sm col-xs-12 col-sm-6',
 		},
-		street: {
-			classNames: 'form-input-sm col-xs-12 col-sm-6',
-		},
-		houseNumber: {
+		address: {
 			classNames: 'form-input-sm col-xs-12 col-sm-6',
 		},
 		zipCode: {
@@ -82,23 +52,8 @@ function getCompanyUiSchema() {
 		city: {
 			classNames: 'form-input-sm col-xs-12 col-sm-6',
 		},
-		VATRegistration: {
-			classNames: 'form-input-sm col-xs-12 col-sm-6',
-		},
-		mobileNumber: {
-			classNames: 'form-input-sm col-xs-12 col-sm-6',
-		},
-		phoneNumber: {
-			classNames: 'form-input-sm col-xs-12 col-sm-6',
-		},
 		email: {
 			classNames: 'form-input-sm col-xs-12 col-sm-6',
-		},
-		emailInvoice: {
-			classNames: 'form-input-sm col-xs-12 col-sm-6'
-		},
-		financedThroughSubsidy: {
-			classNames: 'col-xs-12'
 		},
 		privacy: {
 			classNames: 'col-xs-12'
@@ -110,19 +65,18 @@ function getCompanyDefinition() {
 	return {
 		type: 'object',
 		title: 'Bedrijven',
-		required: ['companyName', 'street', 'houseNumber', 'zipCode', 'city', 'VATRegistration', 'privacy', 'email'],
+		required: ['companyName', 'contactPerson', 'address', 'zipCode', 'city', 'privacy', 'email'],
 		properties: getCompanyProperties()
 	}
 }
 
-export default function(type) {
-	return {
+export default {
 		onSubmit: async ({ formData }) => {
 			submitFunction(formData, 'companyLead');
 		},
 		schema: {
 			definitions: {
-				student: getStudentDefinition(type, true),
+				student: getStudentDefinition(false),
 				company: getCompanyDefinition(),
 			},
 			required: [],
@@ -151,5 +105,4 @@ export default function(type) {
 				}
 			}
 		}
-	}
 }

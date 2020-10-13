@@ -36,7 +36,9 @@ class OrderManager {
 
 	const KEY_ISSUE_DATE_DRIVING_LICENSE = 'Afgiftedatum_Rijbewijs';
 	const KEY_DATE_OF_BIRTH              = 'Geboortedatum';
+	const KEY_PLACE_OF_BIRTH             = 'Geboorteplaats';
 	const KEY_NATIONAL_REGISTRY_NUMBER   = 'Rijksregisternummer';
+	const KEY_ID_CARD_NUMBER             = 'Identiteitskaartnummer';
 	const KEY_AUTOMATIC_TRANSMISSION     = 'Automaat';
 	const KEY_HAS_RECEIVED_LETTER        = 'dw_has_received_letter';
 	const KEY_ENROLLMENT_ID              = 'dw_has_enrollment';
@@ -219,6 +221,20 @@ class OrderManager {
 			$student->setNationalRegistryNumber(
 				$this->postMetaData->getPostMeta($order->get_id(), self::KEY_NATIONAL_REGISTRY_NUMBER, true)
 			);
+		}
+
+		if(isset($dw_options['customer']) && $dw_options['customer'] === 'kempische') {
+			$student->setNationalRegistryNumber(
+				$this->postMetaData->getPostMeta($order->get_id(), self::KEY_NATIONAL_REGISTRY_NUMBER, true)
+			);
+
+			$birthDate = DateTime::createFromFormat(
+				self::BELGIAN_DATE_FORMAT,
+				$this->postMetaData->getPostMeta($order->get_id(), self::KEY_DATE_OF_BIRTH, true)
+			);
+			$student->setDateOfBirth($birthDate ? $birthDate->setTime(0,0): null);
+			$student->setPlaceOfBirth($this->postMetaData->getPostMeta($order->get_id(), self::KEY_PLACE_OF_BIRTH, true));
+			$student->setIdentityCardNumber($this->postMetaData->getPostMeta($order->get_id(), self::KEY_ID_CARD_NUMBER, true));
 		}
 
 		if(!empty($order->get_customer_note())) {
