@@ -310,7 +310,6 @@ function dw_process_checkout() {
 
 	if(!empty($_POST[OrderManager::KEY_ID_CARD_NUMBER])) {
 		$value = dw_sanitize_text_field(OrderManager::KEY_ID_CARD_NUMBER, $_POST[OrderManager::KEY_ID_CARD_NUMBER]);
-		var_dump($value);
 		if(strlen($value) > 12) {
 			wc_add_notice(__('Het identiteitskaartnummer mag niet meer dan 12 cijfers bevatten'), 'error');
 		}

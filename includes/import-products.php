@@ -4,13 +4,7 @@ declare(strict_types=1);
 
 use Dation\Woocommerce\Adapter\RestApiClientFactory;
 use Dation\Woocommerce\Adapter\CourseFilter;
-
-const DW_DEFAULT_PRODUCT_PROPERTIES = [
-	'virtual'           => true,
-	'manage_stock'      => true,
-	'sold_individually' => true,
-	'low_stock_amount'  => 0,
-];
+use Dation\Woocommerce\ProductService;
 
 /**
  * @return WC_Product[]
@@ -21,6 +15,7 @@ const DW_DEFAULT_PRODUCT_PROPERTIES = [
 function dw_import_products() {
 	global $dw_options;
 
+	$productService   = new ProductService($dw_options['default_course_price']);
 	$client           = RestApiClientFactory::getClient();
 	$courses          = $client->getCourseInstances(new DateTime(), null) ?? [];
 	$finishedProducts = [];
@@ -31,17 +26,54 @@ function dw_import_products() {
 	foreach($filteredCourses as $dationProduct) {
 		$woocommerceProduct = dw_get_product_by_sku($dationProduct['id']);
 		if($woocommerceProduct === null) {
-			$product            = dw_set_woocommerce_product_properties($dationProduct);
+			$product            = $productService->createOrUpdateWoocommerceProductFromDationCourse($dationProduct);
 			$finishedProducts[] = $product;
 		} else {
-			$product            = dw_set_woocommerce_product_properties($dationProduct, $woocommerceProduct);
+			$product            = $productService->createOrUpdateWoocommerceProductFromDationCourse($dationProduct, $woocommerceProduct);
 			$finishedProducts[] = $product;
 		}
+		$startDate = $productService->getStartDateFromData($dationProduct);
+		$prettyDate = date_i18n(PRETTY_DATE, $startDate->getTimestamp() . ' ' . $startDate->format(DUTCH_TIME));
+
+		if(isset($dw_options['use_tkm'])) {
+			$product = $productService->setName($product, $dationProduct['name'] . ' ' . $prettyDate);
+		}
+
+		dw_set_product_terms(
+			$product,
+			$dationProduct,
+			$startDate,
+			$productService->formatAddress($dationProduct['parts'][0]['slots'][0]['location']['address'])
+		);
+
+		$contactFormLocation = $dw_options['contact-form'] ?? 'contactformulier';
+		$productService->setExternalUrlForProduct($product, $dationProduct, $contactFormLocation, get_site_url());
 	}
 
 	dw_delete_products();
 
 	return $finishedProducts;
+}
+
+/**
+ * @param WC_Product $woocommerceProduct
+ * @param array $course
+ * @param $startDate
+ * @param $addressLine
+ *
+ * @throws Exception
+ */
+function dw_set_product_terms(WC_Product $woocommerceProduct, array $course, $startDate, $addressLine): void {
+	// set terms after saving products
+	$city = $course['parts'][0]['slots'][0]['city'];
+	wp_set_object_terms($woocommerceProduct->get_id(), $city, 'pa_locatie', false);
+	wp_set_object_terms($woocommerceProduct->get_id(), $course['ccvCode'], 'pa_ccv_code', false);
+
+	dw_format_and_save_dates($woocommerceProduct, $startDate, $course['parts']);
+	wp_set_object_terms($woocommerceProduct->get_id(), $addressLine, 'pa_address', false);
+
+	$attributes = ProductService::getProductAttributes($startDate, $city);
+	update_post_meta($woocommerceProduct->get_id(), '_product_attributes', $attributes);
 }
 
 /**
@@ -89,133 +121,6 @@ function dw_get_product_by_sku($sku) {
 }
 
 /**
- * Update product setting if exists, create new product and set properties if not exists
- *
- * @param $course
- * @param WC_Product|null $woocommerceProduct
- *
- * @return WC_Product
- * @throws Exception
- */
-function dw_set_woocommerce_product_properties($course, WC_Product $woocommerceProduct = null) {
-	global $dw_options;
-	$startDate = DateTime::createFromFormat(DATE_ISO8601, $course['startDate']);
-
-	if($woocommerceProduct === null) {
-		$woocommerceProduct = new WC_Product();
-		$woocommerceProduct->set_manage_stock(DW_DEFAULT_PRODUCT_PROPERTIES['manage_stock']);
-	} else {
-		$dationAvailability = $course['remainingAttendeeCapacity'];
-		if((int)$dationAvailability < (int)$woocommerceProduct->get_stock_quantity()) {
-			$woocommerceProduct->set_stock_quantity((int)$dationAvailability);
-		}
-	}
-
-	$attributes = [
-		'pa_datum'       => [
-			'name'        => 'pa_datum',
-			'value'       => $startDate->format(DUTCH_DATE),
-			'position'    => 1,
-			'is_visible'  => true,
-			'is_taxonomy' => true,
-		],
-		'pa_locatie'     => [
-			'name'        => 'pa_locatie',
-			'value'       => $course['parts'][0]['slots'][0]['city'],
-			'is_visible'  => true,
-			'is_taxonomy' => true,
-		],
-		'pa_tijd'        => [
-			'name'        => 'pa_tijd',
-			'value'       => $startDate->format(DUTCH_TIME),
-			'is_visible'  => true,
-			'is_taxonomy' => true,
-		],
-		'pa_slot_time'   => [
-			'name'        => 'pa_slot_time',
-			'is_visible'  => true,
-			'is_taxonomy' => true,
-		],
-		'pa_pretty_date' => [
-			'name'        => 'pa_pretty_date',
-			'is_visible'  => true,
-			'is_taxonomy' => true,
-		],
-		'pa_address'     => [
-			'name'        => 'pa_address',
-			'is_visible'  => true,
-			'is_taxonomy' => true,
-		],
-		'pa_ccv_code'    => [
-			'name'        => 'pa_ccv_code',
-			'is_visible'  => true,
-			'is_taxonomy' => true,
-		],
-		'pa_month'       => [
-			'name'        => 'pa_month',
-			'is_visible'  => true,
-			'is_taxonomy' => true,
-		],
-		'pa_product_url' => [
-			'name'        => 'pa_product_url',
-			'is_visible'  => true,
-			'is_taxonomy' => true,
-		]
-	];
-
-	$prettyDate = date_i18n(PRETTY_DATE, $startDate->getTimestamp()) . ' ' . $startDate->format(DUTCH_TIME);
-
-	if(isset($dw_options['use_tkm'])) {
-		$woocommerceProduct->set_name($course['name'] . ' ' . $prettyDate);
-	} else {
-		$woocommerceProduct->set_name($course['name']);
-	}
-	$woocommerceProduct->set_menu_order($startDate->getTimestamp());
-
-	$woocommerceProduct->set_description($course['name']);
-	$woocommerceProduct->set_short_description($course['ccv_code'] ?? '');
-	$woocommerceProduct->set_sku($course['id']);
-	$woocommerceProduct->set_regular_price($dw_options['default_course_price']);
-	$woocommerceProduct->set_virtual(DW_DEFAULT_PRODUCT_PROPERTIES['virtual']);
-	$woocommerceProduct->set_stock_quantity($course['remainingAttendeeCapacity']);
-	$woocommerceProduct->set_sold_individually(DW_DEFAULT_PRODUCT_PROPERTIES['sold_individually']);
-	$woocommerceProduct->set_low_stock_amount(DW_DEFAULT_PRODUCT_PROPERTIES['low_stock_amount']);
-
-	$addressLine = dw_format_and_save_address($woocommerceProduct, $course['parts'][0]['slots'][0]['location']['address']);
-
-	$courseParts = $course['parts'];
-	usort($courseParts, function ($a, $b) {
-		$startA = (DateTime::createFromFormat(DATE_ISO8601, $a['slots'][0]['startDate']))->getTimestamp();
-		$startB = (DateTime::createFromFormat(DATE_ISO8601, $b['slots'][0]['startDate']))->getTimestamp();
-		if($startA === $startB) {
-			return 0;
-		}
-
-		return ($startA < $startB) ? -1 : 1;
-
-	});
-
-	$firstSlotStart = $courseParts[0]['slots'][0]['startDate'];
-	$firstSlotEnd   = $courseParts[0]['slots'][0]['endDate'];
-
-	$url = dw_generate_external_url($woocommerceProduct->get_sku(), $addressLine, $course['name'], urlencode($firstSlotStart), urlencode($firstSlotEnd));
-	$woocommerceProduct->update_meta_data('product_url', $url);
-
-	$woocommerceProduct->save();
-
-	// set terms after saving products
-	wp_set_object_terms($woocommerceProduct->get_id(), $course['parts'][0]['slots'][0]['city'], 'pa_locatie', false);
-	wp_set_object_terms($woocommerceProduct->get_id(), $course['ccvCode'], 'pa_ccv_code', false);
-
-	dw_format_and_save_dates($woocommerceProduct, $startDate, $courseParts);
-	wp_set_object_terms($woocommerceProduct->get_id(), $addressLine, 'pa_address', false);
-
-	update_post_meta($woocommerceProduct->get_id(), '_product_attributes', $attributes);
-
-	return $woocommerceProduct;
-}
-
-/**
  * @param WC_Product $product
  * @param DateTime $date
  * @param array $courseParts
@@ -244,20 +149,4 @@ function dw_format_and_save_dates(WC_Product $product, DateTime $date, array $co
 			true
 		);
 	}
-}
-
-function dw_format_and_save_address(WC_Product $product, array $address) {
-	$addressLine = implode(', ', array_filter([
-		$address['streetName'], $address['houseNumber'], $address['addition'], $address['postalCode'], $address['city']
-	]));
-
-	return $addressLine;
-}
-
-function dw_generate_external_url($trainingId, $location, $trainingName, $startDate, $endDate) {
-	global $dw_options;
-	$contactFormLocation = $dw_options['contact-form'] ?? 'contactformulier';
-
-	return get_site_url() . "/$contactFormLocation?dw_trainingId=$trainingId&dw_location=$location&dw_trainingName=$trainingName&dw_start_date=$startDate&dw_end_date=$endDate";
-
 }
