@@ -30,7 +30,6 @@ const DUTCH_TIME  = "H:i";
 const PRETTY_DATE = "l d F Y";
 
 const DELAY_REASONS = [
-	'corona'  => 'Uitstel vanwege corona',
 	'medical' => 'Uitstel om medische redenen',
 	'service' => 'Uitstel vanwege beroep of dienst in het buitenland',
 	'study'   => 'Uitstel vanwege studie in het buitenland',

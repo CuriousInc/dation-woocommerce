@@ -68,7 +68,7 @@ function getStudentProperties() {
     },
     automaticTransmission: {
       type: 'boolean',
-      title: 'Automaat',
+      title: 'Ik wil rijlessen met een automaat',
     },
     dateTheoryExamPassed: {
       type: 'string',
