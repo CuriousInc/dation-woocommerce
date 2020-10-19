@@ -30,7 +30,6 @@ if(!defined('DW_BASE_HOST')) {
 require 'vendor/autoload.php';
 
 require 'includes/cron-import-products.php';
-require 'includes/cron-remove-products.php';
 
 /**
  * Localisation
