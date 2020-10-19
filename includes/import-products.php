@@ -33,7 +33,7 @@ function dw_import_products() {
 			$finishedProducts[] = $product;
 		}
 		$startDate = $productService->getStartDateFromData($dationProduct);
-		$prettyDate = date_i18n(PRETTY_DATE, $startDate->getTimestamp() . ' ' . $startDate->format(DUTCH_TIME));
+		$prettyDate = date_i18n(PRETTY_DATE, $startDate->getTimestamp()) . ' ' . $startDate->format(DUTCH_TIME);
 
 		if(isset($dw_options['use_tkm'])) {
 			$product = $productService->setName($product, $dationProduct['name'] . ' ' . $prettyDate);
@@ -50,7 +50,7 @@ function dw_import_products() {
 		$productService->setExternalUrlForProduct($product, $dationProduct, $contactFormLocation, get_site_url());
 	}
 
-	dw_delete_products();
+	dw_delete_products($filteredCourses);
 
 	return $finishedProducts;
 }
@@ -79,17 +79,29 @@ function dw_set_product_terms(WC_Product $woocommerceProduct, array $course, $st
 /**
  * Move product in the passed to the trash bin. Called when importing
  */
-function dw_delete_products() {
+function dw_delete_products(array $filteredCourses) {
+	$products = wc_get_products([]);
+
+	$productsToRemove = array_filter(
+		$products,
+		function (WC_Product $product) use ($filteredCourses) {
+			return false === array_search($product->get_sku(), array_column($filteredCourses, 'id'));
+		}
+	);
+
+	foreach($productsToRemove as $product) {
+		$product->delete() ;
+	}
+
+	$products = wc_get_products([]);
+
 	$currentTimestamp = (new DateTime())
 		->setTime(23, 59, 59)
 		->getTimestamp();
 
-	$products = wc_get_products([]);
-
-	array_walk($products, function ($product) use ($currentTimestamp) {
+	array_walk($products, function (WC_Product $product) use ($currentTimestamp, $filteredCourses) {
 		if((int)$product->get_menu_order() < $currentTimestamp) {
 			$product->delete();
-			$product->save();
 		}
 	});
 }
