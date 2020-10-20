@@ -67,7 +67,7 @@ class ProductService {
 
 		return $product;
 	}
-	public static function getProductAttributes(DateTime $startDate, string $city): array {
+	public static function getProductAttributes(DateTime $startDate, ?string $city): array {
 		return [
 			'pa_datum'       => [
 				'name'        => 'pa_datum',
@@ -121,7 +121,10 @@ class ProductService {
 		];
 	}
 
-	public function formatAddress(array $address): string {
+	public function formatAddress(?array $address): string {
+		if(null === $address) {
+			return '';
+		}
 		return implode(', ', array_filter([
 			$address['streetName'], $address['houseNumber'], $address['addition'], $address['postalCode'], $address['city']
 		]));
