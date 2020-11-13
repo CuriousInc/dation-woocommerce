@@ -67,6 +67,7 @@ class ProductService {
 
 		return $product;
 	}
+
 	public static function getProductAttributes(DateTime $startDate, ?string $city): array {
 		return [
 			'pa_datum'       => [
@@ -125,6 +126,7 @@ class ProductService {
 		if(null === $address) {
 			return '';
 		}
+
 		return implode(', ', array_filter([
 			$address['streetName'], $address['houseNumber'], $address['addition'], $address['postalCode'], $address['city']
 		]));
@@ -152,11 +154,14 @@ class ProductService {
 		$firstSlotEnd   = $courseParts[0]['slots'][0]['endDate'];
 
 		$trainingId   = $woocommerceProduct->get_sku();
-		$location     = $this->formatAddress($courseParts[0]['slots'][0]['location']['address']);
+		$location     = isset($courseParts[0]['slots'][0]['location']['address']['city']) ? $courseParts[0]['slots'][0]['location']['address']['city'] : '';
 		$trainingName = $course['name'];
-		$startDate    = urlencode($firstSlotStart);
-		$endDate      = urlencode($firstSlotEnd);
-		$url          = "$siteLocation/$contactFormLocation?dw_trainingId=$trainingId&dw_location=$location&dw_trainingName=$trainingName&dw_start_date=$startDate&dw_end_date=$endDate";
+
+		$startDate    = DateTime::createFromFormat(DATE_ISO8601, $firstSlotStart);
+		$endDate      = DateTime::createFromFormat(DATE_ISO8601, $firstSlotEnd);
+		$dateString   = urlencode($startDate->format('d-m-Y H:i') . '-' . $endDate->format('H:i'));
+
+		$url = "$siteLocation/$contactFormLocation?dw_trainingId=$trainingId&dw_location=$location&dw_trainingName=$trainingName&dw_start_date=$dateString";
 
 		$woocommerceProduct->update_meta_data('product_url', $url);
 

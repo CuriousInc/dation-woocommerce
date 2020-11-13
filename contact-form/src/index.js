@@ -23,14 +23,11 @@ const type = window.frameElement.getAttribute('data-type');
 // Rendered in iframe so we take the location of the parent.
 const urlParams = new URLSearchParams(window.parent.location.search);
 
-const startDate = moment(urlParams.get('dw_start_date'));
-const endDate = moment(urlParams.get('dw_end_date'));
-
-const date = `${startDate.format('DD-MM-YYYY HH:mm')}-${endDate.format('HH:mm')}`;
+const startDate = urlParams.get('dw_start_date');
 
 const props = {
   title: urlParams.get('dw_trainingName') || 'Training onbekend',
-  date,
+  date: startDate,
   location: urlParams.get('dw_location') || 'Locatie onbekend',
   packageName: urlParams.get('dw_package'),
   education: urlParams.get('dw_education'),

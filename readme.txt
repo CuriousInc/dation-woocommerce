@@ -23,6 +23,9 @@ Install and activate the plugin and go to the Dation Woocommerce settings page i
 You can set prices, filter on (CCV) codes and enable specific 'Terugkommoment' features.
 
 == Changelog ==
+= 1.2.29 =
+* decrease length of checkout url
+
 = 1.2.28 =
 * Add COVID delay reason to checkout form
 
