@@ -113,6 +113,9 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 				if($key === 'idCardNumber') {
 					$value = preg_replace("/[^0-9]/", "", $value);
 				}
+				if($key === 'birthDate') {
+					$value = \DateTime::createFromFormat(DUTCH_DATE, $value)->format(\DateTime::ATOM);
+				}
 				$formData[$key] = $value;
 			} else {
 				$nonDefaultParams[$key] = $value;
