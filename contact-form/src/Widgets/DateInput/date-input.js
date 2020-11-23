@@ -27,12 +27,10 @@ const DateInput = ({
   } = options;
 
   const handleChange = (inputValue) => {
-    if (moment.isMoment(inputValue)) {
-      const val = inputValue.format('DD-MM-YYYY');
+    const val = moment.isMoment(inputValue) ? inputValue.format('DD-MM-YYYY') : inputValue;
 
-      setFieldValue(val);
-      typeof onChange === 'function' && onChange(val);
-    }
+    setFieldValue(val);
+    typeof onChange === 'function' && onChange(val);
   };
 
 

@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import Form from 'react-jsonschema-form';
+import moment from 'moment';
 import injectBootstrapCss from './Loaders/StyleLoader';
 
 import SignupAsPrivate from './Schemas/Hoekstra/signup-private';
@@ -19,13 +20,20 @@ const HoekstraApp = ({
   // TODO: Localisation
   const transformErrors = (errors) => errors.map((error) => {
     let newError = {
-      ...error,
+	  ...error,
     };
-    if (error.name === 'required') {
+
+    if(error.name === 'format' && error.params.format === 'email') {
       newError = {
         ...newError,
-        message: 'Dit is een verplicht veld',
+        message: 'Voer een geldig e-mailadres in',
       };
+    }
+    if (error.name === 'required') {
+	  newError = {
+        ...newError,
+        message: 'Dit is een verplicht veld',
+	  };
     }
     return newError;
   });
@@ -34,12 +42,41 @@ const HoekstraApp = ({
 
   const toggleSchema = (type) => {
     if (type === 'company') {
-      setSchema(SignupAsCompany);
+	  setSchema(SignupAsCompany);
     } else {
-      setSchema(SignupAsPrivate);
+	  setSchema(SignupAsPrivate);
     }
   };
 
+  const isInvalidDate = (birthDateString) => {
+    const birthDateMoment = moment(birthDateString, 'DD-MM-YYYY', true);
+    if(!birthDateMoment.isValid() || birthDateMoment.format('DD-MM-YYYY') === "Invalid date") {
+      return true;
+    }
+
+    return false
+  }
+
+  const validate = (formData, errors) => {
+    const { birthDate, students } = formData;
+    if (birthDate) {
+      if(isInvalidDate(birthDate)) {
+        errors.birthDate.addError('Formaat niet herkend. Gebruik dd-mm-yyyy');
+      }
+    }
+
+    if (students) {
+	  students.forEach((student, key) => {
+	    if(student.birthDate) {
+	      if(isInvalidDate(student.birthDate)) {
+            errors.students[key].birthDate = { __errors: ['Formaat niet herkend. Gebruik dd-mm-yyyy'] };
+          }
+        }
+	  });
+    }
+
+    return errors;
+  };
   return (
     <div className="App">
       <div className="container">
@@ -49,18 +86,18 @@ const HoekstraApp = ({
             <button
               type="button"
               onClick={() => {
-                setFormFor('individual');
-                toggleSchema();
-              }}
+			    setFormFor('individual');
+			    toggleSchema();
+			  }}
               className={`${formFor === 'individual' ? 'btn btn-primary' : 'btn btn-default'} btn-block`}
             >Particulier
             </button>
             <button
               type="button"
               onClick={() => {
-                setFormFor('company');
-                toggleSchema('company');
-              }}
+			    setFormFor('company');
+			    toggleSchema('company');
+			  }}
               className={`${formFor === 'company' ? 'btn btn-primary' : 'btn btn-default'} btn-block`}
             >Bedrijven
             </button>
@@ -88,13 +125,14 @@ const HoekstraApp = ({
               ref={formRef}
               schema={schema.schema}
               uiSchema={schema.uiSchema}
-              formData={{ trainingId, titel: title, datum: date }}
+              formData={{ trainingId, titel: title, datum: date, firstName: undefined }}
               onSubmit={schema.onSubmit}
               onChange={schema.onChange}
               onError={schema.onError}
               transformErrors={transformErrors}
               showErrorList={false}
               noHtml5Validate
+              validate={validate}
             >
               <button type="submit" className="btn btn-primary pull-right">Verzenden</button>
             </Form>
