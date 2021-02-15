@@ -71,6 +71,21 @@ function dw_render_options_page() {
 				</tr>
 				<tr>
 					<th scope="row">
+						<label class="description" for="dw_settings[remove_courses]">
+							<?php _e('Verwijder cursussen zonder capaciteit') ?>
+						</label>
+					</th>
+					<td>
+						<input id="dw_settings[remove_courses]" name="dw_settings[remove_courses]"
+							   type="checkbox" value="1"
+							<?php if(isset($dw_options['remove_courses'])) {
+								echo "checked";
+							} ?>
+						>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
 						<label class="description" for="dw_settings[contact-form]">
 							<?php _e('Pagina contactformulier') ?>
 						</label>
@@ -117,21 +132,21 @@ function dw_render_options_page() {
 						</p>
 					</td>
 				</tr>
-                <tr>
-                    <th scope="row">
-                        <label class="description" for="dw_settings[customer]">
-                            <?php _e('Klantcode'); ?>
-                        </label>
-                    </th>
-                    <td>
-                        <input id="dw_settings[customer]" name="dw_settings[customer]"
-                            type="text" value="<?php echo isset($dw_options['customer']) ? $dw_options['customer'] : '' ?>"
-                        >
-                        <p class="description">
-                            Klant code voor specifieke functionaliteiten
-                        </p>
-                    </td>
-                </tr>
+				<tr>
+					<th scope="row">
+						<label class="description" for="dw_settings[customer]">
+							<?php _e('Klantcode'); ?>
+						</label>
+					</th>
+					<td>
+						<input id="dw_settings[customer]" name="dw_settings[customer]"
+							type="text" value="<?php echo isset($dw_options['customer']) ? $dw_options['customer'] : '' ?>"
+						>
+						<p class="description">
+							Klant code voor specifieke functionaliteiten
+						</p>
+					</td>
+				</tr>
 			</table>
 
 			<h2 class="title">Terugkommomenten</h2>
@@ -146,7 +161,7 @@ function dw_render_options_page() {
 						<input id="dw_settings[use_tkm]" name="dw_settings[use_tkm]"
 							   type="checkbox" value="1"
 							   <?php if(isset($dw_options['use_tkm'])) {
-							   	echo "checked";
+								echo "checked";
 							   } ?>
 						>
 						<p class="description">

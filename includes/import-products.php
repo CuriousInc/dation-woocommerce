@@ -80,14 +80,23 @@ function dw_set_product_terms(WC_Product $woocommerceProduct, array $course, $st
  * Move product in the passed to the trash bin. Called when importing
  */
 function dw_delete_products(array $filteredCourses) {
+	global $dw_options;
+
 	$products = wc_get_products([
 		'limit' => -1
 	]);
 
 	$productsToRemove = array_filter(
 		$products,
-		function (WC_Product $product) use ($filteredCourses) {
-			return false === array_search($product->get_sku(), array_column($filteredCourses, 'id'));
+		function (WC_Product $product) use ($filteredCourses, $dw_options) {
+			if(false === array_search($product->get_sku(), array_column($filteredCourses, 'id'))) {
+				return true;
+			}
+			if(isset($dw_options['remove_courses']) && $product->get_stock_quantity() < 1) {
+				return true;
+			}
+
+			return false;
 		}
 	);
 

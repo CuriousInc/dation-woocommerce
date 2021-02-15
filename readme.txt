@@ -23,6 +23,9 @@ Install and activate the plugin and go to the Dation Woocommerce settings page i
 You can set prices, filter on (CCV) codes and enable specific 'Terugkommoment' features.
 
 == Changelog ==
+= 1.2.32 =
+* Add setting to automatically remove products without stock
+
 = 1.2.31 =
 * Improve form validation contact form
 
