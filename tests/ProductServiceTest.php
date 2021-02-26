@@ -49,10 +49,6 @@ class ProductServiceTest extends TestCase {
 			->with($course['ccv_code']);
 
 		$product->expects(self::once())
-			->method('set_regular_price')
-			->with($regularPrice);
-
-		$product->expects(self::once())
 			->method('set_virtual')
 			->with(ProductService::DW_DEFAULT_PRODUCT_PROPERTIES['virtual']);
 
