@@ -44,13 +44,13 @@ class ProductService {
 			$woocommerceProduct = new WC_Product();
 			$woocommerceProduct->set_sku($course['id']);
 			$woocommerceProduct->set_manage_stock(self::DW_DEFAULT_PRODUCT_PROPERTIES['manage_stock']);
+			$woocommerceProduct->set_regular_price($this->defaultCoursePrice);
 		}
 		$woocommerceProduct->set_name($course['name']);
 		$woocommerceProduct->set_menu_order($startDate->getTimestamp());
 
 		$woocommerceProduct->set_description($course['name']);
 		$woocommerceProduct->set_short_description($course['ccv_code'] ?? '');
-		$woocommerceProduct->set_regular_price($this->defaultCoursePrice);
 		$woocommerceProduct->set_virtual(self::DW_DEFAULT_PRODUCT_PROPERTIES['virtual']);
 		$woocommerceProduct->set_stock_quantity($course['remainingAttendeeCapacity']);
 		$woocommerceProduct->set_sold_individually(self::DW_DEFAULT_PRODUCT_PROPERTIES['sold_individually']);
