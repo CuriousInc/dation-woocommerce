@@ -16,12 +16,16 @@ export const submitFunction = (formData, endpoint) => {
     method: 'post',
     data: JSON.stringify(formData),
     url: `${baseUrl}/wp-json/dationwoocommerce/v1/submit/${endpoint}`,
-  }).then(() => {
-    template.innerHTML = 'Bedankt voor uw reservering. Er wordt zo spoedig mogelijk contact met u opgenomen over uw inschrijving.';
-    template.className = 'alert alert-success';
+  }).then(response => {
+    if(response.data['redirect_url']) {
+      window.parent.location.href = response.data['redirect_url'];
+    } else {
+      template.innerHTML = 'Bedankt voor uw reservering. Er wordt zo spoedig mogelijk contact met u opgenomen over uw inschrijving.';
+      template.className = 'alert alert-success';
 
-    const placeHolder = document.getElementById('alertPlaceHolder');
-    placeHolder.append(template);
+      const placeHolder = document.getElementById('alertPlaceHolder');
+      placeHolder.append(template);
+    }
   }).catch(() => {
     template.innerHTML = 'Er is iets misgegaan bij het inschrijven. Probeer het opnieuw';
     template.className = 'alert alert-danger';

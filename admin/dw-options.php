@@ -91,7 +91,17 @@ function dw_render_options_page() {
 						</label>
 					</th>
 					<td>
-						<input id="dw_settings[contact-form]" name="dw_settings[contact-form]" type="text" value="<?php echo isset($dw_options['contact-form']) ? $dw_options['contact-form'] : 'contactformulier'?>"
+						<input id="dw_settings[contact-form]" name="dw_settings[contact-form]" type="text" value="<?php echo isset($dw_options['contact-form']) ? $dw_options['contact-form'] : 'contactformulier'?>" >
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label class="description" for="dw_settings[redirect-url]">
+							<?php _e('Redirect url contactformulier') ?>
+						</label>
+					</th>
+					<td>
+						<input class="regular-text" id="dw_settings[redirect-url]" name="dw_settings[redirect-url]" type="text" value="<?php echo isset($dw_options['redirect-url']) ? $dw_options['redirect-url'] : '' ?>" >
 					</td>
 				</tr>
 			</table>

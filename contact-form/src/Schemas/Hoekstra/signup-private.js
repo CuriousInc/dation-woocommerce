@@ -19,7 +19,18 @@ export default {
       'birthDate',
       'emailAddress',
     ],
-    properties: getBasicStudentSchema(),
+    properties: {
+      ...getBasicStudentSchema(),
+      newsLetter: {
+        type: 'boolean',
+        title: 'Ik blijf graag op de hoogte van het laatste nieuws en ontwikkelingen'
+      }
+    },
   },
-  uiSchema: getStudentUISchema(),
+  uiSchema: {
+    ...getStudentUISchema(),
+    newsLetter: {
+      classNames: 'col-xs-12',
+    }
+  },
 };

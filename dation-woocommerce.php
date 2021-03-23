@@ -10,7 +10,7 @@ declare(strict_types=1);
  * Description: Je website altijd up-to-date met je Dation planning. Importeer je Dation cursussen als Woocommerce producten.
  * Author: Dation
  * Author URI: http://www.dation.nl
- * Version: 1.2.33
+ * Version: 1.2.34
  */
 
 // Global variables
@@ -38,8 +38,9 @@ load_plugin_textdomain('dw', false, dirname(plugin_basename(__FILE__)) . '/');
 
 // called just before the woocommerce template functions are included
 add_action('init', 'dw_override_woo_templates', 20);
-$enpoint = new LeadContactFormEndpoint();
-add_action('rest_api_init', [$enpoint, 'register_routes']);
+$redirectUrl = isset($dw_options['redirect-url']) && !empty($dw_options['redirect-url']) ? $dw_options['redirect-url'] : null;
+$endpoint    = new LeadContactFormEndpoint($redirectUrl);
+add_action('rest_api_init', [$endpoint, 'register_routes']);
 
 // indicates we are running the admin
 if(is_admin()) {

@@ -14,9 +14,12 @@ use WP_REST_Server;
 class LeadContactFormEndpoint extends \WP_REST_Controller {
 	/** @var RestApiClient */
 	private $apiClient;
+	/** @var string|null */
+	private $redirectUrl;
 
-	public function __construct() {
+	public function __construct(?string $redirectUrl = null) {
 		$this->apiClient = RestApiClientFactory::getClient();
+		$this->redirectUrl = $redirectUrl;
 	}
 
 	private const NOTES_KEY           = 'notes';
@@ -67,7 +70,7 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 
 		try {
 			$this->apiClient->postLead($formData)->getBody()->getContents();
-			return new \WP_REST_Response();
+			return $this->returnSuccess();
 		} catch(ClientException $e) {
 			return new WP_Error( 'post_failed', __('An error occurred'), array( 'status' => 404 ) );
 		}
@@ -96,10 +99,19 @@ class LeadContactFormEndpoint extends \WP_REST_Controller {
 			}
 		}
 		if(count($errors) === 0) {
-			return new \WP_REST_Response();
+			return $this->returnSuccess();
 		} else {
 			return new WP_Error( 'post_failed', __('An error occurred'), array( 'status' => 404 ) );
 		}
+	}
+
+	private function returnSuccess() {
+		$response = null;
+		if($this->redirectUrl !== null) {
+			$response = ['redirect_url' => $this->redirectUrl];
+		}
+
+		return new \WP_REST_Response($response);
 	}
 
 	private function getLeadFromPostDate($leadArray = []) {
