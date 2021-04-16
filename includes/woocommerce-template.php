@@ -148,7 +148,7 @@ function dw_override_checkout_fields($fields) {
 	if(isset($dw_options['use_tkm'])) {
 		$newOrderFields['order'][OrderManager::KEY_DATE_OF_BIRTH] = [
 			'type'     => 'text',
-			'label'    => __('Geboortedatum'),
+			'label'    => __('Geboortedatum (dd.mm.yyyy)'),
 			'required' => true,
 		];
 
@@ -160,7 +160,7 @@ function dw_override_checkout_fields($fields) {
 
 		$newOrderFields['order'][OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] = [
 			'type'     => 'text',
-			'label'    => __('Afgiftedatum rijbewijs'),
+			'label'    => __('Afgiftedatum rijbewijs (dd.mm.yyyy)'),
 			'required' => true,
 		];
 
@@ -202,7 +202,7 @@ function dw_override_checkout_fields($fields) {
 	if(isset($dw_options['customer']) && $dw_options['customer'] === 'kempische') {
 		$newOrderFields['order'][OrderManager::KEY_DATE_OF_BIRTH] = [
 			'type'     => 'text',
-			'label'    => __('Geboortedatum'),
+			'label'    => __('Geboortedatum (dd.mm.yyyy)'),
 			'required' => true,
 		];
 

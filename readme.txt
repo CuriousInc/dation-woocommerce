@@ -23,6 +23,9 @@ Install and activate the plugin and go to the Dation Woocommerce settings page i
 You can set prices, filter on (CCV) codes and enable specific 'Terugkommoment' features.
 
 == Changelog ==
+= 1.2.35 =
+* update labels of checkout fields to include the required date format
+
 = 1.2.34 =
 * add option to set a redirect url after successfully submitting a lead
 
