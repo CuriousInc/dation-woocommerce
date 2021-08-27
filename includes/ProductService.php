@@ -70,52 +70,57 @@ class ProductService {
 
 	public static function getProductAttributes(DateTime $startDate, ?string $city): array {
 		return [
-			'pa_datum'       => [
+			'pa_datum'        => [
 				'name'        => 'pa_datum',
 				'value'       => $startDate->format(DUTCH_DATE),
 				'position'    => 1,
 				'is_visible'  => true,
 				'is_taxonomy' => true,
 			],
-			'pa_locatie'     => [
+			'pa_locatie'      => [
 				'name'        => 'pa_locatie',
 				'value'       => $city,
 				'is_visible'  => true,
 				'is_taxonomy' => true,
 			],
-			'pa_tijd'        => [
+			'pa_tijd'         => [
 				'name'        => 'pa_tijd',
 				'value'       => $startDate->format(DUTCH_TIME),
 				'is_visible'  => true,
 				'is_taxonomy' => true,
 			],
-			'pa_slot_time'   => [
+			'pa_slot_time'    => [
 				'name'        => 'pa_slot_time',
 				'is_visible'  => true,
 				'is_taxonomy' => true,
 			],
-			'pa_pretty_date' => [
+			'pa_pretty_date'  => [
 				'name'        => 'pa_pretty_date',
 				'is_visible'  => true,
 				'is_taxonomy' => true,
 			],
-			'pa_address'     => [
+			'pa_address'      => [
 				'name'        => 'pa_address',
 				'is_visible'  => true,
 				'is_taxonomy' => true,
 			],
-			'pa_ccv_code'    => [
+			'pa_ccv_code'     => [
 				'name'        => 'pa_ccv_code',
 				'is_visible'  => true,
 				'is_taxonomy' => true,
 			],
-			'pa_month'       => [
+			'pa_month'        => [
 				'name'        => 'pa_month',
 				'is_visible'  => true,
 				'is_taxonomy' => true,
 			],
-			'pa_product_url' => [
+			'pa_product_url'  => [
 				'name'        => 'pa_product_url',
+				'is_visible'  => true,
+				'is_taxonomy' => true,
+			],
+			'pa_product_name' => [
+				'name'        => 'pa_product_name',
 				'is_visible'  => true,
 				'is_taxonomy' => true,
 			]
@@ -157,9 +162,9 @@ class ProductService {
 		$location     = isset($courseParts[0]['slots'][0]['location']['address']['city']) ? $courseParts[0]['slots'][0]['location']['address']['city'] : '';
 		$trainingName = $course['name'];
 
-		$startDate    = DateTime::createFromFormat(DATE_ISO8601, $firstSlotStart);
-		$endDate      = DateTime::createFromFormat(DATE_ISO8601, $firstSlotEnd);
-		$dateString   = urlencode($startDate->format('d-m-Y H:i') . '-' . $endDate->format('H:i'));
+		$startDate  = DateTime::createFromFormat(DATE_ISO8601, $firstSlotStart);
+		$endDate    = DateTime::createFromFormat(DATE_ISO8601, $firstSlotEnd);
+		$dateString = urlencode($startDate->format('d-m-Y H:i') . '-' . $endDate->format('H:i'));
 
 		$url = "$siteLocation/$contactFormLocation?dw_trainingId=$trainingId&dw_location=$location&dw_trainingName=$trainingName&dw_start_date=$dateString";
 

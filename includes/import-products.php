@@ -68,7 +68,7 @@ function dw_set_product_terms(WC_Product $woocommerceProduct, array $course, $st
 	$city = $course['parts'][0]['slots'][0]['city'];
 	wp_set_object_terms($woocommerceProduct->get_id(), $city, 'pa_locatie', false);
 	wp_set_object_terms($woocommerceProduct->get_id(), $course['ccvCode'], 'pa_ccv_code', false);
-
+	wp_set_object_terms($woocommerceProduct->get_id(), $course['name'], 'pa_product_name', false);
 	dw_format_and_save_dates($woocommerceProduct, $startDate, $course['parts']);
 	wp_set_object_terms($woocommerceProduct->get_id(), $addressLine, 'pa_address', false);
 
