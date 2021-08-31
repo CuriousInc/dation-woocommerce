@@ -23,7 +23,10 @@ Install and activate the plugin and go to the Dation Woocommerce settings page i
 You can set prices, filter on (CCV) codes and enable specific 'Terugkommoment' features.
 
 == Changelog ==
-= 1.2.36=
+= 1.2.37 =
+* add date format hint to contact form date inputs
+
+= 1.2.36 =
 * Add product name custom attribute
 
 = 1.2.35 =

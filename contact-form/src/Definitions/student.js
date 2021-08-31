@@ -54,7 +54,7 @@ export const getBasicStudentSchema = () => ({
   },
   birthDate: {
     type: 'string',
-    title: 'Geboortedatum',
+    title: 'Geboortedatum (dd-mm-jjjj)',
   },
 });
 
@@ -66,19 +66,19 @@ export const getStudentProperties = () => ({
   },
   dateCLicence: {
     type: 'string',
-    title: 'Datum rijbewijs C behaald',
+    title: 'Datum rijbewijs C behaald (dd-mm-jjjj)',
   },
   dateDLicence: {
     type: 'string',
-    title: 'Datum rijbewijs D behaald',
+    title: 'Datum rijbewijs D behaald (dd-mm-jjjj)',
   },
   dateCode95: {
     type: 'string',
-    title: 'Datum code 95',
+    title: 'Datum code 95 (dd-mm-jjjj)',
   },
   dateMedicalExam: {
     type: 'string',
-    title: 'Datum medische schifting',
+    title: 'Datum medische schifting (dd-mm-jjjj)',
   },
   receiveSms: {
     type: 'boolean',
