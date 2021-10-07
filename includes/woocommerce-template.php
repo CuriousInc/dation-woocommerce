@@ -34,13 +34,25 @@ const DELAY_REASONS = [
 	'medical' => 'Uitstel om medische redenen',
 	'service' => 'Uitstel vanwege beroep of dienst in het buitenland',
 	'study'   => 'Uitstel vanwege studie in het buitenland',
-	'prison'  => 'Uitstel vanwege vrijheidsbeneming'
+	'prison'  => 'Uitstel vanwege vrijheidsbeneming',
+	"late"    => 'Uitstel vanwege te laat aanmelden'
 ];
 
 global $dw_options;
+
+// Remove the '(optioneel)' addition to non-required input field labels
+function remove_optional_checkout_text($field, $key, $args, $value ) {
+	if( is_checkout() && ! is_wc_endpoint_url() ) {
+		$optional = '&nbsp;<span class="optional">(' . esc_html__( 'optional', 'woocommerce' ) . ')</span>';
+		$field = str_replace( $optional, '', $field );
+	}
+	return $field;
+}
+
 // Register override for checkout and order email
 if(isset($dw_options['use_tkm']) || isset($dw_options['customer'])) {
 	add_filter('woocommerce_checkout_fields', 'dw_override_checkout_fields');
+	add_filter( 'woocommerce_form_field' , 'remove_optional_checkout_text', 10, 4 );
 }
 //Disable shopping cart functionality of applicable
 if(!isset($dw_options['use_webshop'])) {
