@@ -113,7 +113,7 @@ function dw_delete_products(array $filteredCourses) {
 		->getTimestamp();
 
 	array_walk($products, function (WC_Product $product) use ($currentTimestamp) {
-		if((int)$product->get_menu_order() <= $currentTimestamp) {
+		if((int)$product->get_menu_order() > 1000000000 && (int)$product->get_menu_order() <= $currentTimestamp) {
 			$product->delete();
 		}
 	});
