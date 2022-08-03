@@ -68,7 +68,7 @@ jobs:
   lint_php71:
     <<: *container_config
     docker:
-      - image: circleci/php:7.1
+      - image: circleci/php:8.0
     steps:
       - checkout
       - *attach_workspace
