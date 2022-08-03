@@ -23,6 +23,9 @@ Install and activate the plugin and go to the Dation Woocommerce settings page i
 You can set prices, filter on (CCV) codes and enable specific 'Terugkommoment' features.
 
 == Changelog ==
+= 1.2.40 =
+* dependency updates and bug fixes
+
 = 1.2.39 =
 * bug fix for deleting woocommerce products
 
