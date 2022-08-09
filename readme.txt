@@ -23,7 +23,7 @@ Install and activate the plugin and go to the Dation Woocommerce settings page i
 You can set prices, filter on (CCV) codes and enable specific 'Terugkommoment' features.
 
 == Changelog ==
-= 1.2.41 =
+= 1.2.42 =
 * contact form update
 
 = 1.2.40 =
