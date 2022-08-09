@@ -18,13 +18,18 @@ export default {
       'birthPlace',
       'birthDate',
       'emailAddress',
+      'privacy',
     ],
     properties: {
       ...getBasicStudentSchema(),
       newsLetter: {
         type: 'boolean',
         title: 'Ik blijf graag op de hoogte van het laatste nieuws en ontwikkelingen'
-      }
+      },
+      privacy: {
+        type: 'boolean',
+        title: 'Akkoord met de privacyverklaring en algemene voorwaarden.',
+      },
     },
   },
   uiSchema: {

@@ -63,12 +63,17 @@ export default {
               type: 'boolean',
               title: 'Maak gebruik van SOOB?',
             },
+            privacy: {
+              type: 'boolean',
+              title: 'Akkoord met de privacyverklaring en algemene voorwaarden.',
+            },
           },
           extraRequired: [
             'mobileNumber',
             'phoneNumber',
             'contactPerson',
             'emailInvoice',
+            'privacy'
           ],
         }),
       },
