@@ -12,7 +12,11 @@ if(!class_exists('WP_List_Table')) {
 function dw_render_course_page() {
 	$table = new ProductList();
 	$table->prepare_items();
-
+    try {
+		dw_import_products();
+    } catch(Throwable $exception) {
+        echo $exception->getMessage();
+    }
 	?>
 	<div class="wrap">
 		<h1>Cursussen</h1>
