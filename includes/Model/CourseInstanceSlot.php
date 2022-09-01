@@ -15,9 +15,6 @@ class CourseInstanceSlot {
 	/** @var \DateTime $endDate */
 	private $endDate;
 
-	/** @var string $city */
-	private $city;
-
 	public function getId(): int {
 		return $this->id;
 	}
@@ -28,10 +25,6 @@ class CourseInstanceSlot {
 
 	public function getEndDate(): \DateTime {
 		return $this->endDate;
-	}
-
-	public function getCity(): string {
-		return $this->city;
 	}
 
 	public function setId(int $id): CourseInstanceSlot {
@@ -47,11 +40,6 @@ class CourseInstanceSlot {
 	public function setEndDate(\DateTime $endDate): CourseInstanceSlot {
 		$this->endDate = $endDate;
 
-		return $this;
-	}
-
-	public function setCity(string $city): CourseInstanceSlot {
-		$this->city = $city;
 		return $this;
 	}
 }

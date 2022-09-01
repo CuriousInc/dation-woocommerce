@@ -23,6 +23,9 @@ Install and activate the plugin and go to the Dation Woocommerce settings page i
 You can set prices, filter on (CCV) codes and enable specific 'Terugkommoment' features.
 
 == Changelog ==
+= 1.2.45 =
+* Fix synchronizing orders to Dation
+
 = 1.2.44 =
 * Minor bug fix.
 
