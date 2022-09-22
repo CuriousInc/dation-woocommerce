@@ -331,6 +331,10 @@ function dw_process_checkout() {
 			wc_add_notice(__('Het identiteitskaartnummer mag niet meer dan 12 cijfers bevatten'), 'error');
 		}
 	}
+
+	if (!(preg_match('/^\d+$/', $_POST['billing_phone']))){
+		wc_add_notice( "Het telefoonnummer is niet correct. Vul alleen de cijfers in."  ,'error' );
+	}
 }
 
 function dw_is_valid_date(string $input): bool {

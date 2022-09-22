@@ -24,6 +24,9 @@ You can set prices, filter on (CCV) codes and enable specific 'Terugkommoment' f
 
 == Changelog ==
 = 1.2.45 =
+* Add phone number validation to checkout process
+
+= 1.2.45 =
 * Fix synchronizing orders to Dation
 
 = 1.2.44 =
