@@ -856,16 +856,16 @@
         },
         {
             "name": "viison/address-splitter",
-            "version": "0.3.2",
+            "version": "0.3.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/VIISON/AddressSplitting.git",
-                "reference": "6f5acd7d37641392f4fc1cf126d2cbfdd2f33946"
+                "url": "https://github.com/pickware/address-splitter.git",
+                "reference": "ebad709276aaadce94a3a1fe2507aa38a467a94a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/VIISON/AddressSplitting/zipball/6f5acd7d37641392f4fc1cf126d2cbfdd2f33946",
-                "reference": "6f5acd7d37641392f4fc1cf126d2cbfdd2f33946",
+                "url": "https://api.github.com/repos/pickware/address-splitter/zipball/ebad709276aaadce94a3a1fe2507aa38a467a94a",
+                "reference": "ebad709276aaadce94a3a1fe2507aa38a467a94a",
                 "shasum": ""
             },
             "require": {
@@ -891,7 +891,7 @@
                 }
             ],
             "description": "Tries to split an address line into street name, house number and other additional information like building, apartment information etc.",
-            "time": "2018-03-05T10:46:06+00:00"
+            "time": "2019-10-24T09:23:47+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -1315,8 +1315,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "role": "lead",
-                    "email": "sebastian@phpunit.de"
+                    "email": "sebastian@phpunit.de",
+                    "role": "lead"
                 }
             ],
             "description": "Library that provides collection, processing, and rendering functionality for PHP code coverage information.",
@@ -1587,8 +1587,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "role": "lead",
-                    "email": "sebastian@phpunit.de"
+                    "email": "sebastian@phpunit.de",
+                    "role": "lead"
                 }
             ],
             "description": "The PHP Unit Testing framework.",
@@ -1606,12 +1606,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "ea693fa060702164985511acc3ceb5389c9ac761"
+                "reference": "eb59d9f35a47f567ae15e7179d7c666489cd4b85"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/ea693fa060702164985511acc3ceb5389c9ac761",
-                "reference": "ea693fa060702164985511acc3ceb5389c9ac761",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/eb59d9f35a47f567ae15e7179d7c666489cd4b85",
+                "reference": "eb59d9f35a47f567ae15e7179d7c666489cd4b85",
                 "shasum": ""
             },
             "conflict": {
@@ -1814,7 +1814,7 @@
                 }
             ],
             "description": "Prevents installation of composer packages with known security vulnerabilities: no API, simply require it",
-            "time": "2019-07-18T15:17:58+00:00"
+            "time": "2019-10-09T14:04:58+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
