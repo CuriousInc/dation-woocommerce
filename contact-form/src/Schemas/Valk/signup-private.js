@@ -64,7 +64,7 @@ function getStudentProperties() {
     location: {
       type: 'string',
       title: 'Locatie',
-      enum: ['Lier', 'Lille', 'Geel', 'Kasterlee'],
+      enum: ['Lier', 'Lille', 'Geel', 'Kasterlee', 'Duffel'],
     },
     automaticTransmission: {
       type: 'boolean',
