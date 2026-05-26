@@ -24,7 +24,7 @@ You can set prices, filter on (CCV) codes and enable specific 'Terugkommoment' f
 
 == Changelog ==
 = 1.2.48 =
-* Dependency updates.
+* Dependency updates
 
 = 1.2.47 =
 * Dependency updates. Minor contact form update
