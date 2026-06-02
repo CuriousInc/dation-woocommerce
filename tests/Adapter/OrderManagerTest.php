@@ -10,7 +10,7 @@ use Dation\Woocommerce\RestApiClient\RestApiClient;
 use Dation\WooCommerce\TranslatorInterface;
 use Faker\Factory;
 use Faker\Generator;
-use GuzzleHttp\Client as HttpClient;
+use Dation\WoocommerceVendor\GuzzleHttp\Client as HttpClient;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use WC_Order;

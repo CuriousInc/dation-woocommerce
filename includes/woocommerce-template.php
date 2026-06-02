@@ -13,8 +13,8 @@ use Dation\Woocommerce\Email\InformationWarning;
 use Dation\Woocommerce\Exceptions\LicenseDateLongOverTimeException;
 use Dation\Woocommerce\Exceptions\LicenseDateOverTimeException;
 use Dation\Woocommerce\Exceptions\LicenseDateUnderTimeException;
-use SetBased\Rijksregisternummer\Rijksregisternummer;
-use SetBased\Rijksregisternummer\RijksregisternummerHelper;
+use Dation\WoocommerceVendor\SetBased\Rijksregisternummer\Rijksregisternummer;
+use Dation\WoocommerceVendor\SetBased\Rijksregisternummer\RijksregisternummerHelper;
 
 const TOO_EARLY_MESSAGE     = "Het gekozen terugkommoment is te vroeg. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs.";
 const OVERTIME_MESSAGE      = "Let op: als u geen uitstel heeft gekregen van de overheid dient u een boete van 51 euro te betalen. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze.";

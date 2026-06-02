@@ -2,13 +2,13 @@
 
 ERROR=false
 
-for file in `find .`
+for file in `find . -not -path './vendor/*' -not -path './strauss/*'`
 do
     EXTENSION="${file##*.}"
 
     if [ "$EXTENSION" == "php" ] || [ "$EXTENSION" == "phtml" ]
     then
-        RESULTS=`php -l $file`
+        RESULTS=`php -d error_reporting=E_ERROR -l $file`
 
         if [ "$RESULTS" != "No syntax errors detected in $file" ]
         then

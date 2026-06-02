@@ -9,10 +9,10 @@ use Dation\Woocommerce\Model\PaymentParty;
 use Dation\Woocommerce\Model\Student;
 use Dation\Woocommerce\RestApiClient\RestApiClient;
 use Dation\Woocommerce\Model\Enrollment;
-use GuzzleHttp\Client as HttpClient;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
+use Dation\WoocommerceVendor\GuzzleHttp\Client as HttpClient;
+use Dation\WoocommerceVendor\GuzzleHttp\Handler\MockHandler;
+use Dation\WoocommerceVendor\GuzzleHttp\HandlerStack;
+use Dation\WoocommerceVendor\GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 
 class RestApiClientTest extends TestCase {

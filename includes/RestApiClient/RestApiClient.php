@@ -11,14 +11,14 @@ use Dation\Woocommerce\ObjectNormalizerFactory;
 use Dation\Woocommerce\Model\CourseInstance;
 use Dation\Woocommerce\Model\Enrollment;
 use Dation\Woocommerce\Model\Student;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
-use Symfony\Component\Serializer\Encoder\JsonEncode;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
+use Dation\WoocommerceVendor\GuzzleHttp\Client;
+use Dation\WoocommerceVendor\GuzzleHttp\Exception\ClientException;
+use Dation\WoocommerceVendor\Symfony\Component\Serializer\Encoder\JsonEncode;
+use Dation\WoocommerceVendor\Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Dation\WoocommerceVendor\Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Dation\WoocommerceVendor\Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Dation\WoocommerceVendor\Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Dation\WoocommerceVendor\Symfony\Component\Serializer\Serializer;
 
 /**
  * The RestApiClient is a service that deals with the communication with the
@@ -96,7 +96,7 @@ class RestApiClient {
 	private function get(string $endpoint, array $query) {
 		$response = $this->httpClient->get($endpoint, ['query' => $query]);
 
-		return \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+		return \Dation\WoocommerceVendor\GuzzleHttp\json_decode($response->getBody()->getContents(), true);
 	}
 
 	/**
@@ -196,7 +196,7 @@ class RestApiClient {
 	/**
 	 * @param array $leadData
 	 *
-	 * @return \Psr\Http\Message\ResponseInterface
+	 * @return \Dation\WoocommerceVendor\Psr\Http\Message\ResponseInterface
 	 */
 	public function postLead(array $leadData) {
 		return $this->httpClient->post('leads', [

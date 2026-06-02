@@ -2,10 +2,10 @@
 
 namespace Dation\Woocommerce;
 
-use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
-use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
-use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Dation\WoocommerceVendor\Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
+use Dation\WoocommerceVendor\Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
+use Dation\WoocommerceVendor\Symfony\Component\PropertyInfo\PropertyInfoExtractor;
+use Dation\WoocommerceVendor\Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class ObjectNormalizerFactory {
 	/** @var ObjectNormalizer $normalizer */

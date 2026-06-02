@@ -3,6 +3,7 @@
 
 # Ignore composer libraries
 /vendor/
+/strauss/
 
 # Ignore PHPUnit cache
 .phpunit.result.cache

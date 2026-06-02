@@ -7,7 +7,7 @@ namespace Dation\Woocommerce\ApiEndpoints;
 use Dation\Woocommerce\Adapter\RestApiClientFactory;
 use Dation\Woocommerce\RestApiClient\RestApiClient;
 use Error;
-use GuzzleHttp\Exception\ClientException;
+use Dation\WoocommerceVendor\GuzzleHttp\Exception\ClientException;
 use WP_Error;
 use WP_REST_Server;
 

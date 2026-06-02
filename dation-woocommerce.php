@@ -27,7 +27,18 @@ if(!defined('DW_BASE_HOST')) {
 
 // Includes
 
-require 'vendor/autoload.php';
+require 'strauss/autoload.php';
+
+spl_autoload_register(function (string $class): void {
+	$prefix = 'Dation\\Woocommerce\\';
+	if (strncmp($prefix, $class, strlen($prefix)) !== 0) {
+		return;
+	}
+	$file = __DIR__ . '/includes/' . str_replace('\\', '/', substr($class, strlen($prefix))) . '.php';
+	if (file_exists($file)) {
+		require $file;
+	}
+});
 
 require 'includes/cron-import-products.php';
 

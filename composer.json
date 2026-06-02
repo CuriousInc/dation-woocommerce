@@ -17,12 +17,16 @@
         "symfony/property-access": "^4.3",
         "symfony/property-info": "^4.3",
         "phpdocumentor/reflection-docblock": "^4.3",
-        "viison/address-splitter": "^0.3.2"
+        "viison/address-splitter": "^0.3.2",
+        "brianhenryie/strauss": "^0.21.1"
     },
     "autoload": {
         "psr-4": {
             "Dation\\Woocommerce\\": "includes/"
         }
+    },
+    "autoload-dev": {
+        "classmap": ["tests/"]
     },
     "config": {
         "platform": {
@@ -32,5 +36,30 @@
     "require-dev": {
         "phpunit/phpunit": "^8.2",
         "fzaninotto/faker": "^1.8"
+    },
+    "scripts": {
+        "post-install-cmd": ["php -d error_reporting=E_ERROR vendor/bin/strauss"],
+        "post-update-cmd": ["php -d error_reporting=E_ERROR vendor/bin/strauss"]
+    },
+    "extra": {
+        "strauss": {
+            "target_directory": "strauss",
+            "namespace_prefix": "Dation\\WoocommerceVendor\\",
+            "classmap_prefix": "Dation_WoocommerceVendor_",
+            "packages": [
+                "guzzlehttp/guzzle",
+                "guzzlehttp/promises",
+                "guzzlehttp/psr7",
+                "psr/http-message",
+                "ralouphie/getallheaders",
+                "symfony/serializer",
+                "symfony/property-access",
+                "symfony/property-info",
+                "phpdocumentor/reflection-docblock",
+                "setbased/rijksregisternummer",
+                "viison/address-splitter"
+            ],
+            "update_call_sites": ["includes/", "tests/"]
+        }
     }
 }
