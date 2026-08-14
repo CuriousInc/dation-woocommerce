@@ -16,14 +16,14 @@ use Dation\Woocommerce\Exceptions\LicenseDateUnderTimeException;
 use Dation\WoocommerceVendor\SetBased\Rijksregisternummer\Rijksregisternummer;
 use Dation\WoocommerceVendor\SetBased\Rijksregisternummer\RijksregisternummerHelper;
 
-const TOO_EARLY_MESSAGE     = "Het gekozen terugkommoment is te vroeg. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs.";
-const OVERTIME_MESSAGE      = "Let op: als u geen uitstel heeft gekregen van de overheid dient u een boete van 51 euro te betalen. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze.";
-const LONG_OVERTIME_MESSAGE = "Let op: als u geen uitstel heeft gekregen van de overheid bestaat de kans dat u helemaal niet mag deelnemen aan het terugkommoment op deze datum. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze,<b> geef dan een reden voor uitstel op.</b> Deze uitzondering moet u expliciet zijn toegekend vanwege het departement Mobiliteit & Openbare Werken via een schrijven. Indien u hier verdergaat, maar dit blijkt niet door de overheid te zijn toegekend, blijft u het inschrijvingsgeld verschuldigd.";
-const DW_WARNING            = "dw_warning_given";
+const DATION_TOO_EARLY_MESSAGE = "Het gekozen terugkommoment is te vroeg. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs.";
+const DATION_OVERTIME_MESSAGE  = "Let op: als u geen uitstel heeft gekregen van de overheid dient u een boete van 51 euro te betalen. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze.";
+const DATION_LONG_OVERTIME_MESSAGE    = "Let op: als u geen uitstel heeft gekregen van de overheid bestaat de kans dat u helemaal niet mag deelnemen aan het terugkommoment op deze datum. Kies een terugkommoment tussen de 6 en 9 maanden na de afgiftedatum van uw rijbewijs om dit te voorkomen. U kunt er ook voor kiezen om toch door te gaan met uw huidige keuze,<b> geef dan een reden voor uitstel op.</b> Deze uitzondering moet u expliciet zijn toegekend vanwege het departement Mobiliteit & Openbare Werken via een schrijven. Indien u hier verdergaat, maar dit blijkt niet door de overheid te zijn toegekend, blijft u het inschrijvingsgeld verschuldigd.";
+const DATION_DW_WARNING            = "dw_warning_given";
 
-const LONG_OVERTIME_WARNING = 'Let op: TKM later dan 11 maanden';
-const OVERTIME_WARNING      = 'Let op: TKM later dan 9 maanden';
-const TOO_EARLY_WARNING     = 'Let op: TKM eerder dan 6 maanden';
+const DATION_LONG_OVERTIME_WARNING = 'Let op: TKM later dan 11 maanden';
+const DATION_OVERTIME_WARNING      = 'Let op: TKM later dan 9 maanden';
+const DATION_TOO_EARLY_WARNING            = 'Let op: TKM eerder dan 6 maanden';
 
 const DUTCH_DATE  = "d-m-Y";
 const DUTCH_TIME  = "H:i";
@@ -111,12 +111,12 @@ function dw_email_order_render_extra_fields($order, $sent_to_admin, $plain_text)
 			canFollowMoment($issueDrivingLicense, $product->get_attribute('pa_datum'));
 		} catch(LicenseDateOverTimeException $e) {
 			//Add warning
-			$issueDrivingLicenseDateWarningText = OVERTIME_WARNING;
+			$issueDrivingLicenseDateWarningText = DATION_OVERTIME_WARNING;
 		} catch(LicenseDateUnderTimeException $e) {
 			//This should never happen
-			$issueDrivingLicenseDateWarningText = TOO_EARLY_WARNING;
+			$issueDrivingLicenseDateWarningText = DATION_TOO_EARLY_WARNING;
 		} catch(LicenseDateLongOverTimeException $e) {
-			$issueDrivingLicenseDateWarningText = LONG_OVERTIME_WARNING;
+			$issueDrivingLicenseDateWarningText = DATION_LONG_OVERTIME_WARNING;
 		}
 		$issueDrivingLicenseDateWarning = '<p style="color: red">' . $issueDrivingLicenseDateWarningText . '</p>';
 
@@ -269,8 +269,8 @@ function dw_process_checkout() {
 			} catch(LicenseDateOverTimeException $e) {
 				if(empty($_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE]) || $_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] === $driverLicenseIssueDate) {
 					//If the dat is the same, and we have nog
-					if(empty($_SESSION[DW_WARNING])) {
-						$_SESSION[DW_WARNING]                                   = true;
+					if(empty($_SESSION[DATION_DW_WARNING])) {
+						$_SESSION[DATION_DW_WARNING]                            = true;
 						$_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] = $driverLicenseIssueDate;
 
 						wc_add_notice(__($e->getMessage()), "error");
@@ -283,8 +283,8 @@ function dw_process_checkout() {
 			} catch(LicenseDateLongOverTimeException $e) {
 				if(empty($_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE]) || $_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] === $driverLicenseIssueDate) {
 					//If the date is the same, and we have not yet given a warning, give the warning. Continue otherwise
-					if(empty($_SESSION[DW_WARNING])) {
-						$_SESSION[DW_WARNING]                                   = true;
+					if(empty($_SESSION[DATION_DW_WARNING])) {
+						$_SESSION[DATION_DW_WARNING]                            = true;
 						$_SESSION[OrderManager::KEY_ISSUE_DATE_DRIVING_LICENSE] = $driverLicenseIssueDate;
 
 						wc_add_notice(__($e->getMessage()), "error");
@@ -531,21 +531,21 @@ function canFollowMoment(string $licenseIssueDate, string $trainingDate): bool {
 	$trainingDateTime->setTime(0, 0);
 
 	if($trainingDateTime < $licenseDateTime) {
-		throw new LicenseDateUnderTimeException(TOO_EARLY_MESSAGE);
+		throw new LicenseDateUnderTimeException(DATION_TOO_EARLY_MESSAGE);
 	}
 
 	$diff = $licenseDateTime->diff($trainingDateTime);
 
 	if($diff->y > 0 || ($diff->y === 0 && $diff->m > 10)) {
-		throw new LicenseDateLongOverTimeException(LONG_OVERTIME_MESSAGE);
+		throw new LicenseDateLongOverTimeException(DATION_LONG_OVERTIME_MESSAGE);
 	}
 
 	if($diff->m === 9 || $diff->m === 10) {
-		throw new LicenseDateOverTimeException(OVERTIME_MESSAGE);
+		throw new LicenseDateOverTimeException(DATION_OVERTIME_MESSAGE);
 	}
 
 	if($diff->m < 6) {
-		throw new LicenseDateUnderTimeException(TOO_EARLY_MESSAGE);
+		throw new LicenseDateUnderTimeException(DATION_TOO_EARLY_MESSAGE);
 	}
 
 	return true;

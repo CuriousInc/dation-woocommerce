@@ -120,7 +120,8 @@ class OrderManager {
 	 * @param $message
 	 */
 	private function caughtErrorActions(WC_Order $order, string $errorType, $message): void {
-		do_action('woocommerce_email_classes');
+		// Make sure WC_Emails is initialized, so the email classes (and their triggers) are registered.
+		WC()->mailer();
 		do_action('dw_synchronize_failed_email_action', $order);
 
 		$note = $this->translator->translate($errorType);
@@ -392,7 +393,8 @@ class OrderManager {
 					$comments .= " ||| " . "Let op: TKM later dan 9 maanden";
 				}
 
-				do_action('woocommerce_email_classes');
+				// Make sure WC_Emails is initialized, so the email classes (and their triggers) are registered.
+				WC()->mailer();
 				do_action('dw_warning_email_action', $order);
 			}
 			if(!empty($reasonForDelay)) {
