@@ -25,8 +25,7 @@ if [[ -z "$WP_ORG_USERNAME" ]]; then
     exit 1
 fi
 
-PLUGIN_BUILD_DIRECTORIES=(admin includes vendor contact-form)
-PLUGIN_BUILD_FILES=(LICENSE dation-woocommerce.php readme.txt)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_BUILD_PATH="/tmp/build"
 PLUGIN_SVN_PATH="/tmp/svn"
 
@@ -44,21 +43,18 @@ if [ $error == 0 ]; then
     exit 0
 fi
 
-# Checkout the git tag
+# Checkout the git tag. strauss/ and vendor/ are gitignored, so the generated
+# dependencies from the build job survive this.
 git checkout tags/$LATEST_GIT_TAG
 
-# Create the build directory
-mkdir $PLUGIN_BUILD_PATH
-
-# Copy plugin directories to the build directory
-for DIRECTORY in "${PLUGIN_BUILD_DIRECTORIES[@]}"; do
-    cp -r $DIRECTORY $PLUGIN_BUILD_PATH/$DIRECTORY
-done
-
-# Copy plugin files to the build directory
-for FILE in "${PLUGIN_BUILD_FILES[@]}"; do
-    cp $FILE $PLUGIN_BUILD_PATH/$FILE
-done
+# Assemble the payload that gets published. Bail out rather than fall through to
+# the SVN commit below, which would publish an incomplete plugin. Note this
+# script deliberately does not 'set -e', since it depends on the exit code of the
+# 'svn ls' check above.
+if ! "$SCRIPT_DIR/build-plugin.sh" "$PLUGIN_BUILD_PATH"; then
+    echo "Failed to assemble the plugin payload. Aborting deployment." 1>&2
+    exit 1
+fi
 
 # Checkout the SVN repo
 svn co -q --no-auth-cache --username $WP_ORG_USERNAME --password $WP_ORG_PASSWORD "https://plugins.svn.wordpress.org/$WP_ORG_PLUGIN_NAME" $PLUGIN_SVN_PATH
